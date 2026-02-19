@@ -8,8 +8,34 @@ import lombok.Data;
 public class SignupReq {
     @NotBlank
     private String email;
+    
+    @NotBlank
+    private String documentType;
+    
     @NotBlank
     private String dni;
+    
+    @NotBlank
+    private String fullName;
+    
+    @NotBlank
+    private String department;
+    
+    @NotBlank
+    private String municipality;
+    
+    @NotBlank
+    private String phone;
+    
+    @NotBlank
+    private String ageRange;
+    
+    @NotBlank
+    private String gender;
+    
+    @NotBlank
+    private String differentialFocus;
+    
     @NotBlank
     @Size(min = 8)
     private String password;

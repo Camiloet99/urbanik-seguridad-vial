@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { MdEmail, MdLock, MdVisibility, MdVisibilityOff } from "react-icons/md";
 import Input from "../Input";
 import PasswordInput from "../PasswordInput";
+import brandLogo from "../../assets/brand-logo.png";
 
 const variants = {
   initial: { opacity: 0, x: -12 },
@@ -91,6 +92,15 @@ export default function LoginForm({
         >
           Crea una aquí.
         </button>
+      </div>
+
+      <div className="mt-auto pt-8 flex flex-col items-center gap-2">
+        <p className="text-xs text-white/60">Powered by:</p>
+        <img
+          src={brandLogo}
+          alt="Brand"
+          className="h-8"
+        />
       </div>
     </motion.form>
   );

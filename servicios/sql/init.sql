@@ -4,20 +4,23 @@ CREATE TABLE IF NOT EXISTS users (
   email VARCHAR(190) NOT NULL UNIQUE,      -- Email_institucional (lowercase)
   dni VARCHAR(32) NOT NULL UNIQUE,         -- NUM_DOCUMENTO
 
-  name VARCHAR(190) NOT NULL,              -- Nombre
-  genero VARCHAR(32),                      -- GENERO
-  edad INT,                                -- EDAD
+  full_name VARCHAR(190) NOT NULL,         -- Nombre completo
+  genero VARCHAR(32),                      -- Género
+  age_range VARCHAR(32),                   -- Rango de edad
   fecha_nacimiento DATE,                   -- FECHA_NACIMIENTO
 
-  phone VARCHAR(64),                       -- preferente (celular o tel)
-  telefono VARCHAR(64),                    -- Telefono
-  celular VARCHAR(64),                     -- Celular
+  documento_type VARCHAR(32),              -- Tipo de documento
+  department VARCHAR(120),                 -- Departamento
+  municipality VARCHAR(120),               -- Municipio
+  phone VARCHAR(64),                       -- Teléfono
+  telefono VARCHAR(64),                    -- Teléfono alternativo
+  celular VARCHAR(64),                     -- Celular alternativo
 
-  email_personal VARCHAR(190),             -- Email
-  ciudad_residencia VARCHAR(120),          -- Ciudad_Residencia
-  subregion VARCHAR(120),                  -- SUBREGION
-  tipo_documento_id VARCHAR(32),           -- ID_TIPO_DOCUMENTO
-  enfoque_diferencial VARCHAR(120),        -- ENFOQUE DIFERENCIAL
+  email_personal VARCHAR(190),             -- Email personal
+  ciudad_residencia VARCHAR(120),          -- Ciudad de residencia
+  subregion VARCHAR(120),                  -- Subregión
+  tipo_documento_id VARCHAR(32),           -- ID tipo de documento
+  enfoque_diferencial VARCHAR(120),        -- Enfoque diferencial
   programa VARCHAR(160),                   -- Programa
   nivel VARCHAR(80),                       -- Nivel
 
@@ -25,6 +28,9 @@ CREATE TABLE IF NOT EXISTS users (
   password_hash VARCHAR(200) NOT NULL,
   role VARCHAR(32) NOT NULL,
   enabled BOOLEAN NOT NULL DEFAULT TRUE,
+
+  initial_test_done BOOLEAN NOT NULL DEFAULT FALSE,
+  exit_test_done BOOLEAN NOT NULL DEFAULT FALSE,
 
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

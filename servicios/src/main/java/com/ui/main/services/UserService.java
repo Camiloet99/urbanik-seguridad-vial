@@ -22,8 +22,8 @@ public class UserService {
 
     public Mono<UserEntity> patchUser(String email, UpdateUserReq req) {
         return getByEmail(email).flatMap(u -> {
-            if (req.getName() != null) u.setName(req.getName());
-            if (req.getPhone() != null) u.setCelular(req.getPhone());
+            if (req.getName() != null) u.setFullName(req.getName());
+            if (req.getPhone() != null) u.setPhone(req.getPhone());
             if (req.getAvatarId() != null) u.setAvatarId(req.getAvatarId());
             return users.save(u);
         });

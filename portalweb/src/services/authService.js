@@ -7,8 +7,32 @@ export async function loginApi({ email, password }) {
 export async function verifyUserIdentityApi({ email, dni }) {
   return http.post("/auth/verify-identity", { email, dni });
 }
-export async function signupApi({ email, dni, password }) {
-  return http.post("/auth/signup", { email, dni, password });
+export async function signupApi({
+  email,
+  documentType,
+  dni,
+  fullName,
+  department,
+  municipality,
+  phone,
+  ageRange,
+  gender,
+  differentialFocus,
+  password,
+}) {
+  return http.post("/auth/signup", {
+    email,
+    documentType,
+    dni,
+    fullName,
+    department,
+    municipality,
+    phone,
+    ageRange,
+    gender,
+    differentialFocus,
+    password,
+  });
 }
 export async function resetPasswordApi({ email, dni, newPassword }) {
   return http.post("/auth/reset-password", { email, dni, newPassword });

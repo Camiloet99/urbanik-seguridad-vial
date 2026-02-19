@@ -1,10 +1,11 @@
 package com.ui.main.services;
 
-import com.ui.main.model.dto.RosterRow;
+import com.ui.main.model.dto.SignupReq;
 import com.ui.main.repository.UserRepository;
 import com.ui.main.repository.entity.UserEntity;
 import com.ui.main.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,10 +16,10 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final RosterService roster;
     private final UserRepository users;
     private final PasswordEncoder encoder;
     private final JwtService jwt;
@@ -104,42 +105,27 @@ public class AuthService {
     //  SIGNUP FLEXIBLE
     // =========================
 
-    public Mono<Void> signup(String email, String dni, String rawPassword) {
-        String norm = email.toLowerCase();
+    public Mono<Void> signup(SignupReq req) {
+        log.info(req.toString());
+        String norm = req.getEmail().toLowerCase();
 
-        if (rawPassword.length() < 8) {
+        if (req.getPassword().length() < 8) {
             return Mono.error(new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Contraseña insegura (mínimo 8 caracteres)"
             ));
         }
 
-        return verifyIdentity(norm, dni)
-                .then(users.existsByEmailIgnoreCase(norm))
-                .flatMap(exists -> {
-                    if (exists) {
-                        return Mono.error(new ResponseStatusException(
-                                HttpStatus.CONFLICT, "Cuenta ya registrada"
-                        ));
-                    }
-                    return Mono.just(true);
-                })
-                .then(users.existsByDni(dni))
-                .flatMap(dniExists -> {
-                    if (dniExists) {
-                        return Mono.error(new ResponseStatusException(
-                                HttpStatus.CONFLICT, "Documento ya registrado"
-                        ));
-                    }
-                    return Mono.just(true);
-                })
-                .then(
-                        roster.findByInstitutionalEmail(norm)
-                                .map(r -> buildUserFromRoster(r, rawPassword))
-                                .switchIfEmpty(Mono.defer(() ->
-                                        Mono.just(buildUserForUnknown(norm, dni, rawPassword))
-                                ))
+        return verifyIdentity(norm, req.getDni())
+                .then(users.findByEmailIgnoreCase(norm)
+                        .flatMap(existingUser ->
+                            Mono.error(new ResponseStatusException(
+                                    HttpStatus.CONFLICT, "Cuenta ya registrada"
+                            ))
+                        )
+                        .switchIfEmpty(Mono.just(true))
                 )
+                .then(Mono.just(buildUserForSignup(req)))
                 .flatMap(users::save)
                 .then();
     }
@@ -148,43 +134,23 @@ public class AuthService {
     //  Helpers de construcción
     // =========================
 
-    private UserEntity buildUserFromRoster(RosterRow r, String rawPassword) {
-        return UserEntity.builder()
-                .email(r.emailInstitutional())
-                .dni(r.dni())
-                .name(r.name())
-                .genero(r.genero())
-                .edad(r.edad())
-                .fechaNacimiento(r.fechaNacimiento())
-                .telefono(r.telefono())
-                .celular(r.celular())
-                .emailPersonal(r.emailPersonal())
-                .ciudadResidencia(r.ciudadResidencia())
-                .subregion(r.subregion())
-                .tipoDocumentoId(r.tipoDocumentoId())
-                .enfoqueDiferencial(r.enfoqueDiferencial())
-                .programa(r.programa())
-                .nivel(r.nivel())
-                .avatarId(0)
-                .passwordHash(encoder.encode(rawPassword))
-                .role(r.admin() ? "ADMIN" : "USER")
-                .enabled(true)
-                .initialTestDone(false)
-                .exitTestDone(false)
-                .build();
-    }
-
     /**
-     * Usuario cuando NO está en el roster.
-     * Dejamos campos que no conocemos en null o valores por defecto.
+     * Usuario nuevo - Usa los datos proporcionados en SignupReq.
      */
-    private UserEntity buildUserForUnknown(String email, String dni, String rawPassword) {
+    private UserEntity buildUserForSignup(SignupReq req) {
         return UserEntity.builder()
-                .email(email)
-                .dni(dni)
-                .name(email)
+                .email(req.getEmail().toLowerCase())
+                .dni(req.getDni())
+                .fullName(req.getFullName())
+                .documentType(req.getDocumentType())
+                .department(req.getDepartment())
+                .municipality(req.getMunicipality())
+                .phone(req.getPhone())
+                .genero(req.getGender())
+                .ageRange(req.getAgeRange())
+                .differentialFocus(req.getDifferentialFocus())
                 .avatarId(0)
-                .passwordHash(encoder.encode(rawPassword))
+                .passwordHash(encoder.encode(req.getPassword()))
                 .role("USER")
                 .enabled(true)
                 .initialTestDone(false)

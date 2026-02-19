@@ -12,20 +12,20 @@ public class UserMeRes {
     private Long id;
     private String email;
     private String dni;
-    private String name;
+    private String fullName;
+    private String documentType;
     private String genero;
-    private Integer edad;
-    private LocalDate fechaNacimiento;
-
+    private String ageRange;
+    private String department;
+    private String municipality;
     private String phone;
-    private String telefono;
-    private String celular;
+    private LocalDate fechaNacimiento;
 
     private String emailPersonal;
     private String ciudadResidencia;
     private String subregion;
     private String tipoDocumentoId;
-    private String enfoqueDiferencial;
+    private String differentialFocus;
     private String programa;
     private String nivel;
 
@@ -35,12 +35,13 @@ public class UserMeRes {
     public static UserMeRes of(UserEntity u) {
         return UserMeRes.builder()
                 .id(u.getId()).email(u.getEmail()).dni(u.getDni())
-                .name(u.getName()).genero(u.getGenero()).edad(u.getEdad())
+                .fullName(u.getFullName()).documentType(u.getDocumentType())
+                .genero(u.getGenero()).ageRange(u.getAgeRange())
+                .department(u.getDepartment()).municipality(u.getMunicipality()).phone(u.getPhone())
                 .fechaNacimiento(u.getFechaNacimiento())
-                .phone(u.getCelular()).telefono(u.getTelefono()).celular(u.getCelular())
                 .emailPersonal(u.getEmailPersonal()).ciudadResidencia(u.getCiudadResidencia())
                 .subregion(u.getSubregion()).tipoDocumentoId(u.getTipoDocumentoId())
-                .enfoqueDiferencial(u.getEnfoqueDiferencial())
+                .differentialFocus(u.getDifferentialFocus())
                 .programa(u.getPrograma()).nivel(u.getNivel())
                 .avatarId(u.getAvatarId()).role(u.getRole())
                 .build();

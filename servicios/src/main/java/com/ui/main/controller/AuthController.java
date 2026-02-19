@@ -24,7 +24,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public Mono<Map<String,Object>> signup(@Valid @RequestBody Mono<SignupReq> body) {
-        return body.flatMap(b -> auth.signup(b.getEmail(), b.getDni(), b.getPassword()))
+        return body.flatMap(auth::signup)
                 .thenReturn(Map.of("ok", true));
     }
 

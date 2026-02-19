@@ -23,21 +23,41 @@ public class UserEntity {
     private String email;
     private String dni;
 
-    private String name;
+    @Column("full_name")
+    private String fullName;
+
     private String genero;
-    private Integer edad;
+
+    @Column("age_range")
+    private String ageRange;
 
     @Column("fecha_nacimiento")
     private LocalDate fechaNacimiento;
 
+    private String phone;
     private String telefono;
     private String celular;
 
+    @Column("email_personal")
     private String emailPersonal;
+
+    @Column("ciudad_residencia")
     private String ciudadResidencia;
+
     private String subregion;
+
+    @Column("tipo_documento_id")
     private String tipoDocumentoId;
-    private String enfoqueDiferencial;
+    
+    @Column("document_type")
+    private String documentType;
+
+    private String department;
+    private String municipality;
+
+    @Column("enfoque_diferencial")
+    private String differentialFocus;
+    
     private String programa;
     private String nivel;
 
@@ -50,7 +70,6 @@ public class UserEntity {
     private String role;
     private Boolean enabled;
 
-    // NUEVO -> deben existir en DB como initial_test_done / exit_test_done
     @Column("initial_test_done")
     private Boolean initialTestDone;
 

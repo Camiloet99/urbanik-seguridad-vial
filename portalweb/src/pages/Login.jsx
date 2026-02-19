@@ -311,11 +311,15 @@ export default function AuthGateway() {
       try {
         await signupApi({
           email: signupEmailFixed,
+          documentType: idValues.documentType,
           dni: idValues.dni,
           fullName: idValues.fullName,
           department: idValues.department,
           municipality: idValues.municipality,
           phone: idValues.phone,
+          ageRange: detailValues.ageRange,
+          gender: detailValues.gender,
+          differentialFocus: detailValues.differentialFocus,
           password: credValues.pass,
         });
         await login(signupEmailFixed, credValues.pass);
@@ -455,7 +459,7 @@ export default function AuthGateway() {
               <img
                 src={brandLogo}
                 alt="Urbanik"
-                className="mx-auto block w-[80%] md:w-[74%]" 
+                className="mx-auto block w-[60%] md:w-[55%]" 
               />
             </div>
 
@@ -515,11 +519,11 @@ export default function AuthGateway() {
                 initial="initial"
                 animate="animate"
                 exit="exit"
-                className="min-h-[420px]"
+                className="min-h-[420px] flex flex-col"
               >
                 <AnimatePresence mode="wait" initial={false}>
                   {mode === "login" && (
-                    <motion.div layout key="login" className="relative">
+                    <motion.div layout key="login" className="relative flex-1 flex flex-col">
                       <AnimatePresence>
                         {loginOkBurst && (
                           <motion.div
