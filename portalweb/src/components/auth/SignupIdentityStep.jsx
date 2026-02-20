@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { MdEmail, MdLock, MdPerson, MdPhone } from "react-icons/md";
 import Input from "../Input";
+import SearchableSelect from "../SearchableSelect";
 import { DEPARTMENTS, MUNICIPALITIES_ANTIOQUIA } from "../../data/colombiaData";
 
 const variants = {
@@ -45,77 +46,33 @@ export default function SignupIdentityStep({
       exit="exit"
     >
       <div className="space-y-5">
-        <label className="block">
-          <div
-            className={`group flex items-center gap-2 rounded-full border h-12 px-5 transition-colors ${
-              errors.department
-                ? "border-red-400/70 focus-within:border-red-300 bg-red-500/5"
-                : "border-white/15 focus-within:border-white/25 bg-white/5 focus-within:bg-white/10"
-            }`}
-          >
-            <select
-              value={values.department || ""}
-              onChange={(e) =>
-                setValues((v) => ({
-                  ...v,
-                  department: e.target.value,
-                }))
-              }
-              aria-invalid={!!errors.department}
-              className="peer min-w-0 flex-1 bg-transparent text-white outline-none appearance-none cursor-pointer"
-              style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "right 0.5rem center",
-                paddingRight: "1.5rem",
-              }}
-            >
-              <option value="">Departamento</option>
-              {DEPARTMENTS.map((dept) => (
-                <option key={dept.value} value={dept.value}>
-                  {dept.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </label>
+        <SearchableSelect
+          options={DEPARTMENTS}
+          value={values.department || ""}
+          onChange={(value) =>
+            setValues((v) => ({
+              ...v,
+              department: value,
+            }))
+          }
+          placeholder="Buscar departamento..."
+          error={!!errors.department}
+        />
         {errors.department && (
-          <p className="text-xs text-red-300 mt-2">{errors.department}</p>
+          <p className="text-xs text-red-300 -mt-4">{errors.department}</p>
         )}
 
-        <label className="block">
-          <div
-            className={`group flex items-center gap-2 rounded-full border h-12 px-5 transition-colors ${
-              errors.municipality
-                ? "border-red-400/70 focus-within:border-red-300 bg-red-500/5"
-                : "border-white/15 focus-within:border-white/25 bg-white/5 focus-within:bg-white/10"
-            }`}
-          >
-            <select
-              value={values.municipality || ""}
-              onChange={(e) =>
-                setValues((v) => ({ ...v, municipality: e.target.value }))
-              }
-              aria-invalid={!!errors.municipality}
-              className="peer min-w-0 flex-1 bg-transparent text-white outline-none appearance-none cursor-pointer"
-              style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "right 0.5rem center",
-                paddingRight: "1.5rem",
-              }}
-            >
-              <option value="">Municipio de Residencia</option>
-              {municipalities.map((municipality) => (
-                <option key={municipality.value} value={municipality.value}>
-                  {municipality.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </label>
+        <SearchableSelect
+          options={municipalities}
+          value={values.municipality || ""}
+          onChange={(value) =>
+            setValues((v) => ({ ...v, municipality: value }))
+          }
+          placeholder="Buscar municipio..."
+          error={!!errors.municipality}
+        />
         {errors.municipality && (
-          <p className="text-xs text-red-300 mt-2">{errors.municipality}</p>
+          <p className="text-xs text-red-300 -mt-4">{errors.municipality}</p>
         )}
 
         <Input
