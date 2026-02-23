@@ -34,7 +34,7 @@ function shimmerClass() {
 export default function Courses() {
   const cardsBase = useMemo(
     () => [
-      /*{
+      /**{
         key: "punto-cero-calma",
         title: "Módulo 1",
         subtitle: "Donde inicia tu viaje interior",
