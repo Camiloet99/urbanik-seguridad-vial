@@ -25,10 +25,10 @@ export default function CourseCard({
       />
 
       {/* Overlay principal (ya lo tenías) */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0B1238]/75 via-[#0B1238]/40 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0B3A39]/70 via-[#0B3A39]/35 to-transparent" />
 
       {/* Faja sutil para realzar texto cerca a la base */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#0B1238]/80 via-[#0B1238]/20 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#0B3A39]/80 via-[#0B3A39]/25 to-transparent" />
 
       {/* Contenido: anclado abajo */}
       <div className="absolute inset-0 p-4 md:p-5 flex flex-col justify-end">

@@ -11,7 +11,8 @@ import card1 from "@/assets/courses/card-1.png";
 import card2 from "@/assets/courses/card-2.jpg";
 import card3 from "@/assets/courses/card-3.jpg";
 import card4 from "@/assets/courses/card-4.jpg";
-
+import card5 from "@/assets/courses/card-5.jpg";
+import card6 from "@/assets/courses/card-6.jpg";
 import partner1 from "@/assets/partner-1-white.png";
 import partner2 from "@/assets/partner-2-white.png";
 import { useNavigate } from "react-router-dom";
@@ -33,17 +34,17 @@ function shimmerClass() {
 export default function Courses() {
   const cardsBase = useMemo(
     () => [
-      {
+      /*{
         key: "punto-cero-calma",
-        title: "Punto Cero CALMA",
+        title: "Módulo 1",
         subtitle: "Donde inicia tu viaje interior",
         img: card1,
         ctaBg: "#1995F1",
         ctaIcon: <CardIcons.MdShare />,
-      },
+      },*/
       {
         key: "bosque-emociones",
-        title: "Bosque de las Emociones",
+        title: "Módulo 2",
         subtitle: "Reconéctate con tu interior",
         img: card2,
         ctaBg: "#FFC107",
@@ -51,7 +52,7 @@ export default function Courses() {
       },
       {
         key: "jardin-mental",
-        title: "Jardín Mental",
+        title: "Módulo 3",
         subtitle: "Siembra tus metas, florece tu mente",
         img: card3,
         ctaBg: "#8BC34A",
@@ -59,12 +60,28 @@ export default function Courses() {
       },
       {
         key: "lago-suenos",
-        title: "Lago de los Sueños",
+        title: "Módulo 4",
         subtitle: "El reflejo de tus libertades",
         img: card4,
         ctaBg: "#9C27B0",
         ctaIcon: <CardIcons.MdArrowForward />,
       },
+    {
+      key: "modulo-5",
+      title: "Módulo 5",
+      subtitle: "Próximamente",
+      img: card5,
+      ctaBg: "#cd6a6a",
+      CardIcons: <CardIcons.MdLock />,
+    },
+    {
+      key: "modulo-6",
+      title: "Módulo 6",
+      subtitle: "Próximamente",
+      img: card6,
+      ctaBg: "#6acdb8",
+      CardIcons: <CardIcons.MdLock />,
+    }
     ],
     []
   );
@@ -81,10 +98,13 @@ export default function Courses() {
     try {
       const p = await getMyProgress();
       const mapped = [
-        { key: "punto-cero-calma", completed: !!p.medalla1 },
+        //{ key: "punto-cero-calma", completed: !!p.medalla1 },
         { key: "bosque-emociones", completed: !!p.medalla2 },
         { key: "jardin-mental", completed: !!p.medalla3 },
         { key: "lago-suenos", completed: !!p.medalla4 },
+        { key: "modulo-5", completed: !!p.medalla5 },
+        { key: "modulo-6", completed: !!p.medalla6 },
+        
       ];
       setProgress(mapped);
       setTestFlags({ initial: !!p.testInitialDone, exit: !!p.testExitDone });
@@ -226,8 +246,8 @@ export default function Courses() {
                 transition={{ delay: 0.05 }}
               >
                 <Hero
-                  title="Metaverso IU Digital"
-                  subtitle="Conoce a ti mismo"
+                  title="Módulo 1"
+                  subtitle="Realiza el test inicial y crea tu avatar"
                   ctaLabel={smartCtaLabel}
                   onCtaClick={goSmart}
                   reminder={
@@ -284,7 +304,7 @@ export default function Courses() {
             </div>
 
             {/* Cards */}
-            <div className="mt-8 sm:mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="mt-8 sm:mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-5">
               {cards.map((c, idx) => (
                 <motion.div
                   key={c.key}
