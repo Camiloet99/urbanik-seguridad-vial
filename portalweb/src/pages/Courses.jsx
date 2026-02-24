@@ -161,6 +161,10 @@ export default function Courses() {
     navigate("/experience");
   };
 
+  const goToCourseDetail = (courseKey) => {
+    navigate(`/courses/${courseKey}`);
+  };
+
   const smartCtaLabel = useMemo(() => {
     const anyMedal = progress.some((p) => p.completed);
     if (!testFlags.initial && !anyMedal) return "Hacer test inicial";
@@ -177,11 +181,11 @@ export default function Courses() {
       return {
         ...c,
         statusLogoSrc,
-        onClick: goSmart,
+        onClick: () => goToCourseDetail(c.key),
         onKeyDown: (e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            goSmart();
+            goToCourseDetail(c.key);
           }
         },
         role: "button",

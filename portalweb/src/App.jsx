@@ -1,4 +1,4 @@
-// src/App.jsx
+import { useParams, useNavigate } from "react-router-dom";
 import {
   createBrowserRouter,
   RouterProvider,
@@ -8,6 +8,7 @@ import AuthGateway from "@/pages/Login";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import ProtectedRoute from "@/routes/ProtectedRoute";
 import Courses from "@/pages/Courses";
+import CourseDetail from "@/pages/CourseDetail";
 import TestInitial from "@/pages/TestInitial";
 import TestExit from "@/pages/TestExit";
 import Profile from "@/pages/Profile";
@@ -31,6 +32,7 @@ const router = createBrowserRouter([
         children: [
           { path: "/", element: <Navigate to="/courses" replace /> },
           { path: "/courses", element: <Courses /> },
+          { path: "/courses/:courseKey", element: <CourseDetail /> },
           { path: "/test-inicial", element: <TestInitial /> },
           { path: "/test-salida", element: <TestExit /> },
           { path: "/profile", element: <Profile /> },
