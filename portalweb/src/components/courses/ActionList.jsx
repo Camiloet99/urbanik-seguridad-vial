@@ -5,21 +5,30 @@ export default function ActionList({
   onClick = () => {},
   testInitialDone = false,
   testExitDone = false,
+  showRating = false,
 }) {
   const items = useMemo(
     () => [
       { key: "test-inicial", label: "Test inicial" },
       { key: "test-salida", label: "Test de salida " },
-      { key: "contacto", label: "Contacto – Email" },
+      {
+        key: showRating ? "califica" : "contacto",
+        label: showRating ? "Califica este módulo" : "Contacto – Email",
+      },
     ],
-    []
+    [showRating]
   );
 
-  const resolveSrc = (key) =>
-    new URL(`../../assets/courses/nocomplete/${key}.png`, import.meta.url).href;
+  const resolveSrc = (key) => {
+    const iconKey = key === "califica" ? "contacto" : key;
+    return new URL(
+      `../../assets/courses/nocomplete/${iconKey}.png`,
+      import.meta.url
+    ).href;
+  };
 
   const resolveBg = (key, completed) => {
-    if (key === "contacto") return "#6EB9FF"; // siempre color
+    if (key === "contacto" || key === "califica") return "#6EB9FF"; // siempre color
     if (!completed) return "transparent";
     if (key === "test-inicial") return "#5944F9";
     if (key === "test-salida") return "#0094FD";
@@ -48,6 +57,8 @@ export default function ActionList({
               ? !!testInitialDone
               : key === "test-salida"
               ? !!testExitDone
+              : key === "contacto" || key === "califica"
+              ? progressMap.get(key) ?? false
               : progressMap.get(key) ?? false;
 
           const disabled =

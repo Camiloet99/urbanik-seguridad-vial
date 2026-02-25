@@ -92,7 +92,6 @@ public class ProgressService {
         return users.findByEmailIgnoreCase(email)
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
                 .flatMap(u -> external.readAll()
-                        // usa flatMap y no retornes null
                         .flatMap(list -> {
                             var curr = findByDni(list, u.getDni()); // puede ser null
                             boolean nm1 = m1 != null ? m1 : (curr != null && curr.isMedalla1());

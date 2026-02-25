@@ -5,6 +5,7 @@ import { getMyProgress } from "@/services/progressService";
 import Hero from "@/components/courses/Hero";
 import ActionList from "@/components/courses/ActionList";
 import ProgressCard from "@/components/courses/ProgressCard";
+import RatingModal from "@/components/courses/RatingModal";
 
 import card1 from "@/assets/courses/card-1.png";
 import card2 from "@/assets/courses/card-2.jpg";
@@ -69,6 +70,7 @@ export default function CourseDetail() {
   const navigate = useNavigate();
 
   const [progress, setProgress] = useState(null);
+  const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
 
   const courseData = useMemo(() => COURSE_DATA[courseKey] || null, [courseKey]);
 
@@ -78,14 +80,12 @@ export default function CourseDetail() {
         const p = await getMyProgress();
         setProgress(p);
       } catch (err) {
-        // si el back no está, no bloqueamos UI
         console.warn("Progress no disponible (backend desconectado).", err);
       }
     };
     fetchProgress();
   }, [courseKey]);
 
-  // Mapa mínimo para ProgressCard/ActionList (sin romper si no hay back)
   const progressMap = useMemo(() => {
     const m = new Map();
     m.set("test-inicial", !!progress?.testInitialDone);
@@ -110,14 +110,13 @@ export default function CourseDetail() {
   }
 
   return (
-    <div className="mt-4 sm:mt-6 lg:mt-12 relative min-h-[calc(80vh-80px)] flex flex-col space-y-8 pb-[calc(84px+env(safe-area-inset-bottom))] sm:pb-0">
-      {/* Fondo i*/}
+    <>
+      <div className="mt-4 sm:mt-6 lg:mt-12 relative min-h-[calc(80vh-80px)] flex flex-col space-y-8 pb-[calc(84px+env(safe-area-inset-bottom))] sm:pb-0">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-950"
       />
 
-      {/* TOP: Banner + Acciones + Progreso */}
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_280px_320px]">
         <Hero
           title={courseData.title}
@@ -134,9 +133,10 @@ export default function CourseDetail() {
           progressMap={progressMap}
           testInitialDone={progressMap.get("test-inicial")}
           testExitDone={progressMap.get("test-salida")}
+          showRating={true}
           onClick={(key) => {
             if (key === "califica") {
-              window.open("");
+              setIsRatingModalOpen(true);
               return;
             }
             if (key === "test-inicial") {
@@ -228,6 +228,14 @@ export default function CourseDetail() {
       </div>
 
       
-    </div>
+      </div>
+
+      <RatingModal
+        isOpen={isRatingModalOpen}
+        courseKey={courseKey}
+        courseTitle={courseData?.title}
+        onClose={() => setIsRatingModalOpen(false)}
+      />
+    </>
   );
 }

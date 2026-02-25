@@ -7,14 +7,11 @@ import ProgressCard from "@/components/courses/ProgressCard";
 import { getMyProgress } from "@/services/progressService";
 import Spinner from "@/components/ui/Spinner";
 
-import card1 from "@/assets/courses/card-1.png";
 import card2 from "@/assets/courses/card-2.jpg";
 import card3 from "@/assets/courses/card-3.jpg";
 import card4 from "@/assets/courses/card-4.jpg";
 import card5 from "@/assets/courses/card-5.jpg";
 import card6 from "@/assets/courses/card-6.jpg";
-import partner1 from "@/assets/partner-1-white.png";
-import partner2 from "@/assets/partner-2-white.png";
 import { useNavigate } from "react-router-dom";
 
 /**
@@ -45,7 +42,7 @@ export default function Courses() {
       {
         key: "bosque-emociones",
         title: "Módulo 2",
-        subtitle: "Reconéctate con tu interior",
+        subtitle: "Rutas y Denuncia Efectiva",
         img: card2,
         ctaBg: "#FFC107",
         ctaIcon: <CardIcons.MdEmojiEmotions />,
