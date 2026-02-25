@@ -14,6 +14,7 @@ import TestExit from "@/pages/TestExit";
 import Profile from "@/pages/Profile";
 import Experience from "@/pages/Experience";
 import NiaChat from "@/pages/NiaChat";
+import CourseRatingPage from "@/pages/CourseRatingPage";
 
 import TermsPrivacyPage from "@/pages/legal/TermsPrivacyPage";
 import DataPolicyPage from "@/pages/legal/DataPolicyPage";
@@ -39,6 +40,7 @@ const router = createBrowserRouter([
           { path: "*", element: <Navigate to="/courses" replace /> },
           { path: "/experience", element: <Experience /> },
           { path: "/chat", element: <NiaChat /> },
+          { path: "/courses/:courseKey/rating", element: <CourseRatingPage /> },
           {
             path: "/admin",
             element: (

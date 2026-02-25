@@ -10,7 +10,7 @@ import card1 from "@/assets/courses/card-1.png";
 import card2 from "@/assets/courses/card-2.jpg";
 import card3 from "@/assets/courses/card-3.jpg";
 import card4 from "@/assets/courses/card-4.jpg";
-
+import ChatNia from "@/components/courses/ChatNia";
 import partner1 from "@/assets/partner-1-white.png";
 import partner2 from "@/assets/partner-2-white.png";
 
@@ -187,36 +187,8 @@ export default function CourseDetail() {
             </div>
           </div>
 
-          {/* Chat NIA (placeholder) */}
-          <div className="rounded-[22px] ring-1 ring-white/10 bg-white/5 p-5">
-            <div className="flex items-center gap-3">
-              <div className="h-14 w-14 rounded-full bg-white/10 ring-1 ring-white/15" />
-              <div>
-                <p className="text-white font-medium">Pregúntale a NIA</p>
-                <p className="text-white/70 text-xs">Asistente del módulo</p>
-              </div>
-            </div>
-
-            <div className="mt-4 rounded-xl bg-white/5 ring-1 ring-white/10 p-3 text-white/70 text-sm min-h-[140px]">
-              Aquí irá el chat embebido (luego conectamos el componente real).
-            </div>
-
-            <div className="mt-3 flex gap-3">
-              <input
-                className="flex-1 rounded-xl bg-white/5 ring-1 ring-white/10 px-3 py-2 text-sm text-white/90 placeholder:text-white/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
-                placeholder="Escribe tu pregunta…"
-                disabled={courseData.locked}
-              />
-              <button
-                className="rounded-xl bg-[#6C4CFF] px-4 py-2 text-sm font-medium
-                           hover:bg-[#5944F9] active:scale-[0.98] transition
-                           focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 disabled:opacity-50"
-                disabled={courseData.locked}
-              >
-                Enviar
-              </button>
-            </div>
-          </div>
+          {/* Chat con NIA */}
+          <ChatNia locked={courseData.locked} />
 
           {/* Recursos */}
           <div className="rounded-[22px] ring-1 ring-white/10 bg-white/5 p-5">
@@ -240,6 +212,14 @@ export default function CourseDetail() {
                   {courseData.locked ? "Recursos disponibles próximamente." : "No hay recursos aún."}
                 </div>
               )}
+<button
+  type="button"
+  className="rounded-full bg-[#5FA9FF] px-6 py-3 text-white font-semibold"
+  onClick={() => navigate(`/courses/${courseKey}/rating`)}
+>
+  Probar pantalla de calificación
+</button>
+              
             </div>
 
           
