@@ -4,7 +4,7 @@ import Hero from "@/components/courses/Hero";
 import CourseCard, { CardIcons } from "@/components/courses/CourseCard";
 import ActionList from "@/components/courses/ActionList";
 import ProgressCard from "@/components/courses/ProgressCard";
-import { getMyProgress } from "@/services/progressService";
+import { getMyProgress, buildMonedaMap, getModuleProgress, isDiagnosticoDone } from "@/services/progressService";
 import Spinner from "@/components/ui/Spinner";
 
 import card2 from "@/assets/courses/card-2.jpg";
@@ -84,7 +84,9 @@ export default function Courses() {
   );
 
   const [progress, setProgress] = useState([]);
+  // modulo 1 is the global "initial test" gate for the full experience
   const [testFlags, setTestFlags] = useState({ initial: false, exit: false });
+  const [diagDone, setDiagDone] = useState(() => isDiagnosticoDone());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -94,16 +96,19 @@ export default function Courses() {
     setLoading(true);
     try {
       const p = await getMyProgress();
+      // Map monedas (completions) per course key
+      const monedaMap = buildMonedaMap(p);
       const mapped = [
-        { key: "bosque-emociones", completed: !!p.medalla2 },
-        { key: "jardin-mental", completed: !!p.medalla3 },
-        { key: "lago-suenos", completed: !!p.medalla4 },
-        { key: "modulo-5", completed: !!p.medalla5 },
-        { key: "modulo-6", completed: !!p.medalla6 },
-        
+        { key: "bosque-emociones", completed: monedaMap.get("bosque-emociones") ?? false },
+        { key: "jardin-mental",    completed: monedaMap.get("jardin-mental")    ?? false },
+        { key: "lago-suenos",      completed: monedaMap.get("lago-suenos")      ?? false },
+        { key: "modulo-5",         completed: monedaMap.get("modulo-5")         ?? false },
+        { key: "modulo-6",         completed: monedaMap.get("modulo-6")         ?? false },
       ];
       setProgress(mapped);
-      setTestFlags({ initial: !!p.testInitialDone, exit: !!p.testExitDone });
+      // Use modulo 1 as the global gate (punto-cero-calma)
+      const mod1 = getModuleProgress(p, 1);
+      setTestFlags({ initial: mod1.testInitialDone, exit: mod1.testExitDone });
     } catch (e) {
       console.error("getMyProgress error:", e);
       setError("No pudimos cargar tu progreso. Intenta de nuevo.");
@@ -142,19 +147,21 @@ export default function Courses() {
     ).href;
   };
 
+  /**
+   * Hero CTA:
+   *  - test-inicial NOT done → go do it first
+   *  - test-inicial done     → go to the module's own CourseDetail page
+   */
   const goSmart = () => {
-    const anyMedal = progress.some((p) => p.completed);
-    if (!testFlags.initial && !anyMedal) {
-      navigate("/test-inicial");
+    if (!diagDone) {
+      navigate("/diagnostico");
       return;
     }
-    const allMedals =
-      progress.length === 4 && progress.every((p) => p.completed);
-    if (allMedals && !testFlags.exit) {
-      navigate("/test-salida");
+    if (!testFlags.initial) {
+      navigate("/test-inicial/1");
       return;
     }
-    navigate("/experience");
+    navigate("/courses/punto-cero-calma");
   };
 
   const goToCourseDetail = (courseKey) => {
@@ -162,26 +169,26 @@ export default function Courses() {
   };
 
   const smartCtaLabel = useMemo(() => {
-    const anyMedal = progress.some((p) => p.completed);
-    if (!testFlags.initial && !anyMedal) return "Hacer test inicial";
-    const allMedals =
-      progress.length === 4 && progress.every((p) => p.completed);
-    if (allMedals && !testFlags.exit) return "Hacer test de salida";
-    return "Continuar experiencia";
-  }, [progress, testFlags]);
+    if (!diagDone) return "Hacer diagnóstico inicial";
+    if (!testFlags.initial) return "Hacer test inicial";
+    return "Ir al módulo";
+  }, [testFlags, diagDone]);
 
   const cards = useMemo(() => {
     return cardsBase.map((c, i) => {
       const isCompleted = progressMap.get(c.key) ?? false;
       const statusLogoSrc = buildStatusLogoSrc(i, isCompleted);
+      // Destructure key out so it is never spread into JSX props
+      const { key, ...rest } = c;
       return {
-        ...c,
+        cardKey: key,
+        ...rest,
         statusLogoSrc,
-        onClick: () => goToCourseDetail(c.key),
+        onClick: () => goToCourseDetail(key),
         onKeyDown: (e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            goToCourseDetail(c.key);
+            goToCourseDetail(key);
           }
         },
         role: "button",
@@ -246,19 +253,14 @@ export default function Courses() {
                 transition={{ delay: 0.05 }}
               >
                 <Hero
-                  title="Módulo 1"
-                  subtitle="Realiza el test inicial y crea tu avatar"
+                  title="Fundamentos de Seguridad Vial"
+                  subtitle="Módulo 1"
                   ctaLabel={smartCtaLabel}
                   onCtaClick={goSmart}
-                  reminder={
-                    isFirstTime
-                      ? {
-                          text: "Puedes personalizar tu avatar 3D en tu perfil.",
-                          actionLabel: "Ir a mi perfil",
-                          onAction: () => navigate("/profile"),
-                        }
-                      : null
-                  }
+                  quickLinks={[
+                    { label: "Personaliza tu avatar 3d", onClick: () => navigate("/profile") },
+                    { label: "Ir a mi perfil",           onClick: () => navigate("/profile") },
+                  ]}
                 />
               </motion.div>
 
@@ -307,7 +309,7 @@ export default function Courses() {
             <div className="mt-8 sm:mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-5">
               {cards.map((c, idx) => (
                 <motion.div
-                  key={c.key}
+                  key={c.cardKey}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.05 * (idx + 1) }}

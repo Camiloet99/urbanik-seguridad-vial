@@ -1,12 +1,30 @@
 // src/services/testsService.js
-import { http } from "@/services/http";
+import { submitTest } from "@/services/progressService";
 
-export async function submitInitialTest(_payload) {
-  await http.post("/progress/me/tests", { kind: "test-inicial" });
+/**
+ * Marks test-inicial as done for a given module.
+ * @param {number} modulo  1–6
+ * @param {any}    _payload  Form data (stored/sent elsewhere if needed)
+ */
+export async function submitInitialTest(modulo, _payload) {
+  await submitTest(modulo, "test-inicial");
   return { ok: true };
 }
 
-export async function submitExitTest(_payload) {
-  await http.post("/progress/me/tests", { kind: "test-salida" });
+/**
+ * Marks test-salida as done for a given module.
+ * @param {number} modulo  1–6
+ */
+export async function submitExitTest(modulo, _payload) {
+  await submitTest(modulo, "test-salida");
+  return { ok: true };
+}
+
+/**
+ * Marks calificacion as done for a given module.
+ * @param {number} modulo  1–6
+ */
+export async function submitCalification(modulo, _payload) {
+  await submitTest(modulo, "calificacion");
   return { ok: true };
 }

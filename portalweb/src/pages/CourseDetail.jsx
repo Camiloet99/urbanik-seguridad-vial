@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { getMyProgress } from "@/services/progressService";
+import { getCourseProgress, getMyProgress, COURSE_KEY_TO_MODULO } from "@/services/progressService";
 
 import Hero from "@/components/courses/Hero";
 import ActionList from "@/components/courses/ActionList";
@@ -21,8 +21,8 @@ import partner2 from "@/assets/partner-2-white.png";
  */
 const COURSE_DATA = {
   "punto-cero-calma": {
-    title: "Punto Cero CALMA",
-    subtitle: "Donde inicia tu viaje interior",
+    title: "Fundamentos de Seguridad Vial",
+    subtitle: "Módulo 1",
     bgImage: card1,
     locked: false,
     resources: ["PDF 1", "PDF 2", "PDF 3"],
@@ -86,12 +86,19 @@ export default function CourseDetail() {
     fetchProgress();
   }, [courseKey]);
 
+  // Per-module progress for this specific course
+  const moduleProgress = useMemo(
+    () => getCourseProgress(progress, courseKey),
+    [progress, courseKey]
+  );
+
   const progressMap = useMemo(() => {
     const m = new Map();
-    m.set("test-inicial", !!progress?.testInitialDone);
-    m.set("test-salida", !!progress?.testExitDone);
+    m.set("test-inicial",  moduleProgress.testInitialDone);
+    m.set("test-salida",   moduleProgress.testExitDone);
+    m.set("calificacion",  moduleProgress.calificationDone);
     return m;
-  }, [progress]);
+  }, [moduleProgress]);
 
   if (!courseData) {
     return (
@@ -133,18 +140,24 @@ export default function CourseDetail() {
           progressMap={progressMap}
           testInitialDone={progressMap.get("test-inicial")}
           testExitDone={progressMap.get("test-salida")}
+          calificationDone={progressMap.get("calificacion")}
           showRating={true}
           onClick={(key) => {
+            const modulo = COURSE_KEY_TO_MODULO[courseKey];
             if (key === "califica") {
               setIsRatingModalOpen(true);
               return;
             }
             if (key === "test-inicial") {
-              navigate("/test-inicial");
+              navigate(`/test-inicial/${modulo}`);
               return;
             }
             if (key === "test-salida") {
-              navigate("/test-salida");
+              navigate(`/test-salida/${modulo}`);
+              return;
+            }
+            if (key === "calificacion") {
+              navigate(`/calificacion/${modulo}`);
               return;
             }
           }}
