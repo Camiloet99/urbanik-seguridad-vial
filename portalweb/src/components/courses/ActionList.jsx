@@ -12,15 +12,15 @@ export default function ActionList({
       { key: "test-inicial", label: "Test inicial" },
       { key: "test-salida", label: "Test de salida " },
       {
-        key: showRating ? "califica" : "contacto",
-        label: showRating ? "Califica este módulo" : "Contacto – Email",
+        key: showRating ? "califica" : "calificacion",
+        label: showRating ? "Califica este módulo" : "Calificación",
       },
     ],
     [showRating]
   );
 
   const resolveSrc = (key) => {
-    const iconKey = key === "califica" ? "contacto" : key;
+    const iconKey = key === "calificacion" ? "calificacion" : key;
     return new URL(
       `../../assets/courses/nocomplete/${iconKey}.png`,
       import.meta.url
@@ -28,10 +28,10 @@ export default function ActionList({
   };
 
   const resolveBg = (key, completed) => {
-    if (key === "contacto" || key === "califica") return "#6EB9FF"; // siempre color
+    if (key === "calificacion" || key === "califica") return "#6EB9FF"; // siempre color
     if (!completed) return "transparent";
-    if (key === "test-inicial") return "#5944F9";
-    if (key === "test-salida") return "#0094FD";
+    if (key === "test-inicial") return "#6EB9FF";
+    if (key === "test-salida") return "#6EB9FF";
     return "transparent";
   };
 
@@ -57,7 +57,7 @@ export default function ActionList({
               ? !!testInitialDone
               : key === "test-salida"
               ? !!testExitDone
-              : key === "contacto" || key === "califica"
+              : key === "calificacion" || key === "calificacion"
               ? progressMap.get(key) ?? false
               : progressMap.get(key) ?? false;
 
