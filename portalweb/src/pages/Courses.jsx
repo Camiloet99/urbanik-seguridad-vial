@@ -42,7 +42,7 @@ export default function Courses() {
       {
         key: "bosque-emociones",
         title: "Módulo 2",
-        subtitle: "Rutas y Denuncia Efectiva",
+        subtitle: "Movilidad y Seguridad Peatonal",
         img: card2,
         ctaBg: "#FFC107",
         ctaIcon: <CardIcons.MdEmojiEmotions />,
@@ -50,7 +50,7 @@ export default function Courses() {
       {
         key: "jardin-mental",
         title: "Módulo 3",
-        subtitle: "Siembra tus metas, florece tu mente",
+        subtitle: "Movilidad Sostenible",
         img: card3,
         ctaBg: "#8BC34A",
         ctaIcon: <CardIcons.MdAutoAwesome />,
@@ -58,7 +58,7 @@ export default function Courses() {
       {
         key: "lago-suenos",
         title: "Módulo 4",
-        subtitle: "El reflejo de tus libertades",
+        subtitle: "Seguridad Vial para Motociclistas",
         img: card4,
         ctaBg: "#9C27B0",
         ctaIcon: <CardIcons.MdArrowForward />,
@@ -66,7 +66,7 @@ export default function Courses() {
     {
       key: "modulo-5",
       title: "Módulo 5",
-      subtitle: "Próximamente",
+      subtitle: "Conducción Segura y Primeros Auxilios",
       img: card5,
       ctaBg: "#cd6a6a",
       CardIcons: <CardIcons.MdLock />,
@@ -74,7 +74,7 @@ export default function Courses() {
     {
       key: "modulo-6",
       title: "Módulo 6",
-      subtitle: "Próximamente",
+      subtitle: "Vehículos de Carga y Operación Segura",
       img: card6,
       ctaBg: "#6acdb8",
       CardIcons: <CardIcons.MdLock />,
@@ -95,7 +95,6 @@ export default function Courses() {
     try {
       const p = await getMyProgress();
       const mapped = [
-        //{ key: "punto-cero-calma", completed: !!p.medalla1 },
         { key: "bosque-emociones", completed: !!p.medalla2 },
         { key: "jardin-mental", completed: !!p.medalla3 },
         { key: "lago-suenos", completed: !!p.medalla4 },
