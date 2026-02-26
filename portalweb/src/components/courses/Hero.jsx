@@ -65,10 +65,10 @@ export default function Hero({
 
           <button
             onClick={onCtaClick}
-            className="inline-flex items-center gap-2 rounded-full bg-[#6C4CFF]
+            className="inline-flex items-center gap-2 rounded-full bg-[#6EB9FF]
                        px-5 py-2.5 text-sm font-medium
                        transition-transform duration-150
-                       hover:bg-[#5944F9] active:scale-[0.98]
+                       hover:bg-[#6EB9FF] active:scale-[0.98]
                        focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60
                        shadow-[0_6px_18px_-8px_rgba(108,76,255,0.9)]
                        hover:shadow-[0_8px_22px_-8px_rgba(108,76,255,1)]
