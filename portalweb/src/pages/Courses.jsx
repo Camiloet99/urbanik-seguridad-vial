@@ -4,7 +4,7 @@ import Hero from "@/components/courses/Hero";
 import CourseCard, { CardIcons } from "@/components/courses/CourseCard";
 import ActionList from "@/components/courses/ActionList";
 import ProgressCard from "@/components/courses/ProgressCard";
-import { getMyProgress, buildMonedaMap, getModuleProgress, isDiagnosticoDone, getGeneralProgress } from "@/services/progressService";
+import { getMyProgress, buildMonedaMap, getModuleProgress, isDiagnosticoDone, getGeneralProgress, syncDiagnosticoFromBackend } from "@/services/progressService";
 import Spinner from "@/components/ui/Spinner";
 
 import card2 from "@/assets/courses/card-2.jpg";
@@ -106,11 +106,26 @@ export default function Courses() {
         { key: "modulo-6",         completed: monedaMap.get("modulo-6")         ?? false },
       ];
       setProgress(mapped);
-      // Use general module (modulo 0) as the gate for Courses.jsx ActionList
+      // General module (modulo 0) drives the Courses.jsx ActionList.
+      // Backend is the source of truth on a successful fetch.
+      // Sync localStorage so it doesn't ghost a stale "done" state.
       const gen = getGeneralProgress(p);
-      setTestFlags({ initial: gen.testInicialGeneral, exit: gen.testFinalGeneral });
+      if (gen.testInicialGeneral) {
+        // Backend confirmed it — make sure localStorage agrees
+        syncDiagnosticoFromBackend(true);
+      } else {
+        // Backend says not done — clear any stale localStorage flag
+        syncDiagnosticoFromBackend(false);
+      }
+      const inicialDone = gen.testInicialGeneral;
+      setDiagDone(inicialDone);
+      setTestFlags({ initial: inicialDone, exit: gen.testFinalGeneral });
     } catch (e) {
       console.error("getMyProgress error:", e);
+      // Backend unreachable — fall back to localStorage so the UI isn't broken
+      const localDone = isDiagnosticoDone();
+      setDiagDone(localDone);
+      setTestFlags({ initial: localDone, exit: false });
       setError("No pudimos cargar tu progreso. Intenta de nuevo.");
     } finally {
       setLoading(false);

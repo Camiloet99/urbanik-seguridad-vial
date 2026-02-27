@@ -167,6 +167,29 @@ export function getDiagnosticoResult() {
 }
 
 /**
+ * Called by fetchProgress after a successful backend response.
+ * Keeps localStorage in sync with the backend's testInicialGeneral flag.
+ * @param {boolean} done
+ */
+export function syncDiagnosticoFromBackend(done) {
+  try {
+    if (done) {
+      // Backend confirmed — ensure localStorage also marks it done
+      const raw = localStorage.getItem(DIAG_KEY);
+      const existing = raw ? JSON.parse(raw) : {};
+      if (!existing?.done) {
+        localStorage.setItem(DIAG_KEY, JSON.stringify({ ...existing, done: true }));
+      }
+    } else {
+      // Backend says not done — remove stale localStorage flag
+      localStorage.removeItem(DIAG_KEY);
+    }
+  } catch {
+    // ignore storage errors
+  }
+}
+
+/**
  * Persists the diagnostic result locally and posts it to the backend.
  * @param {{ score: number, profile: "BAJO"|"MEDIO"|"ALTO", responses: object }} result
  */
@@ -188,8 +211,10 @@ export async function submitDiagnostico(result) {
       { modulo: 0, type: "test-inicial" },
       { token }
     );
-  } catch {
-    // Local flag is enough as UI gate; backend sync is best-effort
+  } catch (err) {
+    // Local flag is the UI gate; backend sync is best-effort.
+    // Log so it's visible in DevTools if something is wrong.
+    console.warn("[submitDiagnostico] backend sync failed:", err);
   }
   return payload;
 }
