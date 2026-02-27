@@ -4,7 +4,7 @@ import Hero from "@/components/courses/Hero";
 import CourseCard, { CardIcons } from "@/components/courses/CourseCard";
 import ActionList from "@/components/courses/ActionList";
 import ProgressCard from "@/components/courses/ProgressCard";
-import { getMyProgress, buildMonedaMap, getModuleProgress, isDiagnosticoDone } from "@/services/progressService";
+import { getMyProgress, buildMonedaMap, getModuleProgress, isDiagnosticoDone, getGeneralProgress } from "@/services/progressService";
 import Spinner from "@/components/ui/Spinner";
 
 import card2 from "@/assets/courses/card-2.jpg";
@@ -106,9 +106,9 @@ export default function Courses() {
         { key: "modulo-6",         completed: monedaMap.get("modulo-6")         ?? false },
       ];
       setProgress(mapped);
-      // Use modulo 1 as the global gate (punto-cero-calma)
-      const mod1 = getModuleProgress(p, 1);
-      setTestFlags({ initial: mod1.testInitialDone, exit: mod1.testExitDone });
+      // Use general module (modulo 0) as the gate for Courses.jsx ActionList
+      const gen = getGeneralProgress(p);
+      setTestFlags({ initial: gen.testInicialGeneral, exit: gen.testFinalGeneral });
     } catch (e) {
       console.error("getMyProgress error:", e);
       setError("No pudimos cargar tu progreso. Intenta de nuevo.");
@@ -280,16 +280,18 @@ export default function Courses() {
                     }
                     if (key === "test-inicial") {
                       if (testFlags.initial) return;
-                      navigate("/test-inicial");
+                      // Test inicial general = Diagnóstico de Perfil de Riesgo Vial
+                      navigate("/diagnostico");
                       return;
                     }
                     if (key === "test-salida") {
                       if (testFlags.exit) return;
                       if (!testFlags.initial) {
-                        navigate("/test-inicial");
+                        navigate("/diagnostico");
                         return;
                       }
-                      navigate("/test-salida");
+                      // Test salida general = módulo 0
+                      navigate("/test-salida/0");
                       return;
                     }
                   }}

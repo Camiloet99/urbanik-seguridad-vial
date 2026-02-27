@@ -136,7 +136,8 @@ function ResultModal({ result, onContinue }) {
 
 export default function ModuleTestForm({ type }) {
   const { modulo } = useParams();
-  const moduloNum = parseInt(modulo) || 1;
+  // parseInt("0") || 1 === 1, so we must NOT use ||. Use explicit null-check instead.
+  const moduloNum = modulo !== undefined ? parseInt(modulo, 10) : 1;
   const navigate = useNavigate();
 
   const isInitial = type === "test-inicial";

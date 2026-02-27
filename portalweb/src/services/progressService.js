@@ -22,12 +22,13 @@ export const COURSE_KEY_TO_MODULO = {
  *
  * Returns:
  * {
- *   monedas: { moneda1, moneda2, moneda3, moneda4, moneda5, moneda6 },
+ *   general: { testInicialGeneral: bool, testFinalGeneral: bool },
  *   modulos: [
  *     { modulo: 1, testInitialDone, testExitDone, calificationDone },
  *     ...
  *     { modulo: 6, testInitialDone, testExitDone, calificationDone },
- *   ]
+ *   ],
+ *   monedas: { moneda1, moneda2, moneda3, moneda4, moneda5, moneda6 },
  * }
  */
 export async function getMyProgress() {
@@ -56,17 +57,28 @@ export async function submitTest(modulo, type) {
  */
 export function emptyProgress() {
   return {
-    monedas: {
-      moneda1: false, moneda2: false, moneda3: false,
-      moneda4: false, moneda5: false, moneda6: false,
-    },
+    general: { testInicialGeneral: false, testFinalGeneral: false },
     modulos: [1, 2, 3, 4, 5, 6].map((n) => ({
       modulo: n,
       testInitialDone: false,
       testExitDone: false,
       calificationDone: false,
     })),
+    monedas: {
+      moneda1: false, moneda2: false, moneda3: false,
+      moneda4: false, moneda5: false, moneda6: false,
+    },
   };
+}
+
+/**
+ * Returns the general (pre-module) progress flags.
+ *
+ * @param {object} progress  Result from getMyProgress()
+ * @returns {{ testInicialGeneral: boolean, testFinalGeneral: boolean }}
+ */
+export function getGeneralProgress(progress) {
+  return progress?.general ?? { testInicialGeneral: false, testFinalGeneral: false };
 }
 
 /**
@@ -168,21 +180,16 @@ export async function submitDiagnostico(result) {
   // Persist locally first — this is the gate used by the UI
   localStorage.setItem(DIAG_KEY, JSON.stringify(payload));
 
-  // Best-effort backend post (modulo 0, type "diagnostico")
+  // Mark testInicialGeneral on the backend (modulo 0, type "test-inicial")
   try {
     const token = getAuthToken();
     await http.post(
       "/progress/me/tests",
-      {
-        modulo: 0,
-        type: "diagnostico",
-        riskScore: result.score,
-        riskProfile: result.profile,
-      },
+      { modulo: 0, type: "test-inicial" },
       { token }
     );
   } catch {
-    // Backend may not support modulo 0 yet — local flag is enough
+    // Local flag is enough as UI gate; backend sync is best-effort
   }
   return payload;
 }

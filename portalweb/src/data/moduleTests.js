@@ -18,12 +18,218 @@
  *   }
  */
 
+/**
+ * moduleTests.js
+ *
+ * Questions for the initial and exit tests of each module.
+ *
+ * Shape:
+ *   MODULE_TESTS[modulo] = {
+ *     title:   string,
+ *     initial: Question[],   // pre-test
+ *     exit:    Question[],   // post-test
+ *   }
+ *
+ *   Question = {
+ *     id:      string,
+ *     text:    string,
+ *     options: { id: string, text: string }[],
+ *     correct: string,   // option id
+ *   }
+ */
+
 export const MODULE_TESTS = {
+  // ─────────────────────────────────────────────────────────────────────────
+  // MÓDULO 0 — General (test inicial manejado por RiskProfileTest; exit aquí)
+  // ─────────────────────────────────────────────────────────────────────────
+  0: {
+    title: "Módulo General de Seguridad Vial",
+    initial: [
+      {
+        id: "0i1",
+        text: "¿Cuál es el principal objetivo de la seguridad vial?",
+        options: [
+          { id: "a", text: "Reducir el tráfico vehicular" },
+          { id: "b", text: "Prevenir accidentes y proteger la vida de todos los actores viales" },
+          { id: "c", text: "Aumentar las multas por infracciones" },
+          { id: "d", text: "Regular el transporte público" },
+        ],
+        correct: "b",
+      },
+      {
+        id: "0i2",
+        text: "¿Qué es un 'actor vial'?",
+        options: [
+          { id: "a", text: "Solo los conductores de vehículos" },
+          { id: "b", text: "El personal de la policía de tránsito" },
+          { id: "c", text: "Toda persona que participa en el tráfico (peatón, ciclista, conductor, etc.)" },
+          { id: "d", text: "Los dueños de vehículos registrados" },
+        ],
+        correct: "c",
+      },
+      {
+        id: "0i3",
+        text: "¿Qué factor es responsable de la mayoría de los accidentes de tránsito?",
+        options: [
+          { id: "a", text: "Estado de las vías" },
+          { id: "b", text: "Condiciones climáticas" },
+          { id: "c", text: "Fallas mecánicas" },
+          { id: "d", text: "El comportamiento humano" },
+        ],
+        correct: "d",
+      },
+      {
+        id: "0i4",
+        text: "¿Qué significa el 'enfoque de sistema seguro' en seguridad vial?",
+        options: [
+          { id: "a", text: "Que sólo los conductores deben ser responsables" },
+          { id: "b", text: "Que el sistema vial debe estar diseñado para tolerar los errores humanos" },
+          { id: "c", text: "Que los errores en la vía son inevitables y aceptables" },
+          { id: "d", text: "Que hay que aumentar las sanciones para reducir accidentes" },
+        ],
+        correct: "b",
+      },
+      {
+        id: "0i5",
+        text: "¿Cuál de estas conductas constituye un comportamiento seguro en la vía?",
+        options: [
+          { id: "a", text: "Usar el teléfono celular al conducir si es urgente" },
+          { id: "b", text: "Respetar señales de tránsito y límites de velocidad" },
+          { id: "c", text: "Adelantar en curvas cuando hay poca visibilidad" },
+          { id: "d", text: "Cruzar semáforos en rojo si no hay carros" },
+        ],
+        correct: "b",
+      },
+      {
+        id: "0i6",
+        text: "¿Cuál es la diferencia entre una vía primaria y una vía secundaria?",
+        options: [
+          { id: "a", text: "El color de la señalización" },
+          { id: "b", text: "La cantidad de carriles disponibles" },
+          { id: "c", text: "La conectividad territorial; las primarias unen regiones y las secundarias unen municipios" },
+          { id: "d", text: "El material del pavimento" },
+        ],
+        correct: "c",
+      },
+      {
+        id: "0i7",
+        text: "¿Qué indica una señal circular con fondo rojo?",
+        options: [
+          { id: "a", text: "Información turística" },
+          { id: "b", text: "Precaución general" },
+          { id: "c", text: "Prohibición o restricción" },
+          { id: "d", text: "Zona escolar" },
+        ],
+        correct: "c",
+      },
+      {
+        id: "0i8",
+        text: "¿Qué es la 'distancia de frenado'?",
+        options: [
+          { id: "a", text: "El espacio entre dos vehículos estacionados" },
+          { id: "b", text: "El recorrido que hace un vehículo desde que el conductor acciona los frenos hasta detenerse" },
+          { id: "c", text: "La longitud mínima permitida de un vehículo" },
+          { id: "d", text: "La distancia entre semáforos" },
+        ],
+        correct: "b",
+      },
+    ],
+    exit: [
+      {
+        id: "0e1",
+        text: "¿Qué cambios concretos puedes aplicar en tu movilidad diaria para mejorar tu seguridad vial?",
+        options: [
+          { id: "a", text: "Ninguno, ya tengo buenos hábitos" },
+          { id: "b", text: "Reducir el uso de elementos de protección si el trayecto es corto" },
+          { id: "c", text: "Planificar rutas seguras, respetar normas y usar elementos de protección siempre" },
+          { id: "d", text: "Evitar salir en horas pico como única medida" },
+        ],
+        correct: "c",
+      },
+      {
+        id: "0e2",
+        text: "¿Cómo influyen las emociones en la conducta vial?",
+        options: [
+          { id: "a", text: "No influyen; conducir es una actividad únicamente física" },
+          { id: "b", text: "El estado emocional afecta la atención, el tiempo de reacción y la toma de decisiones" },
+          { id: "c", text: "Solo afectan a conductores novatos" },
+          { id: "d", text: "influyen positivamente: el enojo aumenta la concentración" },
+        ],
+        correct: "b",
+      },
+      {
+        id: "0e3",
+        text: "¿Cuál de los siguientes hábitos reduce significativamente el riesgo de accidente?",
+        options: [
+          { id: "a", text: "Conducir rápido para pasar menos tiempo en la vía" },
+          { id: "b", text: "Mantener distancia de seguridad y respetar límites de velocidad" },
+          { id: "c", text: "Solo conducir en horarios diurnos" },
+          { id: "d", text: "Usar bocina frecuentemente para alertar a otros" },
+        ],
+        correct: "b",
+      },
+      {
+        id: "0e4",
+        text: "¿Qué deberías hacer si presencias un accidente de tránsito?",
+        options: [
+          { id: "a", text: "Grabar el accidente y publicarlo en redes sociales" },
+          { id: "b", text: "Seguir tu camino para no obstruir el tráfico" },
+          { id: "c", text: "Asegurar la escena, llamar a emergencias y prestar primera ayuda si estás capacitado" },
+          { id: "d", text: "Mover a los heridos para alejarlos del peligro inmediatamente" },
+        ],
+        correct: "c",
+      },
+      {
+        id: "0e5",
+        text: "¿Qué representa la 'visión cero' en seguridad vial?",
+        options: [
+          { id: "a", text: "Eliminar todos los vehículos de combustión interna" },
+          { id: "b", text: "La meta de que ningún accidente sea mortal o cause lesiones graves" },
+          { id: "c", text: "Prohibir el tránsito nocturno" },
+          { id: "d", text: "Reducir el número de vehículos en circulación" },
+        ],
+        correct: "b",
+      },
+      {
+        id: "0e6",
+        text: "¿Por qué es importante el uso del casco en motociclistas?",
+        options: [
+          { id: "a", text: "Es solo un requisito legal sin impacto real" },
+          { id: "b", text: "Protege la cabeza y reduce hasta un 70% el riesgo de muerte en accidente" },
+          { id: "c", text: "Mejora la aerodinámica del conductor" },
+          { id: "d", text: "Aumenta la visibilidad del motociclista" },
+        ],
+        correct: "b",
+      },
+      {
+        id: "0e7",
+        text: "¿Qué es la 'zona de conflicto vial'?",
+        options: [
+          { id: "a", text: "Una vía en obras de construcción" },
+          { id: "b", text: "Un sector donde se presentan con mayor frecuencia siniestros o puntos críticos de riesgo" },
+          { id: "c", text: "Una zona de uso exclusivo para peatones" },
+          { id: "d", text: "El carril izquierdo de una autopista" },
+        ],
+        correct: "b",
+      },
+      {
+        id: "0e8",
+        text: "¿Cuál de los siguientes factores NO es un factor de riesgo vial?",
+        options: [
+          { id: "a", text: "Exceso de velocidad" },
+          { id: "b", text: "Usar el cinturón de seguridad" },
+          { id: "c", text: "Conducir bajo los efectos del alcohol" },
+          { id: "d", text: "Distracción por el uso del celular" },
+        ],
+        correct: "b",
+      },
+    ],
+  },
+
   // ─────────────────────────────────────────────────────────────────────────
   // MÓDULO 1 — Fundamentos de la Seguridad Vial
   // ─────────────────────────────────────────────────────────────────────────
   1: {
-    title: "Fundamentos de la Seguridad Vial",
     initial: [
       {
         id: "1i1",

@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { getMyProgress } from "@/services/progressService";
+import { getMyProgress, getModuleProgress, COURSE_KEY_TO_MODULO } from "@/services/progressService";
 
 import Hero from "@/components/courses/Hero";
 import ActionList from "@/components/courses/ActionList";
@@ -102,10 +102,12 @@ export default function CourseDetail() {
 
   const progressMap = useMemo(() => {
     const m = new Map();
-    m.set("test-inicial", !!progress?.testInitialDone);
-    m.set("test-salida", !!progress?.testExitDone);
+    const modulo = COURSE_KEY_TO_MODULO[courseKey];
+    const mp = getModuleProgress(progress, modulo);
+    m.set("test-inicial", !!mp.testInitialDone);
+    m.set("test-salida",  !!mp.testExitDone);
     return m;
-  }, [progress]);
+  }, [progress, courseKey]);
 
   /**
    * notifica al backend y luego descarga el PDF.
@@ -183,16 +185,17 @@ export default function CourseDetail() {
             testExitDone={progressMap.get("test-salida")}
             showRating={true}
             onClick={(key) => {
+              const modulo = COURSE_KEY_TO_MODULO[courseKey];
               if (key === "califica") {
                 setIsRatingModalOpen(true);
                 return;
               }
               if (key === "test-inicial") {
-                navigate("/test-inicial");
+                navigate(`/test-inicial/${modulo}`);
                 return;
               }
               if (key === "test-salida") {
-                navigate("/test-salida");
+                navigate(`/test-salida/${modulo}`);
                 return;
               }
             }}
