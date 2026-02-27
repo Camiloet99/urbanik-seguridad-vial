@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { markAvatarConfigured } from "@/services/progressService";
+import { markAvatarConfigured, submitAvatarDone } from "@/services/progressService";
 import { CHARACTERS, PROFILES } from "@/assets/characters";
 import banner from "@/assets/banner-blur.jpg";
 import { MdEmail, MdPerson, MdPhone, MdLocationOn, MdBadge, MdShield, MdDateRange } from "react-icons/md";
-import Input from "@/components/Input";
 import { DEPARTMENTS, MUNICIPALITIES_ANTIOQUIA } from "@/data/colombiaData";
 
 const DEPT_MAP = Object.fromEntries(DEPARTMENTS.map((d) => [d.value, d.label]));
@@ -52,15 +51,13 @@ export default function Profile() {
   const navigate = useNavigate();
   const isSetupFlow = new URLSearchParams(location.search).get("setup") === "1";
 
-  // Estados UI
   const [edit, setEdit] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
   const [saving, setSaving] = useState(false);
   const [pickerLoading, setPickerLoading] = useState(false);
-  const [toast, setToast] = useState({ type: "", msg: "" }); // "ok" | "err"
+  const [toast, setToast] = useState({ type: "", msg: "" }); 
   const [errors, setErrors] = useState({ name: "", phone: "" });
 
-  // Form
   const [form, setForm] = useState({
     email: user?.email || "",
     name: user?.name || "",
@@ -69,7 +66,6 @@ export default function Profile() {
 
   console.log(user)
 
-  // Mantener form sincronizado al cambiar el user (ej: recarga/me)
   useEffect(() => {
     setForm({
       email: user?.email || "",
@@ -78,11 +74,9 @@ export default function Profile() {
     });
   }, [user?.email, user?.name, user?.phone]);
 
-  // Validaciones simples
   const validate = () => {
     const next = { name: "", phone: "" };
     if (!form.name?.trim()) next.name = "Nombre requerido";
-    // phone opcional, si viene validarlo suave (7-20 chars útiles)
     if (form.phone && !/^[0-9+\s()-]{7,20}$/.test(form.phone)) {
       next.phone = "Teléfono inválido";
     }
@@ -90,7 +84,6 @@ export default function Profile() {
     return !next.name && !next.phone;
   };
 
-  // Dirty-state real (compara con user actual)
   const isDirty = useMemo(() => {
     return (
       (form.name ?? "") !== (user?.name ?? "") ||
@@ -115,21 +108,23 @@ export default function Profile() {
       setToast({ type: "err", msg: e?.message || "No se pudo guardar" });
     } finally {
       setSaving(false);
-      // limpiar toast en 3s
       setTimeout(() => setToast({ type: "", msg: "" }), 3000);
     }
   };
 
   return (
-    <div className="mx-auto w-full max-w-[1200px] px-2 sm:px-4 lg:px-0">
-      {/* Setup-flow sticky bottom bar */}
+    <div className={`mx-auto w-full max-w-[1200px] px-2 sm:px-4 lg:px-0${isSetupFlow ? " pb-28" : ""}`}>
       {isSetupFlow && (
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#202329]/95 backdrop-blur-md border-t border-white/10 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
           <div className="max-w-sm mx-auto">
             <p className="text-xs text-white/50 text-center mb-2">Paso 1 de 2 &middot; Personaliza tu avatar</p>
             <button
               type="button"
-              onClick={() => { markAvatarConfigured(); navigate("/courses"); }}
+              onClick={async () => {
+                markAvatarConfigured();
+                try { await submitAvatarDone(); } catch { /* best-effort */ }
+                navigate("/courses");
+              }}
               className="w-full rounded-xl py-3 bg-[#00b5e2] hover:brightness-105 active:brightness-95 text-white font-semibold text-sm transition cursor-pointer"
             >
               Listo, continuar al diagnóstico →
@@ -138,9 +133,7 @@ export default function Profile() {
         </div>
       )}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_420px]">
-        {/* Columna izquierda */}
         <div className="space-y-6">
-          {/* Header card (sin overflow-hidden para no cortar el círculo) */}
           <section className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-4 md:p-5 shadow-[0_18px_40px_-18px_rgba(0,0,0,0.45)]">
             <div className="relative">
               <img
@@ -149,10 +142,8 @@ export default function Profile() {
                 className="h-28 w-full rounded-2xl object-cover md:h-32 select-none"
                 draggable={false}
               />
-              {/* Overlay sutil para legibilidad y más “chic” */}
               <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-t from-black/35 via-black/10 to-transparent" />
               <div className="absolute left-1/2 -translate-x-1/2 -bottom-8 z-10">
-                {/* Aro con leve gradiente, sin exagerar */}
                 <div className="h-16 w-16 md:h-20 md:w-20 rounded-full p-[3px] bg-gradient-to-tr from-[#6C4CFF] via-[#8B7BFF] to-transparent">
                   <div className="h-full w-full rounded-full ring-4 ring-[#1F2336] overflow-hidden bg-white/10 backdrop-blur">
                     <img
@@ -166,12 +157,11 @@ export default function Profile() {
             </div>
             <div className="pt-10">
               <h2 className="text-center text-xl md:text-2xl font-semibold drop-shadow-sm">
-                {user?.name || "Usuario"}
+                {user?.fullName || "Usuario"}
               </h2>
             </div>
           </section>
 
-          {/* Card principal: avatar o selector */}
           <section className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-5 md:p-6 shadow-[0_18px_40px_-18px_rgba(0,0,0,0.45)]">
             {!showPicker ? (
               <>
@@ -225,7 +215,9 @@ export default function Profile() {
                 onConfirm={async (id) => {
                   try {
                     setPickerLoading(true);
-                    await updateUser({ avatarId: id }); // endpoint único
+                    await updateUser({ avatarId: id });
+                    // Mark avatar as configured on backend (best-effort)
+                    try { await submitAvatarDone(); markAvatarConfigured(); } catch { /* ignore */ }
                     setShowPicker(false);
                     setToast({ type: "ok", msg: "Avatar actualizado" });
                   } catch (e) {

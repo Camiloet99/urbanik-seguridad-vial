@@ -164,6 +164,12 @@ export function buildMonedaMap(progress) {
   return map;
 }
 
+/** Marks avatar as configured on the backend (dedicated convenience endpoint). */
+export async function submitAvatarDone() {
+  const token = getAuthToken();
+  return http.post("/progress/me/avatar", {}, { token });
+}
+
 // ---------------------------------------------------------------------------
 // Experiencia gamificada tracking  (per-module, localStorage)
 // ---------------------------------------------------------------------------
@@ -210,6 +216,21 @@ export function markAvatarConfigured() {
 export function clearAvatarConfigured() {
   try {
     localStorage.removeItem(AVATAR_KEY);
+  } catch { /* ignore */ }
+}
+
+/**
+ * Called by fetchProgress after a successful backend response.
+ * Keeps localStorage in sync with the backend's avatarDone flag.
+ * @param {boolean} done
+ */
+export function syncAvatarFromBackend(done) {
+  try {
+    if (done) {
+      localStorage.setItem(AVATAR_KEY, "true");
+    } else {
+      localStorage.removeItem(AVATAR_KEY);
+    }
   } catch { /* ignore */ }
 }
 

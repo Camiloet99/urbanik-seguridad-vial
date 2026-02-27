@@ -4,8 +4,9 @@ import Hero from "@/components/courses/Hero";
 import CourseCard, { CardIcons } from "@/components/courses/CourseCard";
 import ActionList from "@/components/courses/ActionList";
 import ProgressCard from "@/components/courses/ProgressCard";
-import { getMyProgress, buildMonedaMap, getModuleProgress, isDiagnosticoDone, getGeneralProgress, syncDiagnosticoFromBackend, isAvatarConfigured } from "@/services/progressService";
+import { getMyProgress, buildMonedaMap, getModuleProgress, isDiagnosticoDone, getGeneralProgress, syncDiagnosticoFromBackend, isAvatarConfigured, syncAvatarFromBackend } from "@/services/progressService";
 import Spinner from "@/components/ui/Spinner";
+import LockedTooltip from "@/components/ui/LockedTooltip";
 
 import card2 from "@/assets/courses/card-2.jpg";
 import card3 from "@/assets/courses/card-3.jpg";
@@ -111,6 +112,10 @@ export default function Courses() {
       // Backend is the source of truth on a successful fetch.
       // Sync localStorage so it doesn't ghost a stale "done" state.
       const gen = getGeneralProgress(p);
+      // Sync avatar done from backend (source of truth)
+      syncAvatarFromBackend(!!gen.avatarDone);
+      setAvatarDone(!!gen.avatarDone);
+      // Sync diagnostic done from backend
       if (gen.testInicialGeneral) {
         // Backend confirmed it — make sure localStorage agrees
         syncDiagnosticoFromBackend(true);
@@ -125,6 +130,8 @@ export default function Courses() {
       console.error("getMyProgress error:", e);
       // Backend unreachable — fall back to localStorage so the UI isn't broken
       const localDone = isDiagnosticoDone();
+      const localAvatar = isAvatarConfigured();
+      setAvatarDone(localAvatar);
       setDiagDone(localDone);
       setTestFlags({ initial: localDone, exit: false });
       setError("No pudimos cargar tu progreso. Intenta de nuevo.");
@@ -295,7 +302,17 @@ export default function Courses() {
                   progressMap={progressMap}
                   testInitialDone={testFlags.initial}
                   testExitDone={testFlags.exit}
-                  lockedItems={!allModulesDone ? { "test-salida": "Completa todos los módulos para desbloquear el test de salida" } : {}}
+                  lockedItems={
+                    !avatarDone
+                      ? {
+                          "test-inicial":  "Personaliza tu avatar 3D primero",
+                          "test-salida":   "Personaliza tu avatar 3D primero",
+                          "calificacion":  "Personaliza tu avatar 3D primero",
+                        }
+                      : !allModulesDone
+                      ? { "test-salida": "Completa todos los módulos para desbloquear el test de salida" }
+                      : {}
+                  }
                   onClick={(key) => {
                     if (key === "contacto") {
                       window.open("mailto:soporte@tu-dominio.com", "_blank");
@@ -338,10 +355,16 @@ export default function Courses() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.05 * (idx + 1) }}
-                  whileHover={{ y: -2 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={avatarDone ? { y: -2 } : {}}
+                  whileTap={avatarDone ? { scale: 0.98 } : {}}
                 >
-                  <CourseCard {...c} />
+                  <LockedTooltip
+                    disabled={!avatarDone}
+                    message="Personaliza tu avatar 3D primero"
+                    placement="top"
+                  >
+                    <CourseCard {...c} onClick={avatarDone ? c.onClick : undefined} />
+                  </LockedTooltip>
                 </motion.div>
               ))}
             </div>

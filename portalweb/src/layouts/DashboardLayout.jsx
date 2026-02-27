@@ -45,7 +45,6 @@ function Item({ to, imgSrc, label }) {
   );
 }
 
-/* ---------- Bottom nav (mobile) ---------- */
 function MobileNav() {
   const { session } = useAuth();
 
@@ -127,11 +126,11 @@ export default function DashboardLayout() {
   const { logout, session } = useAuth();
   const location = useLocation();
 
+  console.log(session);
+
   return (
     <div className="min-h-screen bg-[#202329] text-white">
-      {/* Sidebar desktop */}
       <aside className="fixed left-0 top-0 z-40 hidden h-screen w-24 flex-col items-center bg-white/5 p-3 lg:flex">
-        {/* Logo */}
         <Link
           to="/courses"
           aria-label="Ir a cursos"
@@ -182,8 +181,7 @@ export default function DashboardLayout() {
           <div className="mb-6 flex items-center justify-between gap-4">
             <h1 className="text-2xl font-medium">
               Hola,{" "}
-              {session?.user?.name?.split(" ")[2] ||
-                session?.user?.name ||
+              {session?.user?.fullName ||
                 "Usuario"}
             </h1>
             <div className="flex items-center gap-8">
