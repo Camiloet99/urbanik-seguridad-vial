@@ -85,7 +85,7 @@ function MobileNav() {
                     className={[
                       "grid place-items-center h-11 w-11 rounded-[40%] transition-all duration-200",
                       isActive
-                        ? "bg-[#5944F9] shadow-[0_10px_24px_rgba(89,68,249,0.45)]"
+                        ? "bg-[#6EB9FF] shadow-[0_10px_24px_rgba(89,68,249,0.45)]"
                         : "bg-white/8 ring-1 ring-white/10",
                       "active:scale-95",
                     ].join(" ")}

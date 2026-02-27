@@ -48,7 +48,7 @@ export default function Hero({
 
       {/* text + actions anchored to bottom-left */}
       <div className="absolute inset-0 flex items-end">
-        <div className="w-full px-6 py-5 sm:px-8 sm:py-6 space-y-2.5">
+        <div className="w-full px- py-6 sm:px-8 sm:py-6 space-y-4">
           <h2 className="text-2xl font-bold leading-tight sm:text-3xl drop-shadow">
             {title}
           </h2>
