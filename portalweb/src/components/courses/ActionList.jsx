@@ -5,38 +5,30 @@ export default function ActionList({
   onClick = () => {},
   testInitialDone = false,
   testExitDone = false,
+  showRating = false,
 }) {
   const items = useMemo(
     () => [
       { key: "test-inicial", label: "Test inicial" },
       { key: "test-salida", label: "Test de salida " },
-<<<<<<< Updated upstream
-      { key: "contacto", label: "Contacto – Email" },
-=======
       {
-        key: showRating ? "califica" : "califica",
-        label: showRating ? "Califica este módulo" : "Contacto – Email",
+        key: showRating ? "calificacion" : "calificacion",
+        label: showRating ? "Califica este módulo" : "Calificación",
       },
->>>>>>> Stashed changes
     ],
-    []
+    [showRating]
   );
 
-<<<<<<< Updated upstream
-  const resolveSrc = (key) =>
-    new URL(`../../assets/courses/nocomplete/${key}.png`, import.meta.url).href;
-=======
   const resolveSrc = (key) => {
-    const iconKey = key === "califica" ? "calificacion" : key;
+    const iconKey = key === "calificacion" ? "calificacion" : key;
     return new URL(
       `../../assets/courses/nocomplete/${iconKey}.png`,
       import.meta.url
     ).href;
   };
->>>>>>> Stashed changes
 
   const resolveBg = (key, completed) => {
-    if (key === "contacto") return "#6EB9FF"; // siempre color
+    if (key === "calificacion" || key === "califica") return "#6EB9FF"; // siempre color
     if (!completed) return "transparent";
     if (key === "test-inicial") return "#6EB9FF";
     if (key === "test-salida") return "#6EB9FF";
@@ -65,6 +57,8 @@ export default function ActionList({
               ? !!testInitialDone
               : key === "test-salida"
               ? !!testExitDone
+              : key === "calificacion" || key === "calificacion"
+              ? progressMap.get(key) ?? false
               : progressMap.get(key) ?? false;
 
           const disabled =

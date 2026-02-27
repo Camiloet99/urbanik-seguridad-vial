@@ -1,9 +1,23 @@
 // src/components/auth/SignupIdentityStep.jsx
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { MdEmail, MdLock, MdPerson, MdPhone } from "react-icons/md";
 import Input from "../Input";
 import SearchableSelect from "../SearchableSelect";
-import { DEPARTMENTS, MUNICIPALITIES_ANTIOQUIA } from "../../data/colombiaData";
+import { DEPARTMENTS } from "../../data/colombiaData";
+
+const ALLOWED_MUNICIPALITIES = [
+  { value: "bello", label: "Bello" },
+  { value: "rionegro", label: "Rionegro" },
+  { value: "itagui", label: "Itagüí" },
+  { value: "barbosa", label: "Barbosa" },
+  { value: "copacabana", label: "Copacabana" },
+  { value: "envigado", label: "Envigado" },
+  { value: "guarne", label: "Guarne" },
+  { value: "remedios", label: "Remedios" },
+  { value: "vegachi", label: "Vegachí" },
+  { value: "el_bagre", label: "El Bagre" },
+];
 
 const variants = {
   initial: { opacity: 0, x: -12 },
@@ -34,7 +48,13 @@ export default function SignupIdentityStep({
   onValidate,
   onToLogin,
 }) {
-  const municipalities = MUNICIPALITIES_ANTIOQUIA;
+  // Default Antioquia on mount
+  useEffect(() => {
+    setValues((v) => ({
+      ...v,
+      department: v.department || "antioquia",
+    }));
+  }, []);
 
   return (
     <motion.form
@@ -50,10 +70,7 @@ export default function SignupIdentityStep({
           options={DEPARTMENTS}
           value={values.department || ""}
           onChange={(value) =>
-            setValues((v) => ({
-              ...v,
-              department: value,
-            }))
+            setValues((v) => ({ ...v, department: value }))
           }
           placeholder="Buscar departamento..."
           error={!!errors.department}
@@ -63,7 +80,7 @@ export default function SignupIdentityStep({
         )}
 
         <SearchableSelect
-          options={municipalities}
+          options={ALLOWED_MUNICIPALITIES}
           value={values.municipality || ""}
           onChange={(value) =>
             setValues((v) => ({ ...v, municipality: value }))
@@ -101,13 +118,14 @@ export default function SignupIdentityStep({
                   setValues((v) => ({ ...v, documentType: e.target.value }))
                 }
                 aria-invalid={!!errors.documentType}
-                className="peer min-w-0 bg-transparent text-white outline-none appearance-none cursor-pointer text-sm"
+                className="peer min-w-0 bg-transparent text-white outline-none appearance-none cursor-pointer text-sm text-center"
                 style={{
                   backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
                   backgroundRepeat: "no-repeat",
                   backgroundPosition: "right 0.2rem center",
-                  paddingRight: "0.8rem",
-                  width: "60px",
+                  paddingRight: "1rem",
+                  width: "64px",
+                  textAlignLast: "center",
                 }}
               >
                 <option value="cc">C.C</option>
@@ -162,9 +180,10 @@ export default function SignupIdentityStep({
               <select
                 value="+57"
                 disabled
-                className="peer bg-transparent text-white outline-none appearance-none cursor-not-allowed text-sm"
+                className="peer bg-transparent text-white outline-none appearance-none cursor-not-allowed text-sm text-center"
                 style={{
-                  width: "50px",
+                  width: "52px",
+                  textAlignLast: "center",
                 }}
               >
                 <option value="+57">+57</option>
@@ -206,7 +225,7 @@ export default function SignupIdentityStep({
       <button
         type="submit"
         disabled={isVerifying}
-        className="mt-7 mb-8 h-12 w-full rounded-full bg-[#6C4CFF] font-medium shadow-[0_6px_18px_rgba(108,76,255,0.35)] transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 disabled:opacity-60"
+        className="mt-7 mb-8 h-12 w-full rounded-full bg-[#00b5e2] text-white font-medium shadow-[0_6px_18px_rgba(0,181,226,0.35)] transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00b5e2]/60 disabled:opacity-60"
       >
         {isVerifying ? "Cargando..." : "Continuar"}
       </button>

@@ -10,13 +10,25 @@ export default function Hero({
   bgImage = bgDefault,
   badge,
   className = "",
+  /** @deprecated use quickLinks instead */
   reminder = null,
+  /**
+   * Array of ghost-pill quick-action buttons displayed inline above the CTA.
+   * Each entry: { label: string, onClick: () => void }
+   */
+  quickLinks = [],
 }) {
+  // Merge legacy reminder into quickLinks so old callers still work
+  const links = quickLinks.length
+    ? quickLinks
+    : reminder
+    ? [{ label: reminder.actionLabel, onClick: reminder.onAction }]
+    : [];
+
   return (
     <section
       className={[
         "relative overflow-hidden rounded-[28px] ring-1 ring-white/10",
-        // sombra elegante (no heavy)
         "shadow-[0_18px_40px_-18px_rgba(0,0,0,0.55)]",
         "transition-shadow duration-200 hover:shadow-[0_22px_55px_-20px_rgba(0,0,0,0.6)]",
         className,
@@ -31,53 +43,47 @@ export default function Hero({
         draggable={false}
       />
 
-      {/* overlay sutil con un poco más de soporte en la base */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-black/25 to-black/0" />
+      {/* overlay gradient */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/0" />
 
-      {/* contenedor de texto anclado abajo */}
+      {/* text + actions anchored to bottom-left */}
       <div className="absolute inset-0 flex items-end">
-        <div className="space-y-2 px-6 py-5 sm:px-8 sm:py-7">
-          <h2 className="text-2xl font-semibold leading-tight sm:text-3xl drop-shadow">
+        <div className="w-full px- py-6 sm:px-8 sm:py-6 space-y-4">
+          <h2 className="text-2xl font-bold leading-tight sm:text-3xl drop-shadow">
             {title}
           </h2>
-          <p className="text-white/85 drop-shadow-sm">{subtitle}</p>
+          <p className="text-white/80 text-sm drop-shadow-sm">{subtitle}</p>
 
-          {/* Reminder primera vez */}
-          {reminder && (
-            <div
-              className="mt-2 inline-flex items-center gap-3 rounded-2xl
-                         bg-white/10 ring-1 ring-white/15 backdrop-blur px-3.5 py-2
-                         shadow-[0_8px_20px_-10px_rgba(0,0,0,0.55)]"
-              role="note"
-              aria-live="polite"
-            >
-              <span className="text-sm text-white/90">{reminder.text}</span>
+          {/* ghost-pill quick links + primary CTA in one row */}
+          <div className="flex flex-wrap items-center gap-2 pt-0.5">
+            {links.map((lnk) => (
               <button
-                onClick={reminder.onAction}
-                className="inline-flex items-center rounded-full bg-white/20 hover:bg-white/25
-                           active:bg-white/30 transition px-3 py-1.5 text-xs font-medium
-                           focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                key={lnk.label}
+                onClick={lnk.onClick}
+                className="inline-flex items-center rounded-2xl
+                           bg-white/10 hover:bg-white/18 active:bg-white/25
+                           ring-1 ring-white/20 backdrop-blur
+                           px-4 py-1.5 text-xs font-medium text-white/90
+                           transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50
+                           shadow-[0_4px_14px_-6px_rgba(0,0,0,0.5)]"
               >
-                {reminder.actionLabel}
+                {lnk.label}
               </button>
-            </div>
-          )}
+            ))}
 
-          <button
-            onClick={onCtaClick}
-            className="inline-flex items-center gap-2 rounded-full bg-[#6EB9FF]
-                       px-5 py-2.5 text-sm font-medium
-                       transition-transform duration-150
-                       hover:bg-[#6EB9FF] active:scale-[0.98]
-                       focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60
-                       shadow-[0_6px_18px_-8px_rgba(108,76,255,0.9)]
-                       hover:shadow-[0_8px_22px_-8px_rgba(108,76,255,1)]
-                       cursor-pointer"
-            aria-label={ctaLabel}
-            title={ctaLabel}
-          >
-            {ctaLabel} <MdArrowForward className="text-base" />
-          </button>
+            <button
+              onClick={onCtaClick}
+              className="inline-flex items-center gap-1.5 rounded-full bg-[#00b5e2]
+                         px-5 py-2 text-sm font-semibold text-white
+                         transition-transform duration-150
+                         hover:brightness-110 active:scale-[0.97]
+                         focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60
+                         shadow-[0_6px_18px_-6px_rgba(0,181,226,0.7)]"
+              aria-label={ctaLabel}
+            >
+              {ctaLabel} <MdArrowForward className="text-sm" />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -102,8 +108,14 @@ Hero.propTypes = {
   bgImage: PropTypes.string,
   badge: PropTypes.string,
   className: PropTypes.string,
+  quickLinks: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      onClick: PropTypes.func.isRequired,
+    })
+  ),
   reminder: PropTypes.shape({
-    text: PropTypes.string.isRequired,
+    text: PropTypes.string,
     actionLabel: PropTypes.string.isRequired,
     onAction: PropTypes.func.isRequired,
   }),

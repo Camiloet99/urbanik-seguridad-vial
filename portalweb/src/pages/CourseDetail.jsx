@@ -1,10 +1,11 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { getMyProgress } from "@/services/progressService";
+import { getMyProgress, getModuleProgress, COURSE_KEY_TO_MODULO } from "@/services/progressService";
 
 import Hero from "@/components/courses/Hero";
 import ActionList from "@/components/courses/ActionList";
 import ProgressCard from "@/components/courses/ProgressCard";
+import RatingModal from "@/components/courses/RatingModal";
 
 import card1 from "@/assets/courses/card-1.png";
 import card2 from "@/assets/courses/card-2.jpg";
@@ -17,8 +18,6 @@ import partner2 from "@/assets/partner-2-white.png";
 /**
  * Ruta actual: /courses/:courseKey
  * Esta vista queda "como Figma": SOLO top + bloque inferior (sin secciones extra).
- *
- * ✅ Cambio: resources ahora son objetos {id,label,fileName} en vez de strings.
  */
 const COURSE_DATA = {
   "punto-cero-calma": {
@@ -79,7 +78,7 @@ const COURSE_DATA = {
     subtitle: "Rutas y Denuncia Efectiva",
     bgImage: card4,
     locked: false,
-    resources: [{ id: "m6-pdf-1", label: "PDF 1", fileName: "seguridad-vial.pdf" }],
+    resources: ["PDF 1"],
   },
 };
 
@@ -88,6 +87,7 @@ export default function CourseDetail() {
   const navigate = useNavigate();
 
   const [progress, setProgress] = useState(null);
+  const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
 
   const courseData = useMemo(() => COURSE_DATA[courseKey] || null, [courseKey]);
 
@@ -97,54 +97,20 @@ export default function CourseDetail() {
         const p = await getMyProgress();
         setProgress(p);
       } catch (err) {
-        // si el back no está, no bloqueamos UI
         console.warn("Progress no disponible (backend desconectado).", err);
       }
     };
     fetchProgress();
   }, [courseKey]);
 
-  // Mapa mínimo para ProgressCard/ActionList (sin romper si no hay back)
   const progressMap = useMemo(() => {
     const m = new Map();
-    m.set("test-inicial", !!progress?.testInitialDone);
-    m.set("test-salida", !!progress?.testExitDone);
+    const modulo = COURSE_KEY_TO_MODULO[courseKey];
+    const mp = getModuleProgress(progress, modulo);
+    m.set("test-inicial", !!mp.testInitialDone);
+    m.set("test-salida",  !!mp.testExitDone);
     return m;
   }, [progress]);
-
-  /**
-   * ✅ Nuevo: notifica al backend y luego descarga el PDF.
-   * Requiere que el pdf esté en: public/documents/seguridad-vial.pdf
-   */
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
-
-  const downloadResource = async (resource) => {
-    // 1) avisar al backend (marca descargado / recalcula %)
-    try {
-      await fetch(`${API_URL}/api/progress/resource-downloaded`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          courseKey,
-          resourceId: resource.id,
-        }),
-      });
-
-      // 2) refrescar progreso en UI (si el backend actualiza)
-      const p = await getMyProgress();
-      setProgress(p);
-    } catch (err) {
-      console.warn("No se pudo notificar al backend, igual se descargará.", err);
-    }
-
-    // 3) descargar (desde public/documents)
-    const a = document.createElement("a");
-    a.href = `/documents/${resource.fileName}`;
-    a.download = resource.fileName;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  };
 
   if (!courseData) {
     return (
@@ -163,7 +129,6 @@ export default function CourseDetail() {
   }
 
   return (
-<<<<<<< Updated upstream
     <div className="mt-4 sm:mt-6 lg:mt-12 relative min-h-[calc(80vh-80px)] flex flex-col space-y-8 pb-[calc(84px+env(safe-area-inset-bottom))] sm:pb-0">
       {/* Fondo i*/}
       <div
@@ -171,18 +136,17 @@ export default function CourseDetail() {
         className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-950"
       />
 
-      {/* TOP: Banner + Acciones + Progreso */}
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_280px_320px]">
-        <Hero
-          title={courseData.title}
-          subtitle={courseData.subtitle}
-          bgImage={courseData.bgImage}
-          ctaLabel={courseData.locked ? "Próximamente" : "Cursosar módulo"}
-          onCtaClick={() => {
-            if (courseData.locked) return;
-            navigate("/experience");
-          }}
-        />
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_280px_320px]">
+          <Hero
+            title={courseData.title}
+            subtitle={courseData.subtitle}
+            bgImage={courseData.bgImage}
+            ctaLabel={courseData.locked ? "Próximamente" : "Introducción Módulo"}
+            onCtaClick={() => {
+              if (courseData.locked) return;
+              navigate(`/courses/${courseKey}/intro`);
+            }}
+          />
 
         <ActionList
           progressMap={progressMap}
@@ -203,47 +167,6 @@ export default function CourseDetail() {
             }
           }}
         />
-=======
-    <>
-      <div className="mt-4 sm:mt-6 lg:mt-12 relative min-h-[calc(80vh-80px)] flex flex-col space-y-8 pb-[calc(84px+env(safe-area-inset-bottom))] sm:pb-0">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-950"
-        />
-
-        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_280px_320px]">
-          <Hero
-            title={courseData.title}
-            subtitle={courseData.subtitle}
-            bgImage={courseData.bgImage}
-            ctaLabel={courseData.locked ? "Próximamente" : "Cursosar módulo"}
-            onCtaClick={() => {
-              if (courseData.locked) return;
-              navigate("/experience");
-            }}
-          />
->>>>>>> Stashed changes
-
-          <ActionList
-            progressMap={progressMap}
-            testInitialDone={progressMap.get("test-inicial")}
-            testExitDone={progressMap.get("test-salida")}
-            showRating={true}
-            onClick={(key) => {
-              if (key === "califica") {
-                setIsRatingModalOpen(true);
-                return;
-              }
-              if (key === "test-inicial") {
-                navigate("/test-inicial");
-                return;
-              }
-              if (key === "test-salida") {
-                navigate("/test-salida");
-                return;
-              }
-            }}
-          />
 
           <ProgressCard progressMap={progressMap} />
         </div>
@@ -287,50 +210,38 @@ export default function CourseDetail() {
             <div className="rounded-[22px] ring-1 ring-white/10 bg-white/5 p-5">
               <p className="text-white font-medium">Recursos:</p>
 
-              <div className="mt-4 space-y-3">
-                {courseData.resources?.length ? (
-                  courseData.resources.map((r) => (
-                    <button
-                      key={r.id}
-                      className="w-full flex items-center justify-between rounded-xl bg-white/5 ring-1 ring-white/10 px-4 py-3 text-white/90 text-sm
-                               hover:bg-white/10 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 disabled:opacity-60"
-                      onClick={() => downloadResource(r)}
-                      disabled={courseData.locked}
-                    >
-                      <span>{r.label}</span>
-                      <span className="opacity-80">⬇</span>
-                    </button>
-                  ))
-                ) : (
-                  <div className="text-white/60 text-sm">
-                    {courseData.locked ? "Recursos disponibles próximamente." : "No hay recursos aún."}
-                  </div>
-                )}
-
-                <button
-                  type="button"
-                  className="rounded-full bg-[#5FA9FF] px-6 py-3 text-white font-semibold"
-                  onClick={() => navigate(`/courses/${courseKey}/rating`)}
-                >
-                  Probar pantalla de calificación
-                </button>
-              </div>
+            <div className="mt-4 space-y-3">
+              {courseData.resources?.length ? (
+                courseData.resources.map((r) => (
+                  <button
+                    key={r}
+                    className="w-full flex items-center justify-between rounded-xl bg-white/5 ring-1 ring-white/10 px-4 py-3 text-white/90 text-sm
+                               hover:bg-white/10 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+                    onClick={() => alert(`${r} (pendiente)`)}
+                  >
+                    <span>{r}</span>
+                    <span className="opacity-80">⬇</span>
+                  </button>
+                ))
+              ) : (
+                <div className="text-white/60 text-sm">
+                  {courseData.locked ? "Recursos disponibles próximamente." : "No hay recursos aún."}
+                </div>
+              )}
+<button
+  type="button"
+  className="rounded-full bg-[#5FA9FF] px-6 py-3 text-white font-semibold"
+  onClick={() => navigate(`/courses/${courseKey}/rating`)}
+>
+  Probar pantalla de calificación
+</button>
+              
             </div>
           </div>
         </div>
       </div>
 
-<<<<<<< Updated upstream
       
     </div>
-=======
-      <RatingModal
-        isOpen={isRatingModalOpen}
-        courseKey={courseKey}
-        courseTitle={courseData?.title}
-        onClose={() => setIsRatingModalOpen(false)}
-      />
-    </>
->>>>>>> Stashed changes
   );
 }

@@ -2,8 +2,46 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { CHARACTERS, PROFILES } from "@/assets/characters";
 import banner from "@/assets/banner-blur.jpg";
-import { MdEmail, MdPerson, MdPhone } from "react-icons/md";
+import { MdEmail, MdPerson, MdPhone, MdLocationOn, MdBadge, MdShield, MdDateRange } from "react-icons/md";
 import Input from "@/components/Input";
+import { DEPARTMENTS, MUNICIPALITIES_ANTIOQUIA } from "@/data/colombiaData";
+
+const DEPT_MAP = Object.fromEntries(DEPARTMENTS.map((d) => [d.value, d.label]));
+const MUN_MAP = Object.fromEntries(MUNICIPALITIES_ANTIOQUIA.map((m) => [m.value, m.label]));
+
+const AGE_LABELS = {
+  "16-25": "16 – 25 · Joven",
+  "25-34": "25 – 34 · Adulto Joven",
+  "35-59": "35 – 59 · Adulto",
+  "60+": "60+ · Adulto Mayor",
+};
+const GENDER_LABELS = {
+  male: "Hombre",
+  female: "Mujer",
+  "non-binary": "Persona no binaria",
+  "prefer-not-say": "Prefiero no decirlo",
+};
+const FOCUS_LABELS = {
+  lgbtiq: "Población LGTBIQ+",
+  ethnic: "Población étnica",
+  "armed-conflict": "Víctima del conflicto armado",
+  disability: "Persona con discapacidad",
+  "female-head": "Mujer cabeza de hogar",
+  none: "Ninguno",
+  "prefer-not-say": "Prefiero no decirlo",
+};
+const DOC_LABELS = { cc: "C.C", ti: "T.I", pa: "P.A" };
+
+function InfoRow({ icon, value, className = "" }) {
+  return (
+    <div
+      className={`flex h-11 w-full items-center gap-3 rounded-full border border-white/12 bg-white/5 px-4 text-sm ${className}`}
+    >
+      <span className="text-white/30 shrink-0">{icon}</span>
+      <span className="text-white/75 truncate">{value || "–"}</span>
+    </div>
+  );
+}
 
 export default function Profile() {
   const { session, updateUser } = useAuth();
@@ -23,6 +61,8 @@ export default function Profile() {
     name: user?.name || "",
     phone: user?.phone || "",
   });
+
+  console.log(user)
 
   // Mantener form sincronizado al cambiar el user (ej: recarga/me)
   useEffect(() => {
@@ -93,8 +133,8 @@ export default function Profile() {
               <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-t from-black/35 via-black/10 to-transparent" />
               <div className="absolute left-1/2 -translate-x-1/2 -bottom-8 z-10">
                 {/* Aro con leve gradiente, sin exagerar */}
-                <div className="h-16 w-16 md:h-20 md:w-20 rounded-full p-[3px] bg-gradient-to-tr from-[#6C4CFF] via-[#8B7BFF] to-transparent">
-                  <div className="h-full w-full rounded-full ring-4 ring-[#1F2336] overflow-hidden bg-white/10 backdrop-blur">
+                <div className="h-16 w-16 md:h-20 md:w-20 rounded-full p-[3px] bg-gradient-to-tr from-[6EB9FF] via-[6EB9FF] to-transparent">
+                  <div className="h-full w-full rounded-full ring-4 ring-[6EB9FF] overflow-hidden bg-white/10 backdrop-blur">
                     <img
                       src={profileSrc}
                       alt="Foto de perfil"
@@ -131,7 +171,7 @@ export default function Profile() {
                   <button
                     type="button"
                     className="inline-flex h-11 items-center justify-center rounded-full px-7
-                               bg-gradient-to-b from-[#7457FF] to-[#5B43EE]
+                               bg-gradient-to-b from-[#6EB9FF] to-[#6EB9FF]
                                shadow-[0_8px_24px_rgba(108,76,255,0.35)]
                                hover:brightness-105 active:brightness-95
                                focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70
@@ -182,84 +222,79 @@ export default function Profile() {
 
         {/* Columna derecha: Datos personales */}
         <aside className="rounded-3xl bg-white/5 ring-1 ring-white/10 p-6 md:p-7 shadow-[0_18px_40px_-18px_rgba(0,0,0,0.45)]">
-          <h3 className="text-center text-base font-semibold mb-6">
+          <h3 className="text-center text-base font-semibold mb-5">
             Datos personales
           </h3>
 
-          <div className="space-y-4">
-            <Input
-              placeholder="Email"
-              value={form.email}
-              onChange={() => {}}
-              iconLeft={<MdEmail size={18} />}
-              disabled
-            />
-
-            <Input
-              placeholder="Nombres y Apellidos"
-              value={form.name}
-              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              iconLeft={<MdPerson size={18} />}
-              error={errors.name}
-              disabled={!edit}
-            />
-
-            {/* Teléfono: responsive OK */}
-            <div className="flex items-stretch gap-2">
-              <div className="w-[84px] sm:w-[96px] shrink-0">
-                <Input value="+57" onChange={() => {}} disabled />
-              </div>
-              <div className="flex-1 min-w-0">
-                <Input
-                  placeholder="Número de celular"
-                  value={form.phone}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, phone: e.target.value }))
-                  }
-                  iconLeft={<MdPhone size={18} />}
-                  error={errors.phone}
-                  disabled={!edit}
-                />
-              </div>
+          {/* Edad pill */}
+          <div className="flex justify-center mb-5">
+            <div className="flex flex-col items-center rounded-2xl border border-white/12 bg-white/5 px-8 py-2.5 text-center">
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-white/38">
+                Grupo de edad
+              </span>
+              <span className="text-sm font-medium text-white mt-0.5">
+                {AGE_LABELS[user?.ageRange] || "–"}
+              </span>
             </div>
           </div>
 
-          <div className="mt-6 flex items-center justify-end gap-4">
-            {!edit ? (
-              <button
-                className="text-white/85 hover:text-white underline underline-offset-4 cursor-pointer"
-                onClick={() => setEdit(true)}
-              >
-                Editar
-              </button>
-            ) : (
-              <>
-                <button
-                  className="h-10 rounded-full px-5 bg-white/10 hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 cursor-pointer"
-                  onClick={() => {
-                    // revert
-                    setForm({
-                      email: user?.email || "",
-                      name: user?.name || "",
-                      phone: user?.phone || "",
-                    });
-                    setErrors({ name: "", phone: "" });
-                    setEdit(false);
-                  }}
-                >
-                  Cancelar
-                </button>
-                <button
-                  disabled={!canSave}
-                  className="h-10 rounded-full px-6 bg-[#6C4CFF] font-medium shadow-[0_6px_18px_rgba(108,76,255,0.35)]
-                             disabled:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 cursor-pointer
-                             transition-transform active:scale-[0.98]"
-                  onClick={handleSave}
-                >
-                  {saving ? "Guardando…" : "Guardar"}
-                </button>
-              </>
-            )}
+          <div className="space-y-2.5">
+            {/* Email */}
+            <InfoRow icon={<MdEmail size={16} />} value={user?.email} />
+
+            {/* Documento */}
+            <div className="flex gap-2">
+              <div className="flex h-11 shrink-0 items-center rounded-full border border-white/12 bg-white/5 px-4 text-sm font-medium text-white/70">
+                {DOC_LABELS[user?.documentType] || "–"}
+              </div>
+              <InfoRow icon={<MdBadge size={16} />} value={user?.dni} className="flex-1" />
+            </div>
+
+            {/* Nombre */}
+            <InfoRow icon={<MdPerson size={16} />} value={user?.fullName} />
+
+            {/* Género */}
+            <InfoRow icon={<MdPerson size={16} />} value={GENDER_LABELS[user?.genero]} />
+
+            {/* Departamento */}
+            <InfoRow
+              icon={<MdLocationOn size={16} />}
+              value={DEPT_MAP[user?.department] || user?.department}
+            />
+
+            {/* Municipio */}
+            <InfoRow
+              icon={<MdLocationOn size={16} />}
+              value={MUN_MAP[user?.municipality] || user?.municipality}
+            />
+
+            {/* Teléfono */}
+            <div className="flex gap-2">
+              <div className="flex h-11 shrink-0 items-center rounded-full border border-white/12 bg-white/5 px-4 text-sm font-medium text-white/70">
+                +57
+              </div>
+              <InfoRow icon={<MdPhone size={16} />} value={user?.phone} className="flex-1" />
+            </div>
+
+            {/* Enfoque diferencial */}
+            <InfoRow icon={<MdShield size={16} />} value={FOCUS_LABELS[user?.differentialFocus]} />
+          </div>
+
+          {/* Editar */}
+          <div className="mt-5 flex items-center justify-end">
+            <button
+              className="text-sm text-white/75 hover:text-white underline underline-offset-4 cursor-pointer transition-colors"
+              onClick={() => setEdit(true)}
+            >
+              Editar
+            </button>
+          </div>
+
+          {/* Nivel de riesgo */}
+          <div className="mt-4 pt-4 border-t border-white/10 flex items-center gap-2 text-sm">
+            <span className="text-white/55">Nivel de riesgo:</span>
+            <span className="text-amber-400 text-base leading-none">⚠</span>
+            <span className="font-semibold text-white">{user?.nivel ?? 0}</span>
           </div>
         </aside>
       </div>
@@ -286,7 +321,7 @@ function AvatarPicker({ currentId = 0, onCancel, onConfirm, loading = false }) {
                 className={[
                   "group relative w-full aspect-[3/4] rounded-2xl ring-1 transition cursor-pointer",
                   active
-                    ? "bg-white/10 ring-[#6C4CFF] shadow-[0_8px_24px_rgba(108,76,255,0.35)]"
+                    ? "bg-white/10 ring-[#6EB9FF] shadow-[0_8px_24px_rgba(108,76,255,0.35)]"
                     : "bg-white/5 ring-white/10 hover:bg-white/10",
                 ].join(" ")}
                 disabled={loading}
@@ -317,7 +352,7 @@ function AvatarPicker({ currentId = 0, onCancel, onConfirm, loading = false }) {
         <button
           type="button"
           className="h-11 rounded-full px-7
-                     bg-gradient-to-b from-[#7457FF] to-[#5B43EE]
+                     bg-gradient-to-b from-[#6EB9FF] to-[#6EB9FF]
                      shadow-[0_8px_24px_rgba(108,76,255,0.35)]
                      hover:brightness-105 active:brightness-95 disabled:opacity-60
                      focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 cursor-pointer"

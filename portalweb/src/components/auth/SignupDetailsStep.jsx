@@ -19,10 +19,10 @@ const variants = {
 };
 
 const AGE_RANGES = [
-  { value: "16-25", label: "16 - 25 Joven" },
-  { value: "25-34", label: "25 - 34 Adulto Joven" },
-  { value: "35-59", label: "35 - 59 Adulto" },
-  { value: "60+", label: "60+ Adulto Mayor" },
+  { value: "16-25", label: "16 – 25 · Joven" },
+  { value: "25-34", label: "25 – 34 · Adulto Joven" },
+  { value: "35-59", label: "35 – 59 · Adulto" },
+  { value: "60+", label: "60+ · Adulto Mayor" },
 ];
 
 const GENDERS = [
@@ -41,6 +41,56 @@ const DIFFERENTIAL_FOCUS = [
   { value: "none", label: "Ninguno" },
   { value: "prefer-not-say", label: "Prefiero no decirlo" },
 ];
+
+// Custom chevron arrow encoded for the select background
+const CHEVRON = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2300b5e2' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`;
+
+function SelectField({ placeholder, value, onChange, options, error }) {
+  const hasValue = value !== "";
+  return (
+    <div className="relative group">
+      <div
+        className={`flex items-center rounded-2xl border h-12 px-4 transition-all duration-200 ${
+          error
+            ? "border-red-400/60 bg-red-500/5 shadow-[0_0_0_3px_rgba(248,113,113,0.1)]"
+            : hasValue
+            ? "border-[#00b5e2]/50 bg-white/5 shadow-[0_0_0_3px_rgba(0,181,226,0.08)]"
+            : "border-white/12 bg-white/5 focus-within:border-[#00b5e2]/50 focus-within:bg-white/8 focus-within:shadow-[0_0_0_3px_rgba(0,181,226,0.08)]"
+        }`}
+      >
+        <select
+          value={value}
+          onChange={onChange}
+          aria-invalid={!!error}
+          className="peer min-w-0 flex-1 bg-transparent outline-none appearance-none cursor-pointer text-sm transition-colors"
+          style={{
+            backgroundImage: CHEVRON,
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "right 0.25rem center",
+            paddingRight: "1.5rem",
+            color: hasValue ? "white" : "rgba(255,255,255,0.38)",
+          }}
+        >
+          <option value="" disabled style={{ color: "#888", background: "#202329" }}>
+            {placeholder}
+          </option>
+          {options.map((opt) => (
+            <option
+              key={opt.value}
+              value={opt.value}
+              style={{ color: "white", background: "#202329" }}
+            >
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      </div>
+      {error && (
+        <p className="mt-1.5 text-xs text-red-300 pl-1">{error}</p>
+      )}
+    </div>
+  );
+}
 
 function Rule({ ok, label }) {
   return (
@@ -68,41 +118,6 @@ export default function SignupDetailsStep({
   onSubmit,
   isSubmitting,
 }) {
-  const SelectField = ({ label, value, onChange, options, error }) => (
-    <div className="space-y-2">
-      <label className="block">
-        <div
-          className={`group flex items-center gap-2 rounded-full border h-12 px-5 transition-colors ${
-            error
-              ? "border-red-400/70 focus-within:border-red-300 bg-red-500/5"
-              : "border-white/15 focus-within:border-white/25 bg-white/5 focus-within:bg-white/10"
-          }`}
-        >
-          <select
-            value={value}
-            onChange={onChange}
-            aria-invalid={!!error}
-            className="peer min-w-0 flex-1 bg-transparent text-white outline-none appearance-none cursor-pointer"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "right 0.5rem center",
-              paddingRight: "1.5rem",
-            }}
-          >
-            <option value="">{label}</option>
-            {options.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      </label>
-      {error && <p className="text-xs text-red-300">{error}</p>}
-    </div>
-  );
-
   return (
     <motion.form
       key="signup-details"
@@ -112,29 +127,25 @@ export default function SignupDetailsStep({
       animate="animate"
       exit="exit"
     >
-      <div className="space-y-5">
+      <div className="space-y-4">
         <SelectField
-          label="Rango de edad"
+          placeholder="Rango de edad"
           value={values.ageRange || ""}
-          onChange={(e) =>
-            setValues((v) => ({ ...v, ageRange: e.target.value }))
-          }
+          onChange={(e) => setValues((v) => ({ ...v, ageRange: e.target.value }))}
           options={AGE_RANGES}
           error={errors.ageRange}
         />
 
         <SelectField
-          label="Género"
+          placeholder="Género"
           value={values.gender || ""}
-          onChange={(e) =>
-            setValues((v) => ({ ...v, gender: e.target.value }))
-          }
+          onChange={(e) => setValues((v) => ({ ...v, gender: e.target.value }))}
           options={GENDERS}
           error={errors.gender}
         />
 
         <SelectField
-          label="Enfoque diferencial"
+          placeholder="Enfoque diferencial"
           value={values.differentialFocus || ""}
           onChange={(e) =>
             setValues((v) => ({ ...v, differentialFocus: e.target.value }))
@@ -176,14 +187,14 @@ export default function SignupDetailsStep({
         <button
           type="button"
           onClick={onBack}
-          className="flex-1 h-12 rounded-full border border-white/20 font-medium transition hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+          className="flex-1 h-12 rounded-full border border-white/20 font-medium text-white transition hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
         >
           Atrás
         </button>
         <button
           type="submit"
           disabled={isSubmitting}
-          className="flex-1 h-12 rounded-full bg-[#6C4CFF] font-medium shadow-[0_6px_18px_rgba(108,76,255,0.35)] transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 disabled:opacity-60"
+          className="flex-1 h-12 rounded-full bg-[#00b5e2] text-white font-medium shadow-[0_6px_18px_rgba(0,181,226,0.35)] transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00b5e2]/60 disabled:opacity-60"
         >
           {isSubmitting ? "Creando..." : "Crear Cuenta"}
         </button>

@@ -15,6 +15,8 @@ import Profile from "@/pages/Profile";
 import Experience from "@/pages/Experience";
 import NiaChat from "@/pages/NiaChat";
 import CourseRatingPage from "@/pages/CourseRatingPage";
+import RiskProfileTest from "@/pages/RiskProfileTest";
+import PdfViewer from "@/pages/PdfViewer";
 
 import TermsPrivacyPage from "@/pages/legal/TermsPrivacyPage";
 import DataPolicyPage from "@/pages/legal/DataPolicyPage";
@@ -32,16 +34,20 @@ const router = createBrowserRouter([
         element: <DashboardLayout />,
         children: [
           { path: "/", element: <Navigate to="/courses" replace /> },
-          { path: "/courses", element: <Courses /> },
-          { path: "/courses/:courseKey", element: <CourseDetail /> },
-          { path: "/test-inicial", element: <TestInitial /> },
-          { path: "/test-salida", element: <TestExit /> },
-          { path: "/profile", element: <Profile /> },
-          { path: "*", element: <Navigate to="/courses" replace /> },
-          { path: "/experience", element: <Experience /> },
+          { path: "/courses",                    element: <Courses /> },
+          { path: "/courses/:courseKey",          element: <CourseDetail /> },
+          { path: "/test-inicial/:modulo",        element: <TestInitial /> },
+          { path: "/test-salida/:modulo",         element: <TestExit /> },
+          { path: "/test-inicial",               element: <TestInitial /> },
+          { path: "/test-salida",                element: <TestExit /> },
+          { path: "/profile",                    element: <Profile /> },
+          { path: "/experience",                  element: <Experience /> },
           { path: "/chat", element: <NiaChat /> },
           { path: "/courses/:courseKey/rating", element: <CourseRatingPage /> },
+          { path: "/diagnostico",               element: <RiskProfileTest /> },
+          { path: "/courses/:courseKey/intro", element: <PdfViewer /> },
           {
+            
             path: "/admin",
             element: (
               <AdminRoute>

@@ -4,17 +4,14 @@ import Hero from "@/components/courses/Hero";
 import CourseCard, { CardIcons } from "@/components/courses/CourseCard";
 import ActionList from "@/components/courses/ActionList";
 import ProgressCard from "@/components/courses/ProgressCard";
-import { getMyProgress } from "@/services/progressService";
+import { getMyProgress, buildMonedaMap, getModuleProgress, isDiagnosticoDone, getGeneralProgress, syncDiagnosticoFromBackend } from "@/services/progressService";
 import Spinner from "@/components/ui/Spinner";
 
-import card1 from "@/assets/courses/card-1.png";
 import card2 from "@/assets/courses/card-2.jpg";
 import card3 from "@/assets/courses/card-3.jpg";
 import card4 from "@/assets/courses/card-4.jpg";
 import card5 from "@/assets/courses/card-5.jpg";
 import card6 from "@/assets/courses/card-6.jpg";
-import partner1 from "@/assets/partner-1-white.png";
-import partner2 from "@/assets/partner-2-white.png";
 import { useNavigate } from "react-router-dom";
 
 /**
@@ -45,7 +42,7 @@ export default function Courses() {
       {
         key: "bosque-emociones",
         title: "Módulo 2",
-        subtitle: "Reconéctate con tu interior",
+        subtitle: "Movilidad y Seguridad Peatonal",
         img: card2,
         ctaBg: "#FFC107",
         ctaIcon: <CardIcons.MdEmojiEmotions />,
@@ -53,7 +50,7 @@ export default function Courses() {
       {
         key: "jardin-mental",
         title: "Módulo 3",
-        subtitle: "Siembra tus metas, florece tu mente",
+        subtitle: "Movilidad Sostenible",
         img: card3,
         ctaBg: "#8BC34A",
         ctaIcon: <CardIcons.MdAutoAwesome />,
@@ -61,7 +58,7 @@ export default function Courses() {
       {
         key: "lago-suenos",
         title: "Módulo 4",
-        subtitle: "El reflejo de tus libertades",
+        subtitle: "Seguridad Vial para Motociclistas",
         img: card4,
         ctaBg: "#9C27B0",
         ctaIcon: <CardIcons.MdArrowForward />,
@@ -69,7 +66,7 @@ export default function Courses() {
     {
       key: "modulo-5",
       title: "Módulo 5",
-      subtitle: "Próximamente",
+      subtitle: "Conducción Segura y Primeros Auxilios",
       img: card5,
       ctaBg: "#cd6a6a",
       CardIcons: <CardIcons.MdLock />,
@@ -77,7 +74,7 @@ export default function Courses() {
     {
       key: "modulo-6",
       title: "Módulo 6",
-      subtitle: "Próximamente",
+      subtitle: "Vehículos de Carga y Operación Segura",
       img: card6,
       ctaBg: "#6acdb8",
       CardIcons: <CardIcons.MdLock />,
@@ -87,7 +84,9 @@ export default function Courses() {
   );
 
   const [progress, setProgress] = useState([]);
+  // modulo 1 is the global "initial test" gate for the full experience
   const [testFlags, setTestFlags] = useState({ initial: false, exit: false });
+  const [diagDone, setDiagDone] = useState(() => isDiagnosticoDone());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -97,19 +96,36 @@ export default function Courses() {
     setLoading(true);
     try {
       const p = await getMyProgress();
+      // Map monedas (completions) per course key
+      const monedaMap = buildMonedaMap(p);
       const mapped = [
-        //{ key: "punto-cero-calma", completed: !!p.medalla1 },
-        { key: "bosque-emociones", completed: !!p.medalla2 },
-        { key: "jardin-mental", completed: !!p.medalla3 },
-        { key: "lago-suenos", completed: !!p.medalla4 },
-        { key: "modulo-5", completed: !!p.medalla5 },
-        { key: "modulo-6", completed: !!p.medalla6 },
-        
+        { key: "bosque-emociones", completed: monedaMap.get("bosque-emociones") ?? false },
+        { key: "jardin-mental",    completed: monedaMap.get("jardin-mental")    ?? false },
+        { key: "lago-suenos",      completed: monedaMap.get("lago-suenos")      ?? false },
+        { key: "modulo-5",         completed: monedaMap.get("modulo-5")         ?? false },
+        { key: "modulo-6",         completed: monedaMap.get("modulo-6")         ?? false },
       ];
       setProgress(mapped);
-      setTestFlags({ initial: !!p.testInitialDone, exit: !!p.testExitDone });
+      // General module (modulo 0) drives the Courses.jsx ActionList.
+      // Backend is the source of truth on a successful fetch.
+      // Sync localStorage so it doesn't ghost a stale "done" state.
+      const gen = getGeneralProgress(p);
+      if (gen.testInicialGeneral) {
+        // Backend confirmed it — make sure localStorage agrees
+        syncDiagnosticoFromBackend(true);
+      } else {
+        // Backend says not done — clear any stale localStorage flag
+        syncDiagnosticoFromBackend(false);
+      }
+      const inicialDone = gen.testInicialGeneral;
+      setDiagDone(inicialDone);
+      setTestFlags({ initial: inicialDone, exit: gen.testFinalGeneral });
     } catch (e) {
       console.error("getMyProgress error:", e);
+      // Backend unreachable — fall back to localStorage so the UI isn't broken
+      const localDone = isDiagnosticoDone();
+      setDiagDone(localDone);
+      setTestFlags({ initial: localDone, exit: false });
       setError("No pudimos cargar tu progreso. Intenta de nuevo.");
     } finally {
       setLoading(false);
@@ -146,19 +162,21 @@ export default function Courses() {
     ).href;
   };
 
+  /**
+   * Hero CTA:
+   *  - test-inicial NOT done → go do it first
+   *  - test-inicial done     → go to the module's own CourseDetail page
+   */
   const goSmart = () => {
-    const anyMedal = progress.some((p) => p.completed);
-    if (!testFlags.initial && !anyMedal) {
-      navigate("/test-inicial");
+    if (!diagDone) {
+      navigate("/diagnostico");
       return;
     }
-    const allMedals =
-      progress.length === 4 && progress.every((p) => p.completed);
-    if (allMedals && !testFlags.exit) {
-      navigate("/test-salida");
+    if (!testFlags.initial) {
+      navigate("/test-inicial/1");
       return;
     }
-    navigate("/experience");
+    navigate("/courses/punto-cero-calma");
   };
 
   const goToCourseDetail = (courseKey) => {
@@ -166,26 +184,26 @@ export default function Courses() {
   };
 
   const smartCtaLabel = useMemo(() => {
-    const anyMedal = progress.some((p) => p.completed);
-    if (!testFlags.initial && !anyMedal) return "Hacer test inicial";
-    const allMedals =
-      progress.length === 4 && progress.every((p) => p.completed);
-    if (allMedals && !testFlags.exit) return "Hacer test de salida";
-    return "Continuar experiencia";
-  }, [progress, testFlags]);
+    if (!diagDone) return "Hacer diagnóstico inicial";
+    if (!testFlags.initial) return "Hacer test inicial";
+    return "Ir al módulo";
+  }, [testFlags, diagDone]);
 
   const cards = useMemo(() => {
     return cardsBase.map((c, i) => {
       const isCompleted = progressMap.get(c.key) ?? false;
       const statusLogoSrc = buildStatusLogoSrc(i, isCompleted);
+      // Destructure key out so it is never spread into JSX props
+      const { key, ...rest } = c;
       return {
-        ...c,
+        cardKey: key,
+        ...rest,
         statusLogoSrc,
-        onClick: () => goToCourseDetail(c.key),
+        onClick: () => goToCourseDetail(key),
         onKeyDown: (e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            goToCourseDetail(c.key);
+            goToCourseDetail(key);
           }
         },
         role: "button",
@@ -250,19 +268,14 @@ export default function Courses() {
                 transition={{ delay: 0.05 }}
               >
                 <Hero
-                  title="Módulo 1"
-                  subtitle="Realiza el test inicial y crea tu avatar"
+                  title="Fundamentos de Seguridad Vial"
+                  subtitle="Módulo 1"
                   ctaLabel={smartCtaLabel}
                   onCtaClick={goSmart}
-                  reminder={
-                    isFirstTime
-                      ? {
-                          text: "Puedes personalizar tu avatar 3D en tu perfil.",
-                          actionLabel: "Ir a mi perfil",
-                          onAction: () => navigate("/profile"),
-                        }
-                      : null
-                  }
+                  quickLinks={[
+                    { label: "Personaliza tu avatar 3d", onClick: () => navigate("/profile") },
+                    { label: "Ir a mi perfil",           onClick: () => navigate("/profile") },
+                  ]}
                 />
               </motion.div>
 
@@ -282,16 +295,18 @@ export default function Courses() {
                     }
                     if (key === "test-inicial") {
                       if (testFlags.initial) return;
-                      navigate("/test-inicial");
+                      // Test inicial general = Diagnóstico de Perfil de Riesgo Vial
+                      navigate("/diagnostico");
                       return;
                     }
                     if (key === "test-salida") {
                       if (testFlags.exit) return;
                       if (!testFlags.initial) {
-                        navigate("/test-inicial");
+                        navigate("/diagnostico");
                         return;
                       }
-                      navigate("/test-salida");
+                      // Test salida general = módulo 0
+                      navigate("/test-salida/0");
                       return;
                     }
                   }}
@@ -311,7 +326,7 @@ export default function Courses() {
             <div className="mt-8 sm:mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-5">
               {cards.map((c, idx) => (
                 <motion.div
-                  key={c.key}
+                  key={c.cardKey}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.05 * (idx + 1) }}

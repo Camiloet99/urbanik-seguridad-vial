@@ -7,7 +7,7 @@ import chatIcon from "@/assets/layout/chat.png";
 import profileIcon from "@/assets/layout/profile.png";
 import logoutIcon from "@/assets/layout/logout.png";
 import dataIcon from "@/assets/layout/data.png";
-import partner1 from "@/assets/partner-1-white.png";
+
 import partner2 from "@/assets/partner-2-white.png";
 
 function Item({ to, imgSrc, label }) {
@@ -20,10 +20,10 @@ function Item({ to, imgSrc, label }) {
         const iconBase =
           "grid place-items-center h-11 w-11 rounded-[40%] transition-all duration-200";
         const iconState = isActive
-          ? "bg-[#5944F9] shadow-[0_10px_24px_rgba(89,68,249,0.45)]"
+          ? "bg-[#6EB9FF] shadow-[0_10px_24px_rgba(89,68,249,0.45)]"
           : "bg-transparent";
         const iconHover =
-          "group-hover:bg-[#5944F9] group-hover:shadow-[0_10px_24px_rgba(89,68,249,0.45)] active:scale-95";
+          "group-hover:bg-[#6EB9FF] group-hover:shadow-[0_10px_24px_rgba(89,68,249,0.45)] active:scale-95";
 
         return (
           <>
@@ -85,7 +85,7 @@ function MobileNav() {
                     className={[
                       "grid place-items-center h-11 w-11 rounded-[40%] transition-all duration-200",
                       isActive
-                        ? "bg-[#5944F9] shadow-[0_10px_24px_rgba(89,68,249,0.45)]"
+                        ? "bg-[#6EB9FF] shadow-[0_10px_24px_rgba(89,68,249,0.45)]"
                         : "bg-white/8 ring-1 ring-white/10",
                       "active:scale-95",
                     ].join(" ")}
@@ -128,7 +128,7 @@ export default function DashboardLayout() {
   const location = useLocation();
 
   return (
-    <div className="min-h-screen bg-[#1F2336] text-white">
+    <div className="min-h-screen bg-[#202329] text-white">
       {/* Sidebar desktop */}
       <aside className="fixed left-0 top-0 z-40 hidden h-screen w-24 flex-col items-center bg-white/5 p-3 lg:flex">
         {/* Logo */}
@@ -163,7 +163,7 @@ export default function DashboardLayout() {
           className="mb-2 flex w-full flex-col items-center justify-center gap-1.5 text-[11px] text-white/85 transition group cursor-pointer"
           title="Salir"
         >
-          <span className="grid place-items-center h-11 w-11 rounded-[40%] bg-transparent transition-all duration-200 group-hover:bg-[#5944F9] group-hover:shadow-[0_10px_24px_rgba(89,68,249,0.45)] active:scale-95">
+          <span className="grid place-items-center h-11 w-11 rounded-[40%] bg-transparent transition-all duration-200 group-hover:bg-[#6EB9FF] group-hover:shadow-[0_10px_24px_rgba(89,68,249,0.45)] active:scale-95">
             <img
               src={logoutIcon}
               alt=""
@@ -187,12 +187,7 @@ export default function DashboardLayout() {
                 "Usuario"}
             </h1>
             <div className="flex items-center gap-8">
-              <img
-                src={partner1}
-                alt="Partner 1"
-                className="shrink-0 h-14 sm:h-16 lg:h-[88px] max-h-[88px] object-contain drop-shadow-md"
-                draggable={false}
-              />
+             
               <img
                 src={partner2}
                 alt="Partner 2"
