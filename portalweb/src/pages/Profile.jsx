@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { markAvatarConfigured } from "@/services/progressService";
 import { CHARACTERS, PROFILES } from "@/assets/characters";
 import banner from "@/assets/banner-blur.jpg";
 import { MdEmail, MdPerson, MdPhone, MdLocationOn, MdBadge, MdShield, MdDateRange } from "react-icons/md";
@@ -46,6 +48,9 @@ function InfoRow({ icon, value, className = "" }) {
 export default function Profile() {
   const { session, updateUser } = useAuth();
   const user = session?.user;
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isSetupFlow = new URLSearchParams(location.search).get("setup") === "1";
 
   // Estados UI
   const [edit, setEdit] = useState(false);
@@ -117,6 +122,21 @@ export default function Profile() {
 
   return (
     <div className="mx-auto w-full max-w-[1200px] px-2 sm:px-4 lg:px-0">
+      {/* Setup-flow sticky bottom bar */}
+      {isSetupFlow && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#202329]/95 backdrop-blur-md border-t border-white/10 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+          <div className="max-w-sm mx-auto">
+            <p className="text-xs text-white/50 text-center mb-2">Paso 1 de 2 &middot; Personaliza tu avatar</p>
+            <button
+              type="button"
+              onClick={() => { markAvatarConfigured(); navigate("/courses"); }}
+              className="w-full rounded-xl py-3 bg-[#00b5e2] hover:brightness-105 active:brightness-95 text-white font-semibold text-sm transition cursor-pointer"
+            >
+              Listo, continuar al diagnóstico →
+            </button>
+          </div>
+        </div>
+      )}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_420px]">
         {/* Columna izquierda */}
         <div className="space-y-6">

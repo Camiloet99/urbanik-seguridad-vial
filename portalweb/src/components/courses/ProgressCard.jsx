@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { MdCheckBox } from "react-icons/md";
 
-export default function ProgressCard({ progressMap, className = "" }) {
-  const WEIGHTS = useMemo(
+export default function ProgressCard({ progressMap, weights: weightsProp = null, className = "" }) {
+  const DEFAULT_WEIGHTS = useMemo(
     () => ({
       "test-inicial": 10,
       "test-salida": 10,
@@ -12,6 +12,11 @@ export default function ProgressCard({ progressMap, className = "" }) {
       "lago-suenos": 20,
     }),
     []
+  );
+
+  const WEIGHTS = useMemo(
+    () => weightsProp ?? DEFAULT_WEIGHTS,
+    [weightsProp, DEFAULT_WEIGHTS]
   );
 
   const targetPercent = useMemo(() => {

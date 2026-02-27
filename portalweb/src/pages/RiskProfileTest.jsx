@@ -251,7 +251,7 @@ export default function RiskProfileTest() {
   };
 
   const handleContinue = () => {
-    navigate("/courses/punto-cero-calma", { replace: true });
+    navigate("/courses", { replace: true });
   };
 
   return (

@@ -13,10 +13,15 @@ export default function Hero({
   /** @deprecated use quickLinks instead */
   reminder = null,
   /**
-   * Array of ghost-pill quick-action buttons displayed inline above the CTA.
+   * Array of ghost-pill quick-action buttons displayed in the row above the CTA.
    * Each entry: { label: string, onClick: () => void }
    */
   quickLinks = [],
+  /**
+   * When true, the CTA is rendered on its own line below the quickLinks row.
+   * When false (default), all pills + CTA share one flex-wrap row.
+   */
+  ctaNewRow = false,
 }) {
   // Merge legacy reminder into quickLinks so old callers still work
   const links = quickLinks.length
@@ -54,35 +59,57 @@ export default function Hero({
           </h2>
           <p className="text-white/80 text-sm drop-shadow-sm">{subtitle}</p>
 
-          {/* ghost-pill quick links + primary CTA in one row */}
-          <div className="flex flex-wrap items-center gap-2 pt-0.5">
-            {links.map((lnk) => (
-              <button
-                key={lnk.label}
-                onClick={lnk.onClick}
-                className="inline-flex items-center rounded-2xl
-                           bg-white/10 hover:bg-white/18 active:bg-white/25
-                           ring-1 ring-white/20 backdrop-blur
-                           px-4 py-1.5 text-xs font-medium text-white/90
-                           transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50
-                           shadow-[0_4px_14px_-6px_rgba(0,0,0,0.5)]"
-              >
-                {lnk.label}
-              </button>
-            ))}
+          {/* quick links + CTA */}
+          <div className="space-y-2 pt-0.5">
+            {/* Row 1: ghost-pill quick links */}
+            {links.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2">
+                {links.map((lnk) => (
+                  <button
+                    key={lnk.label}
+                    onClick={lnk.onClick}
+                    className="inline-flex items-center rounded-2xl
+                               bg-white/10 hover:bg-white/18 active:bg-white/25
+                               ring-1 ring-white/20 backdrop-blur
+                               px-4 py-1.5 text-xs font-medium text-white/90
+                               transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50
+                               shadow-[0_4px_14px_-6px_rgba(0,0,0,0.5)]"
+                  >
+                    {lnk.label}
+                  </button>
+                ))}
+              </div>
+            )}
 
-            <button
-              onClick={onCtaClick}
-              className="inline-flex items-center gap-1.5 rounded-full bg-[#00b5e2]
-                         px-5 py-2 text-sm font-semibold text-white
-                         transition-transform duration-150
-                         hover:brightness-110 active:scale-[0.97]
-                         focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60
-                         shadow-[0_6px_18px_-6px_rgba(0,181,226,0.7)]"
-              aria-label={ctaLabel}
-            >
-              {ctaLabel} <MdArrowForward className="text-sm" />
-            </button>
+            {/* Row 2 (or same row when ctaNewRow=false): primary CTA */}
+            <div className={ctaNewRow ? "flex" : "flex flex-wrap items-center gap-2"}>
+              {!ctaNewRow && links.map((lnk) => (
+                <button
+                  key={lnk.label}
+                  onClick={lnk.onClick}
+                  className="inline-flex items-center rounded-2xl
+                             bg-white/10 hover:bg-white/18 active:bg-white/25
+                             ring-1 ring-white/20 backdrop-blur
+                             px-4 py-1.5 text-xs font-medium text-white/90
+                             transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50
+                             shadow-[0_4px_14px_-6px_rgba(0,0,0,0.5)]"
+                >
+                  {lnk.label}
+                </button>
+              ))}
+              <button
+                onClick={onCtaClick}
+                className="inline-flex items-center gap-1.5 rounded-full bg-[#00b5e2]
+                           px-5 py-2 text-sm font-semibold text-white
+                           transition-transform duration-150
+                           hover:brightness-110 active:scale-[0.97]
+                           focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60
+                           shadow-[0_6px_18px_-6px_rgba(0,181,226,0.7)]"
+                aria-label={ctaLabel}
+              >
+                {ctaLabel} <MdArrowForward className="text-sm" />
+              </button>
+            </div>
           </div>
         </div>
       </div>

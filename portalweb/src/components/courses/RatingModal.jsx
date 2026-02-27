@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { submitTest } from "@/services/progressService";
 
 const RATINGS = [
   { value: 1, emoji: "😢", label: "Muy malo" },
@@ -9,7 +10,7 @@ const RATINGS = [
   { value: 5, emoji: "😄", label: "Excelente" },
 ];
 
-export default function RatingModal({ isOpen, courseKey, courseTitle, onClose }) {
+export default function RatingModal({ isOpen, courseKey, courseTitle, modulo, onClose }) {
   const { session } = useAuth();
   const [visible, setVisible] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -29,7 +30,7 @@ export default function RatingModal({ isOpen, courseKey, courseTitle, onClose })
 
   if (!mounted) return null;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selected) return;
 
     const ratingData = {
@@ -42,10 +43,15 @@ export default function RatingModal({ isOpen, courseKey, courseTitle, onClose })
     };
 
     console.log("📊 CALIFICACIÓN ENVIADA:", ratingData);
-    console.log("Usuario:", ratingData.userName);
-    console.log("Email:", ratingData.userEmail);
-    console.log("Calificación:", ratingData.rating);
-    console.log("Módulo:", ratingData.moduleKey);
+
+    // Persist calificationDone on backend
+    if (modulo) {
+      try {
+        await submitTest(modulo, "calificacion");
+      } catch (e) {
+        console.warn("[RatingModal] backend sync failed:", e);
+      }
+    }
 
     onClose();
   };

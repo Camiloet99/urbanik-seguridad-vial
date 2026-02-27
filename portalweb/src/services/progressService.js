@@ -40,11 +40,29 @@ export async function getMyProgress() {
  * POST /progress/me/tests
  *
  * @param {number} modulo   Module number 1–6.
- * @param {"test-inicial"|"test-salida"|"calificacion"} type
+ * @param {"test-inicial"|"test-salida"|"calificacion"|"introduccion"|"pdf1"|"pdf2"|"pdf3"|"pdf4"} type
  */
 export async function submitTest(modulo, type) {
   const token = getAuthToken();
   return http.post("/progress/me/tests", { modulo, type }, { token });
+}
+
+/**
+ * Marks the intro video/section as viewed for a module.
+ * @param {number} modulo  1–6
+ */
+export async function submitIntroduccion(modulo) {
+  return submitTest(modulo, "introduccion");
+}
+
+/**
+ * Marks a specific PDF as read for a module.
+ * @param {number} modulo   1–6
+ * @param {1|2|3|4} pdfNum  PDF number
+ */
+export async function submitPdfRead(modulo, pdfNum) {
+  if (pdfNum < 1 || pdfNum > 4) throw new Error("pdfNum must be 1–4");
+  return submitTest(modulo, `pdf${pdfNum}`);
 }
 
 // ---------------------------------------------------------------------------
@@ -63,6 +81,11 @@ export function emptyProgress() {
       testInitialDone: false,
       testExitDone: false,
       calificationDone: false,
+      introduccionDone: false,
+      pdf1Done: false,
+      pdf2Done: false,
+      pdf3Done: false,
+      pdf4Done: false,
     })),
     monedas: {
       moneda1: false, moneda2: false, moneda3: false,
@@ -90,7 +113,17 @@ export function getGeneralProgress(progress) {
  */
 export function getModuleProgress(progress, modulo) {
   const found = progress?.modulos?.find((m) => m.modulo === modulo);
-  return found ?? { modulo, testInitialDone: false, testExitDone: false, calificationDone: false };
+  return found ?? {
+    modulo,
+    testInitialDone: false,
+    testExitDone: false,
+    calificationDone: false,
+    introduccionDone: false,
+    pdf1Done: false,
+    pdf2Done: false,
+    pdf3Done: false,
+    pdf4Done: false,
+  };
 }
 
 /**
@@ -129,6 +162,55 @@ export function buildMonedaMap(progress) {
     map.set(key, isMonedaEarned(progress, modulo));
   });
   return map;
+}
+
+// ---------------------------------------------------------------------------
+// Experiencia gamificada tracking  (per-module, localStorage)
+// ---------------------------------------------------------------------------
+
+const EXPERIENCIA_PREFIX = "experiencia_done_";
+
+/**
+ * Returns true if the user has clicked into the gamified experience for the
+ * given module. This is used to gate the Test de Salida within a module.
+ * @param {number} modulo  1–6
+ */
+export function isExperienciaDone(modulo) {
+  try { return localStorage.getItem(EXPERIENCIA_PREFIX + modulo) === "true"; } catch { return false; }
+}
+
+/** Marks the gamified experience for a module as entered/done. */
+export function markExperienciaDone(modulo) {
+  try { localStorage.setItem(EXPERIENCIA_PREFIX + modulo, "true"); } catch { /* ignore */ }
+}
+
+// ---------------------------------------------------------------------------
+// Avatar setup tracking  (localStorage gate for the onboarding flow)
+// ---------------------------------------------------------------------------
+
+const AVATAR_KEY = "avatar_configured";
+
+/** Returns true if the user has gone through the initial avatar setup step. */
+export function isAvatarConfigured() {
+  try {
+    return localStorage.getItem(AVATAR_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
+
+/** Marks avatar setup as done (called from Profile when returning to /courses). */
+export function markAvatarConfigured() {
+  try {
+    localStorage.setItem(AVATAR_KEY, "true");
+  } catch { /* ignore */ }
+}
+
+/** Clears avatar setup flag (useful for testing / logout). */
+export function clearAvatarConfigured() {
+  try {
+    localStorage.removeItem(AVATAR_KEY);
+  } catch { /* ignore */ }
 }
 
 // ---------------------------------------------------------------------------

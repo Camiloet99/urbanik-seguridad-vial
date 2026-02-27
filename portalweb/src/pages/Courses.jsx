@@ -4,7 +4,7 @@ import Hero from "@/components/courses/Hero";
 import CourseCard, { CardIcons } from "@/components/courses/CourseCard";
 import ActionList from "@/components/courses/ActionList";
 import ProgressCard from "@/components/courses/ProgressCard";
-import { getMyProgress, buildMonedaMap, getModuleProgress, isDiagnosticoDone, getGeneralProgress, syncDiagnosticoFromBackend } from "@/services/progressService";
+import { getMyProgress, buildMonedaMap, getModuleProgress, isDiagnosticoDone, getGeneralProgress, syncDiagnosticoFromBackend, isAvatarConfigured } from "@/services/progressService";
 import Spinner from "@/components/ui/Spinner";
 
 import card2 from "@/assets/courses/card-2.jpg";
@@ -87,6 +87,7 @@ export default function Courses() {
   // modulo 1 is the global "initial test" gate for the full experience
   const [testFlags, setTestFlags] = useState({ initial: false, exit: false });
   const [diagDone, setDiagDone] = useState(() => isDiagnosticoDone());
+  const [avatarDone, setAvatarDone] = useState(() => isAvatarConfigured());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -168,12 +169,12 @@ export default function Courses() {
    *  - test-inicial done     → go to the module's own CourseDetail page
    */
   const goSmart = () => {
-    if (!diagDone) {
-      navigate("/diagnostico");
+    if (!avatarDone) {
+      navigate("/profile?setup=1");
       return;
     }
-    if (!testFlags.initial) {
-      navigate("/test-inicial/1");
+    if (!diagDone) {
+      navigate("/diagnostico");
       return;
     }
     navigate("/courses/punto-cero-calma");
@@ -184,10 +185,15 @@ export default function Courses() {
   };
 
   const smartCtaLabel = useMemo(() => {
-    if (!diagDone) return "Hacer diagnóstico inicial";
-    if (!testFlags.initial) return "Hacer test inicial";
-    return "Ir al módulo";
-  }, [testFlags, diagDone]);
+    if (!avatarDone) return "Iniciar";
+    if (!diagDone) return "Test de riesgo vial";
+    return "Ir al Módulo 1";
+  }, [avatarDone, diagDone]);
+
+  const allModulesDone = useMemo(
+    () => progress.length > 0 && progress.every((p) => p.completed),
+    [progress]
+  );
 
   const cards = useMemo(() => {
     return cardsBase.map((c, i) => {
@@ -272,9 +278,10 @@ export default function Courses() {
                   subtitle="Módulo 1"
                   ctaLabel={smartCtaLabel}
                   onCtaClick={goSmart}
+                  ctaNewRow
                   quickLinks={[
-                    { label: "Personaliza tu avatar 3d", onClick: () => navigate("/profile") },
-                    { label: "Ir a mi perfil",           onClick: () => navigate("/profile") },
+                    { label: "Personalizar avatar 3D", onClick: () => navigate(avatarDone ? "/profile" : "/profile?setup=1") },
+                    { label: "Ir a mi perfil",          onClick: () => navigate("/profile") },
                   ]}
                 />
               </motion.div>
@@ -288,6 +295,7 @@ export default function Courses() {
                   progressMap={progressMap}
                   testInitialDone={testFlags.initial}
                   testExitDone={testFlags.exit}
+                  lockedItems={!allModulesDone ? { "test-salida": "Completa todos los módulos para desbloquear el test de salida" } : {}}
                   onClick={(key) => {
                     if (key === "contacto") {
                       window.open("mailto:soporte@tu-dominio.com", "_blank");

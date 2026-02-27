@@ -1,20 +1,27 @@
-import { useParams, useNavigate } from "react-router-dom";
+﻿import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { getMyProgress, getModuleProgress, COURSE_KEY_TO_MODULO } from "@/services/progressService";
+import {
+  getMyProgress,
+  getModuleProgress,
+  COURSE_KEY_TO_MODULO,
+  submitIntroduccion,
+  submitPdfRead,
+  isExperienciaDone,
+  markExperienciaDone,
+  isMonedaEarned,
+} from "@/services/progressService";
 
 import Hero from "@/components/courses/Hero";
 import ActionList from "@/components/courses/ActionList";
 import ProgressCard from "@/components/courses/ProgressCard";
 import RatingModal from "@/components/courses/RatingModal";
+import LockedTooltip from "@/components/ui/LockedTooltip";
 
 import card1 from "@/assets/courses/card-1.png";
 import card2 from "@/assets/courses/card-2.jpg";
 import card3 from "@/assets/courses/card-3.jpg";
 import card4 from "@/assets/courses/card-4.jpg";
 import ChatNia from "@/components/courses/ChatNia";
-import partner1 from "@/assets/partner-1-white.png";
-import partner2 from "@/assets/partner-2-white.png";
-
 
 const COURSE_DATA = {
   "punto-cero-calma": {
@@ -30,7 +37,7 @@ const COURSE_DATA = {
   },
   "bosque-emociones": {
     title: "Bosque de las Emociones",
-    subtitle: "Reconéctate con tu interior",
+    subtitle: "Reconectate con tu interior",
     bgImage: card2,
     locked: false,
     resources: [
@@ -39,7 +46,7 @@ const COURSE_DATA = {
     ],
   },
   "jardin-mental": {
-    title: "Jardín Mental",
+    title: "Jardin Mental",
     subtitle: "Siembra tus metas, florece tu mente",
     bgImage: card3,
     locked: false,
@@ -50,7 +57,7 @@ const COURSE_DATA = {
     ],
   },
   "lago-suenos": {
-    title: "Lago de los Sueños",
+    title: "Lago de los Suenos",
     subtitle: "El reflejo de tus libertades",
     bgImage: card4,
     locked: false,
@@ -59,23 +66,24 @@ const COURSE_DATA = {
       { id: "ls-pdf-2", label: "PDF 2", fileName: "seguridad-vial.pdf" },
     ],
   },
-
   "modulo-5": {
-    title: "Módulo 5",
-    subtitle: "Rutas y Denuncia Efectiva",
-    bgImage: card4, // usa una existente para no romper imports
-    locked: false, // cámbialo a true si quieres bloquearlo
+    title: "Modulo 5",
+    subtitle: "Conduccion Segura y Primeros Auxilios",
+    bgImage: card4,
+    locked: false,
     resources: [
       { id: "m5-pdf-1", label: "PDF 1", fileName: "seguridad-vial.pdf" },
       { id: "m5-pdf-2", label: "PDF 2", fileName: "seguridad-vial.pdf" },
     ],
   },
   "modulo-6": {
-    title: "Módulo 6",
-    subtitle: "Rutas y Denuncia Efectiva",
+    title: "Modulo 6",
+    subtitle: "Vehiculos de Carga y Operacion Segura",
     bgImage: card4,
     locked: false,
-    resources: [{ id: "m6-pdf-1", label: "PDF 1", fileName: "seseguridad-vial.pdf" }],
+    resources: [
+      { id: "m6-pdf-1", label: "PDF 1", fileName: "seguridad-vial.pdf" },
+    ],
   },
 };
 
@@ -83,58 +91,107 @@ export default function CourseDetail() {
   const { courseKey } = useParams();
   const navigate = useNavigate();
 
+  const courseData = useMemo(() => COURSE_DATA[courseKey] || null, [courseKey]);
+  const modulo = useMemo(() => COURSE_KEY_TO_MODULO[courseKey] ?? null, [courseKey]);
+
   const [progress, setProgress] = useState(null);
   const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
+  const [experienciaDone, setExperienciaDone] = useState(
+    () => (modulo ? isExperienciaDone(modulo) : false)
+  );
 
-  const courseData = useMemo(() => COURSE_DATA[courseKey] || null, [courseKey]);
-
-  useEffect(() => {
-    const fetchProgress = async () => {
-      try {
-        const p = await getMyProgress();
-        setProgress(p);
-      } catch (err) {
-        console.warn("Progress no disponible (backend desconectado).", err);
-      }
-    };
-    fetchProgress();
-  }, [courseKey]);
-
-  const progressMap = useMemo(() => {
-    const m = new Map();
-    const modulo = COURSE_KEY_TO_MODULO[courseKey];
-    const mp = getModuleProgress(progress, modulo);
-    m.set("test-inicial", !!mp.testInitialDone);
-    m.set("test-salida",  !!mp.testExitDone);
-    return m;
-  }, [progress, courseKey]);
-
-  /**
-   * notifica al backend y luego descarga el PDF.
-   * Requiere que el pdf esté en: public/documents/seseguridad-vial.pdf
-   */
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
-
-  const downloadResource = async (resource) => {
-    // 1) avisar al backend (marca descargado / recalcula %)
+  const fetchProgress = async () => {
     try {
-      await fetch(`${API_URL}/api/progress/resource-downloaded`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          courseKey,
-          resourceId: resource.id,
-        }),
-      });
-
-      // 2) refrescar progreso en UI (si el backend actualiza)
       const p = await getMyProgress();
       setProgress(p);
     } catch (err) {
-      console.warn("No se pudo notificar al backend, igual se descargará.", err);
+      console.warn("Progress no disponible (backend desconectado).", err);
     }
+  };
 
-    // 3) descargar (desde public/documents)
+  useEffect(() => {
+    fetchProgress();
+  }, [courseKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Full module-progress object with all flags
+  const mp = useMemo(
+    () => (modulo ? getModuleProgress(progress, modulo) : null),
+    [progress, modulo]
+  );
+
+  // True when introduccion + all pdfs for this module have been seen
+  const allResourcesDone = useMemo(() => {
+    if (!mp || !courseData) return false;
+    const n = courseData.resources?.length ?? 0;
+    return (
+      mp.introduccionDone &&
+      (n >= 1 ? mp.pdf1Done : true) &&
+      (n >= 2 ? mp.pdf2Done : true) &&
+      (n >= 3 ? mp.pdf3Done : true) &&
+      (n >= 4 ? mp.pdf4Done : true)
+    );
+  }, [mp, courseData]);
+
+  // Map used by ActionList + ProgressCard
+  const progressMap = useMemo(() => {
+    const m = new Map();
+    if (!mp) return m;
+    m.set("test-inicial",  !!mp.testInitialDone);
+    m.set("test-salida",   !!mp.testExitDone);
+    m.set("califica",      !!mp.calificationDone);
+    m.set("introduccion",  !!mp.introduccionDone);
+    m.set("experiencia",   !!isMonedaEarned(progress, modulo));
+    return m;
+  }, [mp, progress, modulo]);
+
+  // Locked messages for ActionList rows
+  const lockedItems = useMemo(() => {
+    if (!mp) return {};
+    const items = {};
+    if (!mp.introduccionDone) {
+      items["test-inicial"] = "Primero ve la introduccion del modulo";
+    }
+    if (!experienciaDone) {
+      items["test-salida"] = "Completa la experiencia gamificada primero";
+    }
+    if (!allResourcesDone) {
+      items["califica"] = "Ve todos los recursos del modulo primero";
+    }
+    return items;
+  }, [mp, experienciaDone, allResourcesDone]);
+
+  // Hero CTA -- marks introduccion done on backend then navigates
+  const handleIntroduccion = async () => {
+    if (courseData?.locked || !modulo) return;
+    try {
+      await submitIntroduccion(modulo);
+      const p = await getMyProgress();
+      setProgress(p);
+    } catch (e) {
+      console.warn("[handleIntroduccion]", e);
+    }
+    navigate("/introduccion");
+  };
+
+  // Play button -- marks experiencia done in localStorage then navigates
+  const handleExperience = () => {
+    if (!mp?.testInitialDone || !modulo) return;
+    markExperienciaDone(modulo);
+    setExperienciaDone(true);
+    navigate("/experience");
+  };
+
+  // PDF download -- marks specific pdf read on backend
+  const downloadResource = async (resource, resourceIndex) => {
+    if (modulo) {
+      try {
+        await submitPdfRead(modulo, resourceIndex + 1);
+        const p = await getMyProgress();
+        setProgress(p);
+      } catch (err) {
+        console.warn("No se pudo notificar al backend, igual se descargara.", err);
+      }
+    }
     const a = document.createElement("a");
     a.href = `/documents/${resource.fileName}`;
     a.download = resource.fileName;
@@ -159,6 +216,8 @@ export default function CourseDetail() {
     );
   }
 
+  const experienceCanPlay = !!mp?.testInitialDone && !courseData.locked;
+
   return (
     <>
       <div className="mt-4 sm:mt-6 lg:mt-12 relative min-h-[calc(80vh-80px)] flex flex-col space-y-8 pb-[calc(84px+env(safe-area-inset-bottom))] sm:pb-0">
@@ -172,20 +231,17 @@ export default function CourseDetail() {
             title={courseData.title}
             subtitle={courseData.subtitle}
             bgImage={courseData.bgImage}
-            ctaLabel={courseData.locked ? "Próximamente" : "Cursosar módulo"}
-            onCtaClick={() => {
-              if (courseData.locked) return;
-              navigate("/experience");
-            }}
+            ctaLabel={courseData.locked ? "Proximamente" : "Introduccion"}
+            onCtaClick={handleIntroduccion}
           />
 
           <ActionList
             progressMap={progressMap}
-            testInitialDone={progressMap.get("test-inicial")}
-            testExitDone={progressMap.get("test-salida")}
+            testInitialDone={mp?.testInitialDone}
+            testExitDone={mp?.testExitDone}
             showRating={true}
+            lockedItems={lockedItems}
             onClick={(key) => {
-              const modulo = COURSE_KEY_TO_MODULO[courseKey];
               if (key === "califica") {
                 setIsRatingModalOpen(true);
                 return;
@@ -201,37 +257,55 @@ export default function CourseDetail() {
             }}
           />
 
-          <ProgressCard progressMap={progressMap} />
+          <ProgressCard
+            progressMap={progressMap}
+            weights={{
+              introduccion: 10,
+              "test-inicial": 15,
+              "test-salida": 15,
+              experiencia: 60,
+            }}
+          />
         </div>
 
-        {/* BLOQUE INFERIOR (Figma): Experiencia + Chat + Recursos */}
+        {/* Bloque inferior: Experiencia + Chat + Recursos */}
         <div className="rounded-[28px] bg-white/5 backdrop-blur-md ring-1 ring-white/10 p-6">
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.25fr_1fr_320px]">
-            {/* Entrada a experiencia (preview tipo video) */}
+
+            {/* Experiencia gamificada */}
             <div className="rounded-[22px] ring-1 ring-white/10 bg-white/5 overflow-hidden">
               <div className="relative h-[260px]">
                 <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/20 to-transparent" />
-
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <button
-                    className="h-16 w-16 rounded-full bg-[#6C4CFF] grid place-items-center
-                             shadow-[0_10px_30px_-12px_rgba(108,76,255,1)]
-                             hover:bg-[#5944F9] active:scale-[0.98]
-                             transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 disabled:opacity-60"
-                    onClick={() => navigate("/experience")}
-                    disabled={courseData.locked}
-                    aria-label="Entrar a la experiencia"
+                  <LockedTooltip
+                    disabled={!experienceCanPlay}
+                    message="Completa el test inicial del modulo primero"
+                    placement="top"
                   >
-                    ▶
-                  </button>
+                    <button
+                      className={[
+                        "h-16 w-16 rounded-full bg-[#6C4CFF] grid place-items-center",
+                        "shadow-[0_10px_30px_-12px_rgba(108,76,255,1)]",
+                        "hover:bg-[#5944F9] active:scale-[0.98]",
+                        "transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60",
+                        !experienceCanPlay ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
+                      ].join(" ")}
+                      onClick={handleExperience}
+                      disabled={!experienceCanPlay}
+                      aria-label="Entrar a la experiencia"
+                    >
+                      &#9654;
+                    </button>
+                  </LockedTooltip>
                 </div>
               </div>
-
               <div className="p-4">
                 <p className="text-white/85 text-sm">
                   {courseData.locked
-                    ? "Este módulo está en preparación."
-                    : "Al hacer clic, entras a la experiencia gamificada del módulo."}
+                    ? "Este modulo esta en preparacion."
+                    : !mp?.testInitialDone
+                    ? "Haz el test inicial del modulo para desbloquear la experiencia."
+                    : "Al hacer clic, entras a la experiencia gamificada del modulo."}
                 </p>
               </div>
             </div>
@@ -241,35 +315,65 @@ export default function CourseDetail() {
 
             {/* Recursos */}
             <div className="rounded-[22px] ring-1 ring-white/10 bg-white/5 p-5">
-              <p className="text-white font-medium">Recursos:</p>
+              <p className="text-white font-medium mb-4">Recursos:</p>
 
-              <div className="mt-4 space-y-3">
+              {/* Boton de introduccion */}
+              <button
+                className={[
+                  "w-full flex items-center justify-between rounded-xl bg-white/5 ring-1 ring-white/10 px-4 py-3",
+                  "text-white/90 text-sm hover:bg-white/10 transition mb-2",
+                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30",
+                  courseData.locked ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
+                ].join(" ")}
+                onClick={handleIntroduccion}
+                disabled={courseData.locked}
+              >
+                <span className="flex items-center gap-2">
+                  Introduccion
+                  {mp?.introduccionDone && (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-emerald-400" aria-hidden="true">
+                      <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </span>
+                <span className="opacity-60">&#9654;</span>
+              </button>
+
+              {/* PDFs */}
+              <div className="space-y-2">
                 {courseData.resources?.length ? (
-                  courseData.resources.map((r) => (
-                    <button
-                      key={r.id}
-                      className="w-full flex items-center justify-between rounded-xl bg-white/5 ring-1 ring-white/10 px-4 py-3 text-white/90 text-sm
-                               hover:bg-white/10 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 disabled:opacity-60"
-                      onClick={() => downloadResource(r)}
-                      disabled={courseData.locked}
-                    >
-                      <span>{r.label}</span>
-                      <span className="opacity-80">⬇</span>
-                    </button>
-                  ))
+                  courseData.resources.map((r, idx) => {
+                    const pdfKey = `pdf${idx + 1}Done`;
+                    const pdfDone = mp?.[pdfKey] ?? false;
+                    return (
+                      <button
+                        key={r.id}
+                        className={[
+                          "w-full flex items-center justify-between rounded-xl bg-white/5 ring-1 ring-white/10 px-4 py-3",
+                          "text-white/90 text-sm hover:bg-white/10 transition",
+                          "focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30",
+                          courseData.locked ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
+                        ].join(" ")}
+                        onClick={() => downloadResource(r, idx)}
+                        disabled={courseData.locked}
+                      >
+                        <span className="flex items-center gap-2">
+                          {r.label}
+                          {pdfDone && (
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-emerald-400" aria-hidden="true">
+                              <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          )}
+                        </span>
+                        <span className="opacity-80">&#11015;</span>
+                      </button>
+                    );
+                  })
                 ) : (
                   <div className="text-white/60 text-sm">
-                    {courseData.locked ? "Recursos disponibles próximamente." : "No hay recursos aún."}
+                    {courseData.locked ? "Recursos disponibles proximamente." : "No hay recursos aun."}
                   </div>
                 )}
-{/** 
-                <button
-                  type="button"
-                  className="rounded-full bg-[#5FA9FF] px-6 py-3 text-white font-semibold"
-                  onClick={() => navigate(`/courses/${courseKey}/rating`)}
-                >
-                  Probar pantalla de calificación}
-                </button>*/}
               </div>
             </div>
           </div>
@@ -280,7 +384,11 @@ export default function CourseDetail() {
         isOpen={isRatingModalOpen}
         courseKey={courseKey}
         courseTitle={courseData?.title}
-        onClose={() => setIsRatingModalOpen(false)}
+        modulo={modulo}
+        onClose={() => {
+          setIsRatingModalOpen(false);
+          fetchProgress();
+        }}
       />
     </>
   );
