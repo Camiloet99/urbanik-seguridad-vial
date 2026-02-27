@@ -12,7 +12,7 @@ export default function ActionList({
       { key: "test-inicial", label: "Test inicial" },
       { key: "test-salida", label: "Test de salida " },
       {
-        key: showRating ? "califica" : "calificacion",
+        key: showRating ? "calificacion" : "calificacion",
         label: showRating ? "Califica este módulo" : "Calificación",
       },
     ],

@@ -172,10 +172,10 @@ export default function CourseDetail() {
             title={courseData.title}
             subtitle={courseData.subtitle}
             bgImage={courseData.bgImage}
-            ctaLabel={courseData.locked ? "Próximamente" : "Cursosar módulo"}
+            ctaLabel={courseData.locked ? "Próximamente" : "Introducción Módulo"}
             onCtaClick={() => {
               if (courseData.locked) return;
-              navigate("/experience");
+              navigate(`/courses/${courseKey}/intro`);
             }}
           />
 
