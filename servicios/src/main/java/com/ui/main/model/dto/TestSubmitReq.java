@@ -1,3 +1,3 @@
 package com.ui.main.model.dto;
 
-public record TestSubmitReq(String kind) {}
+public record TestSubmitReq(int modulo, String type) {}

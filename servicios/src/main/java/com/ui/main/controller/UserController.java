@@ -2,7 +2,6 @@ package com.ui.main.controller;
 
 import com.ui.main.model.dto.UpdateUserReq;
 import com.ui.main.model.dto.UserMeRes;
-import com.ui.main.model.dto.UserWithExperienceStatusRes;
 import com.ui.main.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;

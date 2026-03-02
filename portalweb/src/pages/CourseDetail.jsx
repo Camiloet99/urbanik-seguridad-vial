@@ -5,87 +5,18 @@ import {
   getModuleProgress,
   COURSE_KEY_TO_MODULO,
   submitIntroduccion,
-  submitPdfRead,
   isExperienciaDone,
   markExperienciaDone,
   isMonedaEarned,
 } from "@/services/progressService";
+import { COURSE_DATA } from "@/data/courseData";
 
 import Hero from "@/components/courses/Hero";
 import ActionList from "@/components/courses/ActionList";
 import ProgressCard from "@/components/courses/ProgressCard";
 import RatingModal from "@/components/courses/RatingModal";
 import LockedTooltip from "@/components/ui/LockedTooltip";
-
-import card1 from "@/assets/courses/card-1.png";
-import card2 from "@/assets/courses/card-2.jpg";
-import card3 from "@/assets/courses/card-3.jpg";
-import card4 from "@/assets/courses/card-4.jpg";
 import ChatNia from "@/components/courses/ChatNia";
-
-const COURSE_DATA = {
-  "punto-cero-calma": {
-    title: "Punto Cero CALMA",
-    subtitle: "Donde inicia tu viaje interior",
-    bgImage: card1,
-    locked: false,
-    resources: [
-      { id: "pcc-pdf-1", label: "PDF 1", fileName: "seguridad-vial.pdf" },
-      { id: "pcc-pdf-2", label: "PDF 2", fileName: "seguridad-vial.pdf" },
-      { id: "pcc-pdf-3", label: "PDF 3", fileName: "seguridad-vial.pdf" },
-    ],
-  },
-  "bosque-emociones": {
-    title: "Bosque de las Emociones",
-    subtitle: "Reconectate con tu interior",
-    bgImage: card2,
-    locked: false,
-    resources: [
-      { id: "be-pdf-1", label: "PDF 1", fileName: "seguridad-vial.pdf" },
-      { id: "be-pdf-2", label: "PDF 2", fileName: "seguridad-vial.pdf" },
-    ],
-  },
-  "jardin-mental": {
-    title: "Jardin Mental",
-    subtitle: "Siembra tus metas, florece tu mente",
-    bgImage: card3,
-    locked: false,
-    resources: [
-      { id: "jm-pdf-1", label: "PDF 1", fileName: "seguridad-vial.pdf" },
-      { id: "jm-pdf-2", label: "PDF 2", fileName: "seguridad-vial.pdf" },
-      { id: "jm-pdf-3", label: "PDF 3", fileName: "seguridad-vial.pdf" },
-    ],
-  },
-  "lago-suenos": {
-    title: "Lago de los Suenos",
-    subtitle: "El reflejo de tus libertades",
-    bgImage: card4,
-    locked: false,
-    resources: [
-      { id: "ls-pdf-1", label: "PDF 1", fileName: "seguridad-vial.pdf" },
-      { id: "ls-pdf-2", label: "PDF 2", fileName: "seguridad-vial.pdf" },
-    ],
-  },
-  "modulo-5": {
-    title: "Modulo 5",
-    subtitle: "Conduccion Segura y Primeros Auxilios",
-    bgImage: card4,
-    locked: false,
-    resources: [
-      { id: "m5-pdf-1", label: "PDF 1", fileName: "seguridad-vial.pdf" },
-      { id: "m5-pdf-2", label: "PDF 2", fileName: "seguridad-vial.pdf" },
-    ],
-  },
-  "modulo-6": {
-    title: "Modulo 6",
-    subtitle: "Vehiculos de Carga y Operacion Segura",
-    bgImage: card4,
-    locked: false,
-    resources: [
-      { id: "m6-pdf-1", label: "PDF 1", fileName: "seguridad-vial.pdf" },
-    ],
-  },
-};
 
 export default function CourseDetail() {
   const { courseKey } = useParams();
@@ -119,19 +50,6 @@ export default function CourseDetail() {
     [progress, modulo]
   );
 
-  // True when introduccion + all pdfs for this module have been seen
-  const allResourcesDone = useMemo(() => {
-    if (!mp || !courseData) return false;
-    const n = courseData.resources?.length ?? 0;
-    return (
-      mp.introduccionDone &&
-      (n >= 1 ? mp.pdf1Done : true) &&
-      (n >= 2 ? mp.pdf2Done : true) &&
-      (n >= 3 ? mp.pdf3Done : true) &&
-      (n >= 4 ? mp.pdf4Done : true)
-    );
-  }, [mp, courseData]);
-
   // Map used by ActionList + ProgressCard
   const progressMap = useMemo(() => {
     const m = new Map();
@@ -141,7 +59,36 @@ export default function CourseDetail() {
     m.set("califica",      !!mp.calificationDone);
     m.set("introduccion",  !!mp.introduccionDone);
     m.set("experiencia",   !!isMonedaEarned(progress, modulo));
+    m.set("pdf1",          !!mp.pdf1Done);
+    m.set("pdf2",          !!mp.pdf2Done);
+    m.set("pdf3",          !!mp.pdf3Done);
+    m.set("pdf4",          !!mp.pdf4Done);
     return m;
+  }, [mp, progress, modulo]);
+
+  // True when ALL prereqs before test-salida are met
+  const canDoTestSalida = useMemo(() => {
+    if (!mp) return false;
+    return (
+      mp.introduccionDone &&
+      mp.pdf1Done &&
+      mp.pdf2Done &&
+      mp.pdf3Done &&
+      mp.pdf4Done &&
+      mp.testInitialDone &&
+      experienciaDone
+    );
+  }, [mp, experienciaDone]);
+
+  // Module certificate: unlocked when 100% of this module is done
+  const moduleCertUnlocked = useMemo(() => {
+    if (!mp || !progress || !modulo) return false;
+    return (
+      mp.testInitialDone && mp.testExitDone && mp.calificationDone &&
+      mp.introduccionDone &&
+      mp.pdf1Done && mp.pdf2Done && mp.pdf3Done && mp.pdf4Done &&
+      isMonedaEarned(progress, modulo)
+    );
   }, [mp, progress, modulo]);
 
   // Locked messages for ActionList rows
@@ -151,14 +98,15 @@ export default function CourseDetail() {
     if (!mp.introduccionDone) {
       items["test-inicial"] = "Primero ve la introduccion del modulo";
     }
-    if (!experienciaDone) {
-      items["test-salida"] = "Completa la experiencia gamificada primero";
+    if (!canDoTestSalida) {
+      items["test-salida"] =
+        "Completa la introduccion, los 4 documentos, el test inicial y la experiencia 3D primero";
     }
-    if (!allResourcesDone) {
-      items["califica"] = "Ve todos los recursos del modulo primero";
+    if (!mp.testExitDone) {
+      items["califica"] = "Completa el test de salida primero";
     }
     return items;
-  }, [mp, experienciaDone, allResourcesDone]);
+  }, [mp, canDoTestSalida]);
 
   // Hero CTA -- marks introduccion done on backend then navigates
   const handleIntroduccion = async () => {
@@ -181,23 +129,9 @@ export default function CourseDetail() {
     navigate("/experience");
   };
 
-  // PDF download -- marks specific pdf read on backend
-  const downloadResource = async (resource, resourceIndex) => {
-    if (modulo) {
-      try {
-        await submitPdfRead(modulo, resourceIndex + 1);
-        const p = await getMyProgress();
-        setProgress(p);
-      } catch (err) {
-        console.warn("No se pudo notificar al backend, igual se descargara.", err);
-      }
-    }
-    const a = document.createElement("a");
-    a.href = `/documents/${resource.fileName}`;
-    a.download = resource.fileName;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+  // Open PDF in-portal viewer — backend marks pdfNDone inside PdfVisor on mount
+  const openResource = (resourceIndex) => {
+    navigate(`/courses/${courseKey}/pdf/${resourceIndex + 1}`);
   };
 
   if (!courseData) {
@@ -257,15 +191,106 @@ export default function CourseDetail() {
             }}
           />
 
-          <ProgressCard
-            progressMap={progressMap}
-            weights={{
-              introduccion: 10,
-              "test-inicial": 15,
-              "test-salida": 15,
-              experiencia: 60,
-            }}
-          />
+          <div className="h-full flex flex-col gap-3">
+            <ProgressCard
+              className="flex-1"
+              progressMap={progressMap}
+              weights={{
+                introduccion:    5,
+                "test-inicial":  5,
+                "test-salida":   5,
+                califica:        5,
+                pdf1:            5,
+                pdf2:            5,
+                pdf3:            5,
+                pdf4:            5,
+                experiencia:    60,
+              }}
+            />
+
+            {/* Per-module certificate */}
+            <LockedTooltip
+              disabled={!moduleCertUnlocked}
+              placement="top"
+              message={
+                !moduleCertUnlocked
+                  ? "Completa el 100% del módulo para desbloquear el certificado"
+                  : ""
+              }
+            >
+              <button
+                disabled={!moduleCertUnlocked}
+                onClick={() => {
+                  if (!moduleCertUnlocked) return;
+                  const a = document.createElement("a");
+                  a.href = `/documents/certificado-modulo-${modulo}.pdf`;
+                  a.download = `certificado-modulo-${modulo}.pdf`;
+                  document.body.appendChild(a);
+                  a.click();
+                  a.remove();
+                }}
+                className={[
+                  "w-full flex items-center justify-between gap-3",
+                  "rounded-2xl px-4 py-3 transition-all duration-300",
+                  "focus:outline-none focus-visible:ring-2",
+                  moduleCertUnlocked
+                    ? [
+                        "bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-cyan-500/15",
+                        "ring-2 ring-emerald-400/70 text-emerald-300",
+                        "hover:ring-emerald-400 hover:from-emerald-500/25 hover:to-cyan-500/25",
+                        "shadow-[0_0_24px_-6px_rgba(52,211,153,0.45)]",
+                        "focus-visible:ring-emerald-400 cursor-pointer",
+                      ].join(" ")
+                    : "ring-1 ring-white/10 bg-white/4 text-white/35 cursor-not-allowed",
+                ].join(" ")}
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <span
+                    className={[
+                      "shrink-0 h-9 w-9 rounded-xl flex items-center justify-center ring-1",
+                      moduleCertUnlocked
+                        ? "ring-emerald-400/50 bg-emerald-400/15 text-emerald-400"
+                        : "ring-white/10 bg-white/6 text-white/25",
+                    ].join(" ")}
+                    aria-hidden="true"
+                  >
+                    {moduleCertUnlocked ? (
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    ) : (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" strokeWidth="1.8" />
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                      </svg>
+                    )}
+                  </span>
+                  <div className="text-left leading-tight min-w-0">
+                    <p className="text-[13px] font-semibold truncate">
+                      Certificado Módulo {modulo}
+                    </p>
+                    <p className="text-[11px] mt-0.5 opacity-60 truncate">
+                      {moduleCertUnlocked ? "Listo para descargar" : "Módulo incompleto"}
+                    </p>
+                  </div>
+                </div>
+                <span
+                  className={[
+                    "shrink-0 h-7 w-7 rounded-full flex items-center justify-center ring-1 transition",
+                    moduleCertUnlocked
+                      ? "ring-emerald-400/60 bg-emerald-400/15 text-emerald-400"
+                      : "ring-white/10 bg-white/6 text-white/25",
+                  ].join(" ")}
+                  aria-hidden="true"
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
+              </button>
+            </LockedTooltip>
+          </div>
         </div>
 
         {/* Bloque inferior: Experiencia + Chat + Recursos */}
@@ -317,29 +342,6 @@ export default function CourseDetail() {
             <div className="rounded-[22px] ring-1 ring-white/10 bg-white/5 p-5">
               <p className="text-white font-medium mb-4">Recursos:</p>
 
-              {/* Boton de introduccion */}
-              <button
-                className={[
-                  "w-full flex items-center justify-between rounded-xl bg-white/5 ring-1 ring-white/10 px-4 py-3",
-                  "text-white/90 text-sm hover:bg-white/10 transition mb-2",
-                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30",
-                  courseData.locked ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
-                ].join(" ")}
-                onClick={handleIntroduccion}
-                disabled={courseData.locked}
-              >
-                <span className="flex items-center gap-2">
-                  Introduccion
-                  {mp?.introduccionDone && (
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-emerald-400" aria-hidden="true">
-                      <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  )}
-                </span>
-                <span className="opacity-60">&#9654;</span>
-              </button>
-
-              {/* PDFs */}
               <div className="space-y-2">
                 {courseData.resources?.length ? (
                   courseData.resources.map((r, idx) => {
@@ -348,24 +350,33 @@ export default function CourseDetail() {
                     return (
                       <button
                         key={r.id}
+                        disabled={courseData.locked}
+                        onClick={() => openResource(idx)}
                         className={[
-                          "w-full flex items-center justify-between rounded-xl bg-white/5 ring-1 ring-white/10 px-4 py-3",
-                          "text-white/90 text-sm hover:bg-white/10 transition",
-                          "focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30",
+                          "w-full flex items-center justify-between gap-3",
+                          "rounded-full px-4 py-[10px] transition",
+                          "focus:outline-none focus-visible:ring-2",
+                          pdfDone
+                            ? "ring-2 ring-emerald-400 bg-emerald-400/8 text-emerald-300 hover:bg-emerald-400/14 focus-visible:ring-emerald-400"
+                            : "ring-1 ring-white/20 bg-white/4 text-white/85 hover:bg-white/8 focus-visible:ring-white/40",
                           courseData.locked ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
                         ].join(" ")}
-                        onClick={() => downloadResource(r, idx)}
-                        disabled={courseData.locked}
                       >
-                        <span className="flex items-center gap-2">
-                          {r.label}
-                          {pdfDone && (
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-emerald-400" aria-hidden="true">
-                              <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                          )}
+                        <span className="text-sm font-medium truncate text-left">{r.label}</span>
+                        {/* Download icon */}
+                        <span
+                          className={[
+                            "shrink-0 h-7 w-7 rounded-full flex items-center justify-center ring-1 transition",
+                            pdfDone
+                              ? "ring-emerald-400 bg-emerald-400/15 text-emerald-400"
+                              : "ring-white/25 bg-white/8 text-white/55",
+                          ].join(" ")}
+                          aria-hidden="true"
+                        >
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
                         </span>
-                        <span className="opacity-80">&#11015;</span>
                       </button>
                     );
                   })
