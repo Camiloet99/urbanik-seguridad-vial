@@ -16,7 +16,7 @@ import Experience from "@/pages/Experience";
 import NiaChat from "@/pages/NiaChat";
 import CourseRatingPage from "@/pages/CourseRatingPage";
 import RiskProfileTest from "@/pages/RiskProfileTest";
-import PdfViewer from "@/pages/PdfViewer";
+import PdfVisor from "@/pages/PdfVisor";
 
 import TermsPrivacyPage from "@/pages/legal/TermsPrivacyPage";
 import DataPolicyPage from "@/pages/legal/DataPolicyPage";
@@ -44,6 +44,7 @@ const router = createBrowserRouter([
           { path: "/experience",                  element: <Experience /> },
           { path: "/chat", element: <NiaChat /> },
           { path: "/courses/:courseKey/rating", element: <CourseRatingPage /> },
+          { path: "/courses/:courseKey/pdf/:pdfNum", element: <PdfVisor /> },
           { path: "/diagnostico",               element: <RiskProfileTest /> },
           { path: "/courses/:courseKey/intro", element: <PdfViewer /> },
           {

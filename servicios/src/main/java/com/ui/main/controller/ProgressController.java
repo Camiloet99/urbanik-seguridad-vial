@@ -22,24 +22,26 @@ public class ProgressController {
                 .flatMap(progress::getMyProgress);
     }
 
-    @PatchMapping("/me/medals")
-    public Mono<ProgressMeRes> patchMedals(Mono<Authentication> auth,
-                                           @RequestBody Mono<MedalsPatchReq> body) {
-        return auth.map(a -> (String) a.getPrincipal())
-                .zipWith(body.defaultIfEmpty(new MedalsPatchReq(null, null, null, null)))
-                .flatMap(t -> progress.updateMedals(
-                        t.getT1(), t.getT2().medalla1(), t.getT2().medalla2(), t.getT2().medalla3(), t.getT2().medalla4()
-                ));
-    }
-
     @PostMapping("/me/tests")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public Mono<Void> submitTest(Mono<Authentication> auth,
                                  @RequestBody Mono<TestSubmitReq> body) {
         return auth.map(a -> (String) a.getPrincipal())
                 .zipWith(body)
-                .flatMap(t -> progress.markTestDone(t.getT1(), t.getT2().kind()))
+                .flatMap(t -> progress.markTestDone(
+                        t.getT1(),
+                        t.getT2().modulo(),
+                        t.getT2().type()
+                ))
                 .then();
+    }
+
+    /** Convenience endpoint — marks the user's avatar as configured for the first time. */
+    @PostMapping("/me/avatar")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public Mono<Void> markAvatarDone(Mono<Authentication> auth) {
+        return auth.map(a -> (String) a.getPrincipal())
+                .flatMap(email -> progress.markTestDone(email, 0, "avatar"));
     }
 
     @GetMapping("/all")

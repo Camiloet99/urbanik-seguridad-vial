@@ -7,22 +7,30 @@ export default function ActionList({
   testInitialDone = false,
   testExitDone = false,
   showRating = false,
+  showContacto = false,
   lockedItems = {},
 }) {
   const items = useMemo(
     () => [
       { key: "test-inicial", label: "Test inicial" },
       { key: "test-salida", label: "Test de salida" },
-      {
-        key: showRating ? "calificacion" : "calificacion",
-        label: showRating ? "Califica este módulo" : "Calificación",
-      },
+      showContacto
+        ? { key: "contacto", label: "Contáctanos" }
+        : {
+            key: showRating ? "califica" : "calificacion",
+            label: showRating ? "Califica este módulo" : "Calificación",
+          },
     ],
-    [showRating]
+    [showRating, showContacto]
   );
 
   const resolveSrc = (key) => {
-    const iconKey = key === "calificacion" ? "calificacion" : key;
+    const iconKey =
+      key === "calificacion" || key === "califica"
+        ? "calificacion"
+        : key === "contacto"
+        ? "contacto"
+        : key;
     return new URL(
       `../../assets/courses/nocomplete/${iconKey}.png`,
       import.meta.url
@@ -31,6 +39,7 @@ export default function ActionList({
 
   const resolveBg = (key, completed) => {
     if (key === "calificacion" || key === "califica") return "#6EB9FF";
+    if (key === "contacto") return "#6EB9FF";
     if (!completed) return "transparent";
     if (key === "test-inicial") return "#6EB9FF";
     if (key === "test-salida") return "#6EB9FF";

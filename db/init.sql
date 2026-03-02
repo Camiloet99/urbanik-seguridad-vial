@@ -48,3 +48,22 @@ CREATE TABLE IF NOT EXISTS user_progress (
   UNIQUE KEY uq_user_progress_email (email),
   CONSTRAINT fk_user_progress_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+CREATE TABLE IF NOT EXISTS module_progress (
+  id         BIGINT PRIMARY KEY AUTO_INCREMENT,
+  user_id    BIGINT NOT NULL,
+  email      VARCHAR(190) NOT NULL,
+  modulo     TINYINT UNSIGNED NOT NULL,          -- 0 = general, 1-6 = módulos
+  test_initial_done  BOOLEAN NOT NULL DEFAULT FALSE,
+  test_exit_done     BOOLEAN NOT NULL DEFAULT FALSE,
+  calification_done  BOOLEAN NOT NULL DEFAULT FALSE,
+  introduccion_done  BOOLEAN NOT NULL DEFAULT FALSE,
+  pdf1_done          BOOLEAN NOT NULL DEFAULT FALSE,
+  pdf2_done          BOOLEAN NOT NULL DEFAULT FALSE,
+  pdf3_done          BOOLEAN NOT NULL DEFAULT FALSE,
+  pdf4_done          BOOLEAN NOT NULL DEFAULT FALSE,
+  avatar_done        BOOLEAN NOT NULL DEFAULT FALSE,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_module_progress_email_modulo (email, modulo),
+  CONSTRAINT fk_module_progress_user FOREIGN KEY (user_id) REFERENCES users(id)
+);

@@ -4,7 +4,7 @@ import Hero from "@/components/courses/Hero";
 import CourseCard, { CardIcons } from "@/components/courses/CourseCard";
 import ActionList from "@/components/courses/ActionList";
 import ProgressCard from "@/components/courses/ProgressCard";
-import { getMyProgress, buildMonedaMap, getModuleProgress, isDiagnosticoDone, getGeneralProgress, syncDiagnosticoFromBackend, isAvatarConfigured, syncAvatarFromBackend } from "@/services/progressService";
+import { getMyProgress, buildMonedaMap, getModuleProgress, isMonedaEarned, isDiagnosticoDone, getGeneralProgress, syncDiagnosticoFromBackend, isAvatarConfigured, syncAvatarFromBackend } from "@/services/progressService";
 import Spinner from "@/components/ui/Spinner";
 import LockedTooltip from "@/components/ui/LockedTooltip";
 
@@ -14,6 +14,15 @@ import card4 from "@/assets/courses/card-4.jpg";
 import card5 from "@/assets/courses/card-5.jpg";
 import card6 from "@/assets/courses/card-6.jpg";
 import { useNavigate } from "react-router-dom";
+
+const MODULE_NAMES = {
+  1: "Punto Cero CALMA",
+  2: "Bosque de las Emociones",
+  3: "Jardin Mental",
+  4: "Lago de los Suenos",
+  5: "Modulo 5",
+  6: "Modulo 6",
+};
 
 /**
  * UX/UI improvements included:
@@ -85,6 +94,7 @@ export default function Courses() {
   );
 
   const [progress, setProgress] = useState([]);
+  const [rawProgress, setRawProgress] = useState(null);
   // modulo 1 is the global "initial test" gate for the full experience
   const [testFlags, setTestFlags] = useState({ initial: false, exit: false });
   const [diagDone, setDiagDone] = useState(() => isDiagnosticoDone());
@@ -108,6 +118,7 @@ export default function Courses() {
         { key: "modulo-6",         completed: monedaMap.get("modulo-6")         ?? false },
       ];
       setProgress(mapped);
+      setRawProgress(p);
       // General module (modulo 0) drives the Courses.jsx ActionList.
       // Backend is the source of truth on a successful fetch.
       // Sync localStorage so it doesn't ghost a stale "done" state.
@@ -149,6 +160,22 @@ export default function Courses() {
       mounted = false;
     };
   }, [fetchProgress]);
+
+  const certificateStatus = useMemo(() => {
+    if (!rawProgress) return { unlocked: false, pendingModules: [1, 2, 3, 4, 5, 6] };
+    const pending = [];
+    for (let n = 1; n <= 6; n++) {
+      const m = getModuleProgress(rawProgress, n);
+      const hasMedal = isMonedaEarned(rawProgress, n);
+      const done =
+        m.testInitialDone && m.testExitDone && m.calificationDone &&
+        m.introduccionDone &&
+        m.pdf1Done && m.pdf2Done && m.pdf3Done && m.pdf4Done &&
+        hasMedal;
+      if (!done) pending.push(n);
+    }
+    return { unlocked: pending.length === 0, pendingModules: pending };
+  }, [rawProgress]);
 
   const isFirstTime = useMemo(() => {
     const anyMedal = progress.some((p) => p.completed);
@@ -302,6 +329,7 @@ export default function Courses() {
                   progressMap={progressMap}
                   testInitialDone={testFlags.initial}
                   testExitDone={testFlags.exit}
+                  showContacto={true}
                   lockedItems={
                     !avatarDone
                       ? {
@@ -315,7 +343,10 @@ export default function Courses() {
                   }
                   onClick={(key) => {
                     if (key === "contacto") {
-                      window.open("mailto:soporte@tu-dominio.com", "_blank");
+                      const msg = encodeURIComponent(
+                        "Hola, vengo de la plataforma de Seguridad Vial y necesito ayuda."
+                      );
+                      window.open(`https://wa.me/573507679627?text=${msg}`, "_blank");
                       return;
                     }
                     if (key === "test-inicial") {
@@ -342,8 +373,105 @@ export default function Courses() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15 }}
+                className="h-full"
               >
-                <ProgressCard progressMap={progressMap} />
+                <div className="h-full flex flex-col gap-3">
+                  <ProgressCard progressMap={progressMap} className="flex-1" />
+
+                  {/* Certificate download */}
+                  <LockedTooltip
+                    disabled={!certificateStatus.unlocked}
+                    placement="top"
+                    message={
+                      certificateStatus.pendingModules.length > 0
+                        ? `Pendiente: ${certificateStatus.pendingModules
+                            .slice(0, 2)
+                            .map((n) => MODULE_NAMES[n])
+                            .join(", ")}${
+                            certificateStatus.pendingModules.length > 2
+                              ? ` y ${certificateStatus.pendingModules.length - 2} más`
+                              : ""
+                          }`
+                        : ""
+                    }
+                  >
+                    <button
+                      disabled={!certificateStatus.unlocked}
+                      onClick={() => {
+                        if (!certificateStatus.unlocked) return;
+                        const a = document.createElement("a");
+                        a.href = "/documents/certificado-seguridad-vial.pdf";
+                        a.download = "certificado-seguridad-vial.pdf";
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                      }}
+                      className={[
+                        "w-full flex items-center justify-between gap-3",
+                        "rounded-2xl px-4 py-3 transition-all duration-300",
+                        "focus:outline-none focus-visible:ring-2",
+                        certificateStatus.unlocked
+                          ? [
+                              "bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-cyan-500/15",
+                              "ring-2 ring-emerald-400/70 text-emerald-300",
+                              "hover:ring-emerald-400 hover:from-emerald-500/25 hover:to-cyan-500/25",
+                              "shadow-[0_0_24px_-6px_rgba(52,211,153,0.45)]",
+                              "focus-visible:ring-emerald-400 cursor-pointer",
+                            ].join(" ")
+                          : "ring-1 ring-white/10 bg-white/4 text-white/35 cursor-not-allowed",
+                      ].join(" ")}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span
+                          className={[
+                            "shrink-0 h-9 w-9 rounded-xl flex items-center justify-center ring-1",
+                            certificateStatus.unlocked
+                              ? "ring-emerald-400/50 bg-emerald-400/15 text-emerald-400"
+                              : "ring-white/10 bg-white/6 text-white/25",
+                          ].join(" ")}
+                          aria-hidden="true"
+                        >
+                          {certificateStatus.unlocked ? (
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                              <path d="M12 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                              <path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          ) : (
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                              <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" strokeWidth="1.8" />
+                              <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                            </svg>
+                          )}
+                        </span>
+                        <div className="text-left leading-tight min-w-0">
+                          <p className="text-[13px] font-semibold truncate">Certificado 120h</p>
+                          <p className="text-[11px] mt-0.5 opacity-60 truncate">
+                            {certificateStatus.unlocked
+                              ? "Listo para descargar"
+                              : `${certificateStatus.pendingModules.length} módulo${
+                                  certificateStatus.pendingModules.length > 1 ? "s" : ""
+                                } pendiente${
+                                  certificateStatus.pendingModules.length > 1 ? "s" : ""
+                                }`}
+                          </p>
+                        </div>
+                      </div>
+                      <span
+                        className={[
+                          "shrink-0 h-7 w-7 rounded-full flex items-center justify-center ring-1 transition",
+                          certificateStatus.unlocked
+                            ? "ring-emerald-400/60 bg-emerald-400/15 text-emerald-400"
+                            : "ring-white/10 bg-white/6 text-white/25",
+                        ].join(" ")}
+                        aria-hidden="true"
+                      >
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                          <path d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </span>
+                    </button>
+                  </LockedTooltip>
+                </div>
               </motion.div>
             </div>
 
