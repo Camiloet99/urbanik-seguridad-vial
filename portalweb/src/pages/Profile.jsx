@@ -181,7 +181,7 @@ export default function Profile() {
                   <button
                     type="button"
                     className="inline-flex h-11 items-center justify-center rounded-full px-7
-                               bg-gradient-to-b from-[#7457FF] to-[#5B43EE]
+                               bg-gradient-to-b from-[#6EB9FF] to-[#6EB9FF]
                                shadow-[0_8px_24px_rgba(108,76,255,0.35)]
                                hover:brightness-105 active:brightness-95
                                focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70
@@ -333,7 +333,7 @@ function AvatarPicker({ currentId = 0, onCancel, onConfirm, loading = false }) {
                 className={[
                   "group relative w-full aspect-[3/4] rounded-2xl ring-1 transition cursor-pointer",
                   active
-                    ? "bg-white/10 ring-[#6C4CFF] shadow-[0_8px_24px_rgba(108,76,255,0.35)]"
+                    ? "bg-white/10 ring-[#6EB9FF] shadow-[0_8px_24px_rgba(108,76,255,0.35)]"
                     : "bg-white/5 ring-white/10 hover:bg-white/10",
                 ].join(" ")}
                 disabled={loading}
@@ -364,7 +364,7 @@ function AvatarPicker({ currentId = 0, onCancel, onConfirm, loading = false }) {
         <button
           type="button"
           className="h-11 rounded-full px-7
-                     bg-gradient-to-b from-[#7457FF] to-[#5B43EE]
+                     bg-gradient-to-b from-[#6EB9FF] to-[#6EB9FF]
                      shadow-[0_8px_24px_rgba(108,76,255,0.35)]
                      hover:brightness-105 active:brightness-95 disabled:opacity-60
                      focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 cursor-pointer"

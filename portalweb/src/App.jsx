@@ -46,7 +46,9 @@ const router = createBrowserRouter([
           { path: "/courses/:courseKey/rating", element: <CourseRatingPage /> },
           { path: "/courses/:courseKey/pdf/:pdfNum", element: <PdfVisor /> },
           { path: "/diagnostico",               element: <RiskProfileTest /> },
+          { path: "/courses/:courseKey/intro", element: <PdfViewer /> },
           {
+            
             path: "/admin",
             element: (
               <AdminRoute>
