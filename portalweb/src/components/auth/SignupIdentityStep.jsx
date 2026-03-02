@@ -1,10 +1,9 @@
 // src/components/auth/SignupIdentityStep.jsx
 import { useEffect } from "react";
 import { motion } from "framer-motion";
-import { MdEmail, MdLock, MdPerson, MdPhone } from "react-icons/md";
+import { MdEmail, MdLock, MdPerson, MdPhone, MdLocationOn } from "react-icons/md";
 import Input from "../Input";
 import SearchableSelect from "../SearchableSelect";
-import { DEPARTMENTS } from "../../data/colombiaData";
 
 const ALLOWED_MUNICIPALITIES = [
   { value: "bello", label: "Bello" },
@@ -66,18 +65,12 @@ export default function SignupIdentityStep({
       exit="exit"
     >
       <div className="space-y-5">
-        <SearchableSelect
-          options={DEPARTMENTS}
-          value={values.department || ""}
-          onChange={(value) =>
-            setValues((v) => ({ ...v, department: value }))
-          }
-          placeholder="Buscar departamento..."
-          error={!!errors.department}
-        />
-        {errors.department && (
-          <p className="text-xs text-red-300 -mt-4">{errors.department}</p>
-        )}
+        {/* Departamento bloqueado: solo Antioquia */}
+        <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 h-12 px-4 cursor-not-allowed opacity-60 select-none">
+          <MdLocationOn size={18} className="text-white/30 shrink-0" />
+          <span className="flex-1 text-sm text-white/70">Antioquia</span>
+          <MdLock size={14} className="text-white/30 shrink-0" />
+        </div>
 
         <SearchableSelect
           options={ALLOWED_MUNICIPALITIES}
