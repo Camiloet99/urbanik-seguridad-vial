@@ -29,6 +29,54 @@ function ProgressRing({ percent, size = 84, stroke = 10 }) {
   );
 }
 
+function RatingCard({ index, question, selected, onChange, scaleLabels }) {
+  return (
+    <div className="rounded-[18px] ring-1 ring-white/10 bg-white/[0.04] p-5">
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-xs font-semibold uppercase tracking-wide text-[#00b5e2]/80">
+          {question.category}
+        </span>
+        <span className="text-xs text-white/40">{index + 1}</span>
+      </div>
+      <p className="text-[15px] font-medium text-white/90 mb-5 leading-relaxed">
+        {question.text}
+      </p>
+      <div className="flex items-center gap-2 mb-2">
+        {[1, 2, 3, 4, 5].map((n) => {
+          const isSel = selected === n;
+          return (
+            <button
+              key={n}
+              type="button"
+              onClick={() => onChange(n)}
+              className={[
+                "flex-1 h-10 rounded-xl text-sm font-bold transition ring-1",
+                isSel
+                  ? "bg-[#00b5e2] ring-[#00b5e2] text-white shadow-[0_4px_16px_rgba(0,181,226,0.30)]"
+                  : "bg-white/[0.04] ring-white/10 text-white/60 hover:bg-white/[0.10] hover:ring-white/25",
+              ].join(" ")}
+            >
+              {n}
+            </button>
+          );
+        })}
+      </div>
+      {scaleLabels && (
+        <div className="flex justify-between items-center gap-3 mt-1 px-0.5">
+          <div className="flex items-center gap-1.5">
+            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-white/10 ring-1 ring-white/20 grid place-items-center text-[11px] font-bold text-white/60">1</span>
+            <span className="text-xs font-medium text-white/55">{scaleLabels.minLabel}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs font-medium text-white/55 text-right">{scaleLabels.maxLabel}</span>
+            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-[#00b5e2]/20 ring-1 ring-[#00b5e2]/40 grid place-items-center text-[11px] font-bold text-[#00b5e2]">5</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function QuestionCard({ index, question, selected, onChange }) {
   return (
     <div className="rounded-[18px] ring-1 ring-white/10 bg-white/[0.04] p-5">
@@ -73,6 +121,53 @@ function QuestionCard({ index, question, selected, onChange }) {
 }
 
 function ResultModal({ result, onContinue }) {
+  // Rating test: show completion card (no pass/fail)
+  if (result.isRating) {
+    const avg = result.avg.toFixed(1);
+    const avgPct = Math.round((result.avg / 5) * 100);
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      >
+        <motion.div
+          initial={{ scale: 0.85, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", bounce: 0.3 }}
+          className="bg-[#1a1d24] rounded-[28px] ring-1 ring-white/10 p-8 max-w-sm w-full text-center shadow-2xl"
+        >
+          <div className="mx-auto w-20 h-20 rounded-full grid place-items-center text-4xl mb-5 bg-[#00b5e2]/15 text-[#00b5e2]">
+            ✅
+          </div>
+          <h2 className="text-xl font-bold text-white mb-1">¡Autoevaluación completada!</h2>
+          <p className="text-white/60 text-sm mb-6">
+            Tu respuesta ha sido registrada. Al finalizar el módulo podrás comparar tu progreso.
+          </p>
+          <div className="flex items-center justify-center gap-6 mb-6">
+            <div className="relative">
+              <ProgressRing percent={avgPct} size={96} stroke={10} />
+              <span className="absolute inset-0 flex items-center justify-center text-xl font-bold text-white">
+                {avg}
+              </span>
+            </div>
+            <div className="text-left">
+              <div className="text-2xl font-bold text-white">{avg} / 5</div>
+              <div className="text-white/60 text-sm">promedio</div>
+            </div>
+          </div>
+          <button
+            onClick={onContinue}
+            className="w-full rounded-xl py-3 bg-[#00b5e2] hover:brightness-110 text-white font-semibold transition shadow-[0_8px_20px_rgba(0,181,226,0.30)]"
+          >
+            Continuar
+          </button>
+        </motion.div>
+      </motion.div>
+    );
+  }
+
+  // MCQ test: original pass/fail modal
   const pct = Math.round((result.correct / result.total) * 100);
   const passed = pct >= 60;
 
@@ -88,7 +183,6 @@ function ResultModal({ result, onContinue }) {
         transition={{ type: "spring", bounce: 0.3 }}
         className="bg-[#1a1d24] rounded-[28px] ring-1 ring-white/10 p-8 max-w-sm w-full text-center shadow-2xl"
       >
-        {/* Icon */}
         <div
           className={[
             "mx-auto w-20 h-20 rounded-full grid place-items-center text-4xl mb-5",
@@ -97,7 +191,6 @@ function ResultModal({ result, onContinue }) {
         >
           {passed ? "🎉" : "📚"}
         </div>
-
         <h2 className="text-xl font-bold text-white mb-1">
           {passed ? "¡Muy bien!" : "Sigue practicando"}
         </h2>
@@ -106,8 +199,6 @@ function ResultModal({ result, onContinue }) {
             ? "Has completado el test exitosamente."
             : "No te preocupes, repasa el contenido del módulo."}
         </p>
-
-        {/* Score ring */}
         <div className="flex items-center justify-center gap-6 mb-6">
           <div className="relative">
             <ProgressRing percent={pct} size={96} stroke={10} />
@@ -122,7 +213,6 @@ function ResultModal({ result, onContinue }) {
             <div className="text-white/60 text-sm">respuestas correctas</div>
           </div>
         </div>
-
         <button
           onClick={onContinue}
           className="w-full rounded-xl py-3 bg-[#00b5e2] hover:brightness-110 text-white font-semibold transition shadow-[0_8px_20px_rgba(0,181,226,0.30)]"
@@ -143,6 +233,9 @@ export default function ModuleTestForm({ type }) {
   const isInitial = type === "test-inicial";
   const moduleData = MODULE_TESTS[moduloNum];
   const questions = moduleData?.[isInitial ? "initial" : "exit"] ?? [];
+  const isRatingTest = questions[0]?.type === "rating";
+  const scaleLabels = moduleData?.[isInitial ? "scaleInitial" : "scaleExit"];
+  const introText = moduleData?.[isInitial ? "introInitial" : "introExit"];
 
   const [answers, setAnswers] = useState({});
   const [sending, setSending] = useState(false);
@@ -154,8 +247,8 @@ export default function ModuleTestForm({ type }) {
   const isComplete = answered === total;
   const progress = total > 0 ? Math.round((answered / total) * 100) : 0;
 
-  const handleAnswer = (qIndex, optId) => {
-    setAnswers((prev) => ({ ...prev, [qIndex]: optId }));
+  const handleAnswer = (qIndex, value) => {
+    setAnswers((prev) => ({ ...prev, [qIndex]: value }));
     if (error) setError("");
   };
 
@@ -165,25 +258,38 @@ export default function ModuleTestForm({ type }) {
       return;
     }
 
-    const correct = questions.filter((q, i) => answers[i] === q.correct).length;
-    const score = Math.round((correct / total) * 100);
-
     setSending(true);
     setError("");
     try {
-      const payload = {
-        answers: Object.fromEntries(
-          Object.entries(answers).map(([i, v]) => [questions[i].id, v])
-        ),
-        score,
-        submittedAt: new Date().toISOString(),
-      };
-      if (isInitial) {
-        await submitInitialTest(moduloNum, payload);
+      if (isRatingTest) {
+        const ratings = Object.values(answers).map(Number);
+        const avg = ratings.reduce((s, v) => s + v, 0) / ratings.length;
+        const score = Math.round((avg / 5) * 100);
+        const payload = {
+          answers: Object.fromEntries(
+            Object.entries(answers).map(([i, v]) => [questions[i].id, v])
+          ),
+          score,
+          avg,
+          submittedAt: new Date().toISOString(),
+        };
+        if (isInitial) await submitInitialTest(moduloNum, payload);
+        else await submitExitTest(moduloNum, payload);
+        setResult({ isRating: true, avg, total });
       } else {
-        await submitExitTest(moduloNum, payload);
+        const correct = questions.filter((q, i) => answers[i] === q.correct).length;
+        const score = Math.round((correct / total) * 100);
+        const payload = {
+          answers: Object.fromEntries(
+            Object.entries(answers).map(([i, v]) => [questions[i].id, v])
+          ),
+          score,
+          submittedAt: new Date().toISOString(),
+        };
+        if (isInitial) await submitInitialTest(moduloNum, payload);
+        else await submitExitTest(moduloNum, payload);
+        setResult({ correct, total, score });
       }
-      setResult({ correct, total, score });
     } catch (err) {
       console.error(err);
       setError("No se pudo guardar el test. Intenta de nuevo.");
@@ -224,24 +330,39 @@ export default function ModuleTestForm({ type }) {
         <h1 className="text-2xl font-bold text-white leading-tight">
           {moduleData.title}
         </h1>
-        <p className="text-white/55 text-sm mt-1">
-          {isInitial
-            ? "Responde las siguientes preguntas para evaluar tus conocimientos previos."
-            : "Demuestra lo que aprendiste en este módulo respondiendo las siguientes preguntas."}
-        </p>
+        {introText ? (
+          <p className="text-white/65 text-sm mt-2 leading-relaxed max-w-2xl">{introText}</p>
+        ) : (
+          <p className="text-white/55 text-sm mt-1">
+            {isInitial
+              ? "Responde las siguientes preguntas para evaluar tus conocimientos previos."
+              : "Demuestra lo que aprendiste en este módulo respondiendo las siguientes preguntas."}
+          </p>
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_300px]">
         <div className="space-y-4">
-          {questions.map((q, i) => (
-            <QuestionCard
-              key={q.id}
-              index={i}
-              question={q}
-              selected={answers[i]}
-              onChange={(optId) => handleAnswer(i, optId)}
-            />
-          ))}
+          {questions.map((q, i) =>
+            isRatingTest ? (
+              <RatingCard
+                key={q.id}
+                index={i}
+                question={q}
+                selected={answers[i]}
+                onChange={(val) => handleAnswer(i, val)}
+                scaleLabels={i === 0 ? scaleLabels : null}
+              />
+            ) : (
+              <QuestionCard
+                key={q.id}
+                index={i}
+                question={q}
+                selected={answers[i]}
+                onChange={(optId) => handleAnswer(i, optId)}
+              />
+            )
+          )}
         </div>
 
         <aside className="xl:sticky xl:top-6 self-start rounded-[22px] ring-1 ring-white/10 bg-white/[0.04] backdrop-blur-md p-6 space-y-5">
