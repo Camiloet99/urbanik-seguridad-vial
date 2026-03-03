@@ -13,7 +13,7 @@ function ProgressRing({ percent, size = 84, stroke = 10 }) {
       <defs>
         <linearGradient id="prg" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#00b5e2" />
-          <stop offset="100%" stopColor="#5944F9" />
+          <stop offset="100%" stopColor="#0098bf" />
         </linearGradient>
       </defs>
       <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,.12)" strokeWidth={stroke} />
@@ -316,7 +316,7 @@ export default function ModuleTestForm({ type }) {
   }
 
   const typeLabel = isInitial ? "Test Inicial" : "Test Final";
-  const typeColor = isInitial ? "#00b5e2" : "#5944F9";
+  const typeColor = isInitial ? "#00b5e2" : "#0098bf";
 
   return (
     <div className="min-h-[calc(80vh-80px)] pb-24">

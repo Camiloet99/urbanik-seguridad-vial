@@ -409,10 +409,10 @@ export const MODULE_TESTS = {
 
 /** Reverse lookup: modulo number → courseKey */
 export const MODULO_TO_COURSE_KEY = {
-  1: "punto-cero-calma",
-  2: "bosque-emociones",
-  3: "jardin-mental",
-  4: "lago-suenos",
-  5: "modulo-5",
-  6: "modulo-6",
+  1: "fundamentos-seguridad-vial",
+  2: "movilidad-seguridad-peatonal",
+  3: "movilidad-sostenible-activa",
+  4: "seguridad-vial-motociclistas",
+  5: "conduccion-segura-automoviles",
+  6: "vehiculos-carga-operacion-segura",
 };

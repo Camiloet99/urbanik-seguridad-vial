@@ -99,9 +99,9 @@ export default function SearchableSelect({
           error
             ? "border-red-400/70 bg-red-500/5"
             : isOpen
-              ? "border-[#6C4CFF]/50 bg-white/10"
+              ? "border-[#00b5e2]/50 bg-white/10"
               : "border-white/15 bg-white/5"
-        } ${isOpen ? "ring-2 ring-[#6C4CFF]/20" : "hover:border-white/25 hover:bg-white/7.5"}`}
+        } ${isOpen ? "ring-2 ring-[#00b5e2]/20" : "hover:border-white/25 hover:bg-white/7.5"}`}
       >
         <MdOutlineSearch size={18} className="text-white/60 flex-shrink-0" />
         <input
@@ -151,7 +151,7 @@ export default function SearchableSelect({
                   whileHover={{ backgroundColor: "rgba(255, 255, 255, 0.08)" }}
                   className={`w-full text-left px-5 py-3 transition-colors text-sm font-medium cursor-pointer ${
                     highlightedIndex === index
-                      ? "bg-[#6C4CFF]/20 text-white"
+                      ? "bg-[#00b5e2]/20 text-white"
                       : value === option.value
                         ? "bg-white/10 text-white"
                         : "text-white/70 hover:text-white"
@@ -163,7 +163,7 @@ export default function SearchableSelect({
                       <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        className="w-2 h-2 rounded-full bg-[#6C4CFF]"
+                        className="w-2 h-2 rounded-full bg-[#00b5e2]"
                       />
                     )}
                   </div>

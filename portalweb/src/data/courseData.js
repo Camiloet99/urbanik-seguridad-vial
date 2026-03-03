@@ -12,11 +12,12 @@ import card3 from "@/assets/courses/card-3.jpg";
 import card4 from "@/assets/courses/card-4.jpg";
 
 export const COURSE_DATA = {
-  "punto-cero-calma": {
-    title: "Punto Cero CALMA",
-    subtitle: "Donde inicia tu viaje interior",
+  "fundamentos-seguridad-vial": {
+    title: "Fundamentos de Seguridad Vial",
+    subtitle: "Conoce el sistema vial y tus responsabilidades como actor vial",
     bgImage: card1,
     locked: false,
+    introPdf: "modulo-1/intro.pdf",
     resources: [
       {
         id: "pcc-pdf-1",
@@ -40,11 +41,12 @@ export const COURSE_DATA = {
       },
     ],
   },
-  "bosque-emociones": {
-    title: "Bosque de las Emociones",
-    subtitle: "Reconectate con tu interior",
+  "movilidad-seguridad-peatonal": {
+    title: "Movilidad y Seguridad Peatonal",
+    subtitle: "Protege tu vida y la de los demás en la vía pública",
     bgImage: card2,
     locked: false,
+    introPdf: "modulo-2/intro.pdf",
     resources: [
       { id: "be-pdf-1", label: "Documento 1", fileName: "seguridad-vial.pdf" },
       { id: "be-pdf-2", label: "Documento 2", fileName: "seguridad-vial.pdf" },
@@ -52,11 +54,12 @@ export const COURSE_DATA = {
       { id: "be-pdf-4", label: "Documento 4", fileName: "seguridad-vial.pdf" },
     ],
   },
-  "jardin-mental": {
-    title: "Jardin Mental",
-    subtitle: "Siembra tus metas, florece tu mente",
+  "movilidad-sostenible-activa": {
+    title: "Movilidad Sostenible y Activa",
+    subtitle: "Bicicletas, patinetas y micromovilidad segura",
     bgImage: card3,
     locked: false,
+    introPdf: "modulo-3/intro.pdf",
     resources: [
       { id: "jm-pdf-1", label: "Documento 1", fileName: "seguridad-vial.pdf" },
       { id: "jm-pdf-2", label: "Documento 2", fileName: "seguridad-vial.pdf" },
@@ -64,11 +67,12 @@ export const COURSE_DATA = {
       { id: "jm-pdf-4", label: "Documento 4", fileName: "seguridad-vial.pdf" },
     ],
   },
-  "lago-suenos": {
-    title: "Lago de los Suenos",
-    subtitle: "El reflejo de tus libertades",
+  "seguridad-vial-motociclistas": {
+    title: "Seguridad Vial para Motociclistas",
+    subtitle: "Domina la vía y protege tu vida sobre dos ruedas",
     bgImage: card4,
     locked: false,
+    introPdf: "modulo-4/intro.pdf",
     resources: [
       { id: "ls-pdf-1", label: "Documento 1", fileName: "seguridad-vial.pdf" },
       { id: "ls-pdf-2", label: "Documento 2", fileName: "seguridad-vial.pdf" },
@@ -76,11 +80,12 @@ export const COURSE_DATA = {
       { id: "ls-pdf-4", label: "Documento 4", fileName: "seguridad-vial.pdf" },
     ],
   },
-  "modulo-5": {
-    title: "Modulo 5",
-    subtitle: "Conduccion Segura y Primeros Auxilios",
+  "conduccion-segura-automoviles": {
+    title: "Conducción Segura en Automóviles",
+    subtitle: "Conducción segura y primeros auxilios en la vía",
     bgImage: card4,
     locked: false,
+    introPdf: "modulo-5/intro.pdf",
     resources: [
       { id: "m5-pdf-1", label: "Documento 1", fileName: "seguridad-vial.pdf" },
       { id: "m5-pdf-2", label: "Documento 2", fileName: "seguridad-vial.pdf" },
@@ -88,11 +93,12 @@ export const COURSE_DATA = {
       { id: "m5-pdf-4", label: "Documento 4", fileName: "seguridad-vial.pdf" },
     ],
   },
-  "modulo-6": {
-    title: "Modulo 6",
-    subtitle: "Vehiculos de Carga y Operacion Segura",
+  "vehiculos-carga-operacion-segura": {
+    title: "Vehículos de Carga y Operación Segura",
+    subtitle: "Conducción profesional de vehículos pesados rígidos (C2)",
     bgImage: card4,
     locked: false,
+    introPdf: "modulo-6/intro.pdf",
     resources: [
       { id: "m6-pdf-1", label: "Documento 1", fileName: "seguridad-vial.pdf" },
       { id: "m6-pdf-2", label: "Documento 2", fileName: "seguridad-vial.pdf" },

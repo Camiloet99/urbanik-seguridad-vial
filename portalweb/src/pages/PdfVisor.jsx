@@ -14,16 +14,21 @@ export default function PdfVisor() {
   const { courseKey, pdfNum } = useParams();
   const navigate = useNavigate();
 
-  const pdfNumInt = parseInt(pdfNum, 10);
+  const isIntro = !pdfNum;
+  const pdfNumInt = isIntro ? null : parseInt(pdfNum, 10);
   const course = COURSE_DATA[courseKey] ?? null;
-  const resource = course?.resources?.[pdfNumInt - 1] ?? null;
+  const resource = isIntro
+    ? (course?.introPdf ? { label: "Introducción", fileName: course.introPdf } : null)
+    : (course?.resources?.[pdfNumInt - 1] ?? null);
   const modulo = COURSE_KEY_TO_MODULO[courseKey] ?? null;
 
   const markedRef = useRef(false);
   const [loadError, setLoadError] = useState(false);
 
-  // Mark this PDF as read on the backend (once per mount)
+  // Mark this PDF as read on the backend (once per mount).
+  // Intro is already marked by handleIntroduccion in CourseDetail before navigating here.
   useEffect(() => {
+    if (isIntro) return;
     if (!modulo || !pdfNumInt || pdfNumInt < 1 || pdfNumInt > 4) return;
     if (markedRef.current) return;
     markedRef.current = true;
@@ -31,7 +36,7 @@ export default function PdfVisor() {
     submitPdfRead(modulo, pdfNumInt).catch((err) =>
       console.warn("[PdfVisor] could not mark pdf read:", err)
     );
-  }, [modulo, pdfNumInt]);
+  }, [isIntro, modulo, pdfNumInt]);
 
   const pdfSrc = resource ? `/documents/${resource.fileName}` : null;
 
@@ -42,7 +47,7 @@ export default function PdfVisor() {
           <p className="text-white/80 text-lg">Documento no encontrado.</p>
           <button
             onClick={() => navigate(-1)}
-            className="rounded-xl bg-[#5944F9] hover:brightness-110 text-white font-medium px-6 py-3 transition"
+            className="rounded-xl bg-[#00b5e2] hover:brightness-110 text-white font-medium px-6 py-3 transition"
           >
             Volver
           </button>
@@ -80,7 +85,7 @@ export default function PdfVisor() {
               href={pdfSrc}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-xl bg-[#5944F9] hover:brightness-110 text-white text-sm font-medium px-5 py-2 transition"
+              className="rounded-xl bg-[#00b5e2] hover:brightness-110 text-white text-sm font-medium px-5 py-2 transition"
             >
               Abrir en nueva pestaña
             </a>
@@ -100,7 +105,7 @@ export default function PdfVisor() {
                 href={pdfSrc}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-xl bg-[#5944F9] hover:brightness-110 text-white text-sm font-medium px-5 py-2 transition"
+                className="rounded-xl bg-[#00b5e2] hover:brightness-110 text-white text-sm font-medium px-5 py-2 transition"
               >
                 Abrir en nueva pestaña
               </a>

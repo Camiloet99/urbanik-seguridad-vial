@@ -17,11 +17,9 @@ import {
   resetPasswordApi,
 } from "@/services/authService";
 
-import brandLogo from "../assets/brand-logo-calma.png";
+import brandLogo from "../assets/agencianacional.png";
 import hero from "../assets/login-hero.png";
-import partner1 from "../assets/partner-1.png";
-import partner2 from "../assets/partner-2.png";
-import partner3 from "../assets/partner-3.png";
+import expoLogo from "../assets/logo_expo_blanco.png";
 
 /* ------- Tabs ------- */
 const tabs = [
@@ -57,8 +55,8 @@ function ProgressDots({ total = 2, index = 0 }) {
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
           style={{
             background:
-              i === index ? "rgba(108,76,255,1)" : "rgba(255,255,255,0.28)",
-            boxShadow: i === index ? "0 0 14px rgba(108,76,255,0.55)" : "none",
+              i === index ? "rgba(0,181,226,1)" : "rgba(255,255,255,0.28)",
+            boxShadow: i === index ? "0 0 14px rgba(0,181,226,0.55)" : "none",
           }}
         />
       ))}
@@ -188,6 +186,7 @@ export default function AuthGateway() {
     differentialFocus: "",
     pass: "",
     confirm: "",
+    accept: false,
   });
   const [detailErrors, setDetailErrors] = useState({
     ageRange: "",
@@ -195,6 +194,7 @@ export default function AuthGateway() {
     differentialFocus: "",
     pass: "",
     confirm: "",
+    accept: "",
   });
   const detailRules = useMemo(
     () => ({
@@ -213,6 +213,7 @@ export default function AuthGateway() {
       differentialFocus: "",
       pass: "",
       confirm: "",
+      accept: "",
     });
 
     let okLocal = true;
@@ -235,6 +236,10 @@ export default function AuthGateway() {
     }
     if (detailValues.confirm !== detailValues.pass) {
       setDetailErrors((p) => ({ ...p, confirm: "Las contraseñas no coinciden" }));
+      okLocal = false;
+    }
+    if (!detailValues.accept) {
+      setDetailErrors((p) => ({ ...p, accept: "Debes aceptar las políticas para continuar" }));
       okLocal = false;
     }
 
@@ -681,24 +686,13 @@ export default function AuthGateway() {
                 }}
               />
 
-              <div className="absolute top-6 right-6 z-10">
+              {/* Logo empresa centrado abajo */}
+              <div className="absolute bottom-7 left-1/2 -translate-x-1/2 z-10">
                 <img
-                  src={partner3}
-                  alt="Partner 3"
-                  className="h-[110px] w-auto opacity-95"
-                />
-              </div>
-
-              <div className="absolute bottom-6 right-6 z-10 flex items-center gap-9 pr-1">
-                <img
-                  src={partner1}
-                  alt="Partner 1"
-                  className="h-[92px] w-auto opacity-95"
-                />
-                <img
-                  src={partner2}
-                  alt="Partner 2"
-                  className="h-[92px] w-auto opacity-95"
+                  src={expoLogo}
+                  alt="Logo"
+                  className="h-16 w-auto object-contain drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]"
+                  draggable={false}
                 />
               </div>
             </motion.div>

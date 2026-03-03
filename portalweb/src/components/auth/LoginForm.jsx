@@ -69,7 +69,7 @@ export default function LoginForm({
       <button
         type="submit"
         disabled={isLoading}
-        className={`mt-6 mb-8 h-12 w-full rounded-full bg-[#6C4CFF] font-medium shadow-[0_6px_18px_rgba(108,76,255,0.35)] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 ${
+        className={`mt-6 mb-8 h-12 w-full rounded-full bg-[#00b5e2] font-medium shadow-[0_6px_18px_rgba(0,181,226,0.35)] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 ${
           isLoading ? "opacity-70 cursor-not-allowed" : "hover:opacity-90"
         }`}
       >

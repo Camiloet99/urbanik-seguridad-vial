@@ -5,12 +5,12 @@ import { getAuthToken } from "@/services/session";
 // Map: courseKey  →  modulo number (1-6)
 // ---------------------------------------------------------------------------
 export const COURSE_KEY_TO_MODULO = {
-  "punto-cero-calma":   1,
-  "bosque-emociones":   2,
-  "jardin-mental":      3,
-  "lago-suenos":        4,
-  "modulo-5":           5,
-  "modulo-6":           6,
+  "fundamentos-seguridad-vial":       1,
+  "movilidad-seguridad-peatonal":     2,
+  "movilidad-sostenible-activa":      3,
+  "seguridad-vial-motociclistas":     4,
+  "conduccion-segura-automoviles":    5,
+  "vehiculos-carga-operacion-segura": 6,
 };
 
 // ---------------------------------------------------------------------------
@@ -131,7 +131,7 @@ export function getModuleProgress(progress, modulo) {
  * Convenience wrapper around getModuleProgress.
  *
  * @param {object} progress   Result from getMyProgress()
- * @param {string} courseKey  e.g. "bosque-emociones"
+ * @param {string} courseKey  e.g. "movilidad-seguridad-peatonal"
  */
 export function getCourseProgress(progress, courseKey) {
   const modulo = COURSE_KEY_TO_MODULO[courseKey];

@@ -144,7 +144,7 @@ export default function Profile() {
               />
               <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-t from-black/35 via-black/10 to-transparent" />
               <div className="absolute left-1/2 -translate-x-1/2 -bottom-8 z-10">
-                <div className="h-16 w-16 md:h-20 md:w-20 rounded-full p-[3px] bg-gradient-to-tr from-[#6C4CFF] via-[#8B7BFF] to-transparent">
+                <div className="h-16 w-16 md:h-20 md:w-20 rounded-full p-[3px] bg-gradient-to-tr from-[#00b5e2] via-[#5dd3f0] to-transparent">
                   <div className="h-full w-full rounded-full ring-4 ring-[#1F2336] overflow-hidden bg-white/10 backdrop-blur">
                     <img
                       src={profileSrc}
@@ -182,7 +182,7 @@ export default function Profile() {
                     type="button"
                     className="inline-flex h-11 items-center justify-center rounded-full px-7
                                bg-gradient-to-b from-[#6EB9FF] to-[#6EB9FF]
-                               shadow-[0_8px_24px_rgba(108,76,255,0.35)]
+                               shadow-[0_8px_24px_rgba(0,181,226,0.35)]
                                hover:brightness-105 active:brightness-95
                                focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70
                                cursor-pointer"
@@ -333,7 +333,7 @@ function AvatarPicker({ currentId = 0, onCancel, onConfirm, loading = false }) {
                 className={[
                   "group relative w-full aspect-[3/4] rounded-2xl ring-1 transition cursor-pointer",
                   active
-                    ? "bg-white/10 ring-[#6EB9FF] shadow-[0_8px_24px_rgba(108,76,255,0.35)]"
+                    ? "bg-white/10 ring-[#6EB9FF] shadow-[0_8px_24px_rgba(0,181,226,0.35)]"
                     : "bg-white/5 ring-white/10 hover:bg-white/10",
                 ].join(" ")}
                 disabled={loading}
@@ -365,7 +365,7 @@ function AvatarPicker({ currentId = 0, onCancel, onConfirm, loading = false }) {
           type="button"
           className="h-11 rounded-full px-7
                      bg-gradient-to-b from-[#6EB9FF] to-[#6EB9FF]
-                     shadow-[0_8px_24px_rgba(108,76,255,0.35)]
+                     shadow-[0_8px_24px_rgba(0,181,226,0.35)]
                      hover:brightness-105 active:brightness-95 disabled:opacity-60
                      focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 cursor-pointer"
           onClick={() => onConfirm(selected)}

@@ -4,9 +4,9 @@ import { getMyProgress } from "@/services/progressService";
 export async function getExperiencesProgress() {
   const p = await getMyProgress();
   return [
-    { key: "punto-cero-calma", completed: !!p.medalla1 },
-    { key: "bosque-emociones", completed: !!p.medalla2 },
-    { key: "jardin-mental",   completed: !!p.medalla3 },
-    { key: "lago-suenos",     completed: !!p.medalla4 },
+    { key: "fundamentos-seguridad-vial",   completed: !!p.medalla1 },
+    { key: "movilidad-seguridad-peatonal",  completed: !!p.medalla2 },
+    { key: "movilidad-sostenible-activa",   completed: !!p.medalla3 },
+    { key: "seguridad-vial-motociclistas",  completed: !!p.medalla4 },
   ];
 }

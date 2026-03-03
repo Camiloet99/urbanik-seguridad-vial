@@ -6,10 +6,10 @@ export default function ProgressCard({ progressMap, weights: weightsProp = null,
     () => ({
       "test-inicial": 10,
       "test-salida": 10,
-      "punto-cero-calma": 20,
-      "bosque-emociones": 20,
-      "jardin-mental": 20,
-      "lago-suenos": 20,
+      "fundamentos-seguridad-vial": 20,
+      "movilidad-seguridad-peatonal": 20,
+      "movilidad-sostenible-activa": 20,
+      "seguridad-vial-motociclistas": 20,
     }),
     []
   );
@@ -74,7 +74,7 @@ export default function ProgressCard({ progressMap, weights: weightsProp = null,
 
           <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor="#8BE7F0" />
-            <stop offset="45%" stopColor="#8B7BFF" />
+            <stop offset="45%" stopColor="#5dd3f0" />
             <stop offset="100%" stopColor="#6B83FF" />
           </linearGradient>
 

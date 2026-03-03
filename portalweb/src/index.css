@@ -74,11 +74,11 @@ select option {
 }
 
 select option:hover {
-  background-color: #6c4cff;
+  background-color: #00b5e2;
   color: #ffffff;
 }
 
 select option:checked {
-  background-color: #6c4cff;
+  background-color: #00b5e2;
   color: #ffffff;
 }

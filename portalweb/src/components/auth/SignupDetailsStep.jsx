@@ -183,6 +183,50 @@ export default function SignupDetailsStep({
         <Rule ok={rules.special} label="1 carácter especial" />
       </ul>
 
+      {/* Checkbox politica de privacidad */}
+      <div className="mb-5">
+        <label className="flex items-start gap-3 cursor-pointer select-none group">
+          <input
+            type="checkbox"
+            checked={values.accept || false}
+            onChange={(e) => setValues((v) => ({ ...v, accept: e.target.checked }))}
+            className="sr-only"
+          />
+          <span
+            aria-hidden="true"
+            className={[
+              "mt-0.5 shrink-0 h-5 w-5 rounded-md border-2 flex items-center justify-center transition-all duration-200",
+              values.accept
+                ? "border-[#00b5e2] bg-[#00b5e2]"
+                : errors.accept
+                ? "border-red-400 bg-white/5"
+                : "border-white/30 bg-white/5 group-hover:border-white/60",
+            ].join(" ")}
+          >
+            {values.accept && (
+              <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
+                <path d="M1 4.5L4 7.5L10 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            )}
+          </span>
+          <span className={`text-sm leading-snug ${errors.accept ? "text-red-300" : "text-white/75"}`}>
+            Acepto el{" "}
+            <a
+              href="/documents/politica.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="font-medium text-[#00b5e2] underline underline-offset-2 hover:text-white transition-colors"
+            >
+              Aviso de Privacidad y Condiciones de Uso
+            </a>
+          </span>
+        </label>
+        {errors.accept && (
+          <p className="mt-1 text-xs text-red-300 pl-8">{errors.accept}</p>
+        )}
+      </div>
+
       <div className="flex gap-3">
         <button
           type="button"

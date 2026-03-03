@@ -16,12 +16,12 @@ import card6 from "@/assets/courses/card-6.jpg";
 import { useNavigate } from "react-router-dom";
 
 const MODULE_NAMES = {
-  1: "Punto Cero CALMA",
-  2: "Bosque de las Emociones",
-  3: "Jardin Mental",
-  4: "Lago de los Suenos",
-  5: "Modulo 5",
-  6: "Modulo 6",
+  1: "Fundamentos de Seguridad Vial",
+  2: "Movilidad y Seguridad Peatonal",
+  3: "Movilidad Sostenible y Activa",
+  4: "Seguridad Vial para Motociclistas",
+  5: "Conducción Segura en Automóviles",
+  6: "Vehículos de Carga y Operación Segura",
 };
 
 /**
@@ -41,54 +41,46 @@ function shimmerClass() {
 export default function Courses() {
   const cardsBase = useMemo(
     () => [
-      /**{
-        key: "punto-cero-calma",
-        title: "Módulo 1",
-        subtitle: "Donde inicia tu viaje interior",
-        img: card1,
-        ctaBg: "#1995F1",
-        ctaIcon: <CardIcons.MdShare />,
-      },*/
       {
-        key: "bosque-emociones",
-        title: "Módulo 2",
-        subtitle: "Movilidad y Seguridad Peatonal",
+        key: "movilidad-seguridad-peatonal",
+        title: "Movilidad y Seguridad Peatonal",
+        subtitle: "Módulo 2",
         img: card2,
         ctaBg: "#FFC107",
         ctaIcon: <CardIcons.MdEmojiEmotions />,
       },
       {
-        key: "jardin-mental",
-        title: "Módulo 3",
-        subtitle: "Movilidad Sostenible",
+        key: "movilidad-sostenible-activa",
+        title: "Movilidad Sostenible y Activa",
+        subtitle: "Módulo 3",
         img: card3,
         ctaBg: "#8BC34A",
         ctaIcon: <CardIcons.MdAutoAwesome />,
       },
       {
-        key: "lago-suenos",
-        title: "Módulo 4",
-        subtitle: "Seguridad Vial para Motociclistas",
+        key: "seguridad-vial-motociclistas",
+        title: "Seguridad Vial para Motociclistas",
+        subtitle: "Módulo 4",
         img: card4,
         ctaBg: "#9C27B0",
         ctaIcon: <CardIcons.MdArrowForward />,
       },
-    {
-      key: "modulo-5",
-      title: "Módulo 5",
-      subtitle: "Conducción Segura y Primeros Auxilios",
-      img: card5,
-      ctaBg: "#cd6a6a",
-      CardIcons: <CardIcons.MdLock />,
-    },
-    {
-      key: "modulo-6",
-      title: "Módulo 6",
-      subtitle: "Vehículos de Carga y Operación Segura",
-      img: card6,
-      ctaBg: "#6acdb8",
-      CardIcons: <CardIcons.MdLock />,
-    }
+      {
+        key: "conduccion-segura-automoviles",
+        title: "Conducción Segura en Automóviles",
+        subtitle: "Módulo 5",
+        img: card5,
+        ctaBg: "#cd6a6a",
+        ctaIcon: <CardIcons.MdLock />,
+      },
+      {
+        key: "vehiculos-carga-operacion-segura",
+        title: "Vehículos de Carga y Operación Segura",
+        subtitle: "Módulo 6",
+        img: card6,
+        ctaBg: "#6acdb8",
+        ctaIcon: <CardIcons.MdLock />,
+      },
     ],
     []
   );
@@ -111,11 +103,11 @@ export default function Courses() {
       // Map monedas (completions) per course key
       const monedaMap = buildMonedaMap(p);
       const mapped = [
-        { key: "bosque-emociones", completed: monedaMap.get("bosque-emociones") ?? false },
-        { key: "jardin-mental",    completed: monedaMap.get("jardin-mental")    ?? false },
-        { key: "lago-suenos",      completed: monedaMap.get("lago-suenos")      ?? false },
-        { key: "modulo-5",         completed: monedaMap.get("modulo-5")         ?? false },
-        { key: "modulo-6",         completed: monedaMap.get("modulo-6")         ?? false },
+        { key: "movilidad-seguridad-peatonal", completed: monedaMap.get("movilidad-seguridad-peatonal") ?? false },
+        { key: "movilidad-sostenible-activa",   completed: monedaMap.get("movilidad-sostenible-activa")   ?? false },
+        { key: "seguridad-vial-motociclistas",  completed: monedaMap.get("seguridad-vial-motociclistas")  ?? false },
+        { key: "conduccion-segura-automoviles",  completed: monedaMap.get("conduccion-segura-automoviles")  ?? false },
+        { key: "vehiculos-carga-operacion-segura", completed: monedaMap.get("vehiculos-carga-operacion-segura") ?? false },
       ];
       setProgress(mapped);
       setRawProgress(p);
@@ -211,7 +203,7 @@ export default function Courses() {
       navigate("/diagnostico");
       return;
     }
-    navigate("/courses/punto-cero-calma");
+    navigate("/courses/fundamentos-seguridad-vial");
   };
 
   const goToCourseDetail = (courseKey) => {

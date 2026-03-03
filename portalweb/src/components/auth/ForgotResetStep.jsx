@@ -109,7 +109,7 @@ export default function ForgotResetStep({
         </button>
         <button
           type="submit"
-          className="h-12 flex-1 rounded-full bg-[#6C4CFF] font-medium shadow-[0_6px_18px_rgba(108,76,255,0.35)] transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+          className="h-12 flex-1 rounded-full bg-[#00b5e2] font-medium shadow-[0_6px_18px_rgba(0,181,226,0.35)] transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
         >
           Actualizar
         </button>

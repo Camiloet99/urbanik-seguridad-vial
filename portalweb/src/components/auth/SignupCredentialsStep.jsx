@@ -101,44 +101,52 @@ export default function SignupCredentialsStep({
       </ul>
 
       <div className="mb-2">
-        <label className="flex items-start gap-3 text-sm">
+        <label className="flex items-start gap-3 cursor-pointer select-none group">
+          {/* Hidden native checkbox */}
           <input
             type="checkbox"
             checked={values.accept}
             onChange={(e) =>
               setValues((v) => ({ ...v, accept: e.target.checked }))
             }
-            className="mt-1 accent-[#6C4CFF]"
+            className="sr-only"
           />
-          <span className={errors.accept ? "text-red-300" : "text-white/80"}>
-            Acepto{" "}
+          {/* Custom checkbox box */}
+          <span
+            aria-hidden="true"
+            className={[
+              "mt-0.5 shrink-0 h-5 w-5 rounded-md border-2 flex items-center justify-center transition-all duration-200",
+              values.accept
+                ? "border-[#00b5e2] bg-[#00b5e2]"
+                : errors.accept
+                ? "border-red-400 bg-white/5"
+                : "border-white/30 bg-white/5 group-hover:border-white/60",
+            ].join(" ")}
+          >
+            {values.accept && (
+              <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
+                <path
+                  d="M1 4.5L4 7.5L10 1"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            )}
+          </span>
+          {/* Label text */}
+          <span className={`text-sm leading-snug ${errors.accept ? "text-red-300" : "text-white/75"}`}>
+            Acepto el{" "}
             <a
-              href="/legal/terms-privacy#privacy"
+              href="/documents/politica.pdf"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline"
+              onClick={(e) => e.stopPropagation()}
+              className="font-medium text-[#00b5e2] underline underline-offset-2 hover:text-white transition-colors"
             >
-              Aviso de Privacidad
+              Aviso de Privacidad y Condiciones de Uso
             </a>
-            ,{" "}
-            <a
-              href="/legal/terms-privacy#terms"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline"
-            >
-              Condiciones de Uso
-            </a>{" "}
-            y{" "}
-            <a
-              href="/legal/data-policy"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline"
-            >
-              Política de Protección de Datos
-            </a>
-            .
           </span>
         </label>
         {errors.accept && (
@@ -156,7 +164,7 @@ export default function SignupCredentialsStep({
         </button>
         <button
           type="submit"
-          className="h-12 flex-1 rounded-full bg-[#6C4CFF] font-medium shadow-[0_6px_18px_rgba(108,76,255,0.35)] transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+          className="h-12 flex-1 rounded-full bg-[#00b5e2] font-medium shadow-[0_6px_18px_rgba(0,181,226,0.35)] transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
         >
           Crear Cuenta
         </button>

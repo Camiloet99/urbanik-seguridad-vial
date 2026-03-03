@@ -108,7 +108,7 @@ export default function CourseDetail() {
     return items;
   }, [mp, canDoTestSalida]);
 
-  // Hero CTA -- marks introduccion done on backend then navigates
+  // Hero CTA -- marks introduccion done on backend then navigates to the intro PDF
   const handleIntroduccion = async () => {
     if (courseData?.locked || !modulo) return;
     try {
@@ -118,7 +118,7 @@ export default function CourseDetail() {
     } catch (e) {
       console.warn("[handleIntroduccion]", e);
     }
-    navigate("/introduccion");
+    navigate(`/courses/${courseKey}/intro`);
   };
 
   // Play button -- marks experiencia done in localStorage then navigates
@@ -141,7 +141,7 @@ export default function CourseDetail() {
           <h1 className="text-2xl font-bold text-white mb-4">Curso no encontrado</h1>
           <button
             onClick={() => navigate("/courses")}
-            className="rounded-xl bg-[#5944F9] hover:brightness-110 text-white font-medium px-6 py-3 transition"
+            className="rounded-xl bg-[#00b5e2] hover:brightness-110 text-white font-medium px-6 py-3 transition"
           >
             Volver a Cursos
           </button>
@@ -309,9 +309,9 @@ export default function CourseDetail() {
                   >
                     <button
                       className={[
-                        "h-16 w-16 rounded-full bg-[#6C4CFF] grid place-items-center",
-                        "shadow-[0_10px_30px_-12px_rgba(108,76,255,1)]",
-                        "hover:bg-[#5944F9] active:scale-[0.98]",
+                        "h-16 w-16 rounded-full bg-[#00b5e2] grid place-items-center",
+                        "shadow-[0_10px_30px_-12px_rgba(0,181,226,0.8)]",
+                        "hover:bg-[#0098bf] active:scale-[0.98]",
                         "transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60",
                         !experienceCanPlay ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
                       ].join(" ")}
