@@ -16,6 +16,7 @@ import Experience from "@/pages/Experience";
 import NiaChat from "@/pages/NiaChat";
 import CourseRatingPage from "@/pages/CourseRatingPage";
 import RiskProfileTest from "@/pages/RiskProfileTest";
+import PdfVisor from "@/pages/PdfVisor";
 import PdfViewer from "@/pages/PdfViewer";
 
 import TermsPrivacyPage from "@/pages/legal/TermsPrivacyPage";

@@ -170,7 +170,7 @@ export default function CourseDetail() {
     } catch (e) {
       console.warn("[handleIntroduccion]", e);
     }
-    navigate("/introduccion");
+    navigate(`/courses/${courseKey}/intro`);
   };
 
   // Play button -- marks experiencia done in localStorage then navigates
