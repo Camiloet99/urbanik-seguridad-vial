@@ -79,7 +79,11 @@ public class ProgressService {
                             e.isPdf1Done(),
                             e.isPdf2Done(),
                             e.isPdf3Done(),
-                            e.isPdf4Done()
+                            e.isPdf4Done(),
+                            e.isQuiz1Done(),
+                            e.isQuiz2Done(),
+                            e.isQuiz3Done(),
+                            e.isQuiz4Done()
                     );
                 })
                 .toList();
@@ -125,7 +129,44 @@ public class ProgressService {
                                         case "avatar"         -> entity.setAvatarDone(true);
                                         default -> throw new ResponseStatusException(
                                                 HttpStatus.BAD_REQUEST,
-                                                "type inválido: usa 'test-inicial', 'test-salida', 'calificacion', 'introduccion', 'pdf1', 'pdf2', 'pdf3', 'pdf4' o 'avatar'");
+                                                "type inválido: usa 'test-inicial', 'test-salida', 'calificacion', 'introduccion', 'pdf1'-'pdf4', 'quiz1'-'quiz4' o 'avatar'");
+                                    }
+                                    entity.setUpdatedAt(LocalDateTime.now());
+                                    return moduleProgress.save(entity);
+                                })
+                )
+                .then();
+    }
+
+    // -------------------------------------------------------------------------
+    // Marcar avance de quiz en un módulo (puede marcarse como hecho o no hecho)
+    // -------------------------------------------------------------------------
+
+    public Mono<Void> markQuizDone(String email, int modulo, int quiz, boolean done) {
+        if (modulo < 1 || modulo > TOTAL_MODULOS) {
+            return Mono.error(new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "modulo debe estar entre 1 y " + TOTAL_MODULOS));
+        }
+        if (quiz < 1 || quiz > 4) {
+            return Mono.error(new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "quiz debe estar entre 1 y 4"));
+        }
+
+        return users.findByEmailIgnoreCase(email)
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
+                .flatMap(u ->
+                        moduleProgress.findByEmailIgnoreCaseAndModulo(email, modulo)
+                                .defaultIfEmpty(ModuleProgressEntity.builder()
+                                        .userId(u.getId())
+                                        .email(email.toLowerCase())
+                                        .modulo(modulo)
+                                        .build())
+                                .flatMap(entity -> {
+                                    switch (quiz) {
+                                        case 1 -> entity.setQuiz1Done(done);
+                                        case 2 -> entity.setQuiz2Done(done);
+                                        case 3 -> entity.setQuiz3Done(done);
+                                        case 4 -> entity.setQuiz4Done(done);
                                     }
                                     entity.setUpdatedAt(LocalDateTime.now());
                                     return moduleProgress.save(entity);

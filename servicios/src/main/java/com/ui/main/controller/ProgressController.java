@@ -36,6 +36,25 @@ public class ProgressController {
                 .then();
     }
 
+    /**
+     * Marks a specific quiz (1-4) in a module as done or not done.
+     * Body: { "modulo": 1, "quiz": 2, "done": true }
+     */
+    @PatchMapping("/me/quiz")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public Mono<Void> submitQuiz(Mono<Authentication> auth,
+                                 @RequestBody Mono<QuizSubmitReq> body) {
+        return auth.map(a -> (String) a.getPrincipal())
+                .zipWith(body)
+                .flatMap(t -> progress.markQuizDone(
+                        t.getT1(),
+                        t.getT2().modulo(),
+                        t.getT2().quiz(),
+                        t.getT2().done()
+                ))
+                .then();
+    }
+
     /** Convenience endpoint — marks the user's avatar as configured for the first time. */
     @PostMapping("/me/avatar")
     @ResponseStatus(HttpStatus.NO_CONTENT)

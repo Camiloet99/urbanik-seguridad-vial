@@ -40,10 +40,15 @@ public record ProgressMeRes(
             boolean pdf1Done,
             boolean pdf2Done,
             boolean pdf3Done,
-            boolean pdf4Done
+            boolean pdf4Done,
+            boolean quiz1Done,
+            boolean quiz2Done,
+            boolean quiz3Done,
+            boolean quiz4Done
     ) {
         public static ModuloProgress empty(int modulo) {
-            return new ModuloProgress(modulo, false, false, false, false, false, false, false, false);
+            return new ModuloProgress(modulo, false, false, false, false, false, false, false, false,
+                    false, false, false, false);
         }
     }
 }

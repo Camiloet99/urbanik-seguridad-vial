@@ -49,6 +49,18 @@ public class ModuleProgressEntity {
     @Column("pdf4_done")
     private boolean pdf4Done;
 
+    @Column("quiz1_done")
+    private boolean quiz1Done;
+
+    @Column("quiz2_done")
+    private boolean quiz2Done;
+
+    @Column("quiz3_done")
+    private boolean quiz3Done;
+
+    @Column("quiz4_done")
+    private boolean quiz4Done;
+
     @Column("avatar_done")
     private boolean avatarDone;
 
