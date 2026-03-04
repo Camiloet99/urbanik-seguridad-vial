@@ -65,6 +65,23 @@ export async function submitPdfRead(modulo, pdfNum) {
   return submitTest(modulo, `pdf${pdfNum}`);
 }
 
+/**
+ * PATCH /progress/me/quiz
+ *
+ * Marks quiz N of a module as done (true) or pending (false).
+ * Call with done=true when the user passes the quiz,
+ * done=false if you ever need to reset it.
+ *
+ * @param {number}  modulo  1–6
+ * @param {1|2|3|4} quiz    Quiz number matching the resource (pdf1→quiz1, etc.)
+ * @param {boolean} done
+ */
+export async function submitQuizResult(modulo, quiz, done) {
+  if (quiz < 1 || quiz > 4) throw new Error("quiz must be 1–4");
+  const token = getAuthToken();
+  return http.patch("/progress/me/quiz", { modulo, quiz, done }, { token });
+}
+
 // ---------------------------------------------------------------------------
 // Utility helpers  (pure functions – no API calls)
 // ---------------------------------------------------------------------------
@@ -86,6 +103,10 @@ export function emptyProgress() {
       pdf2Done: false,
       pdf3Done: false,
       pdf4Done: false,
+      quiz1Done: false,
+      quiz2Done: false,
+      quiz3Done: false,
+      quiz4Done: false,
     })),
     monedas: {
       moneda1: false, moneda2: false, moneda3: false,
@@ -123,6 +144,10 @@ export function getModuleProgress(progress, modulo) {
     pdf2Done: false,
     pdf3Done: false,
     pdf4Done: false,
+    quiz1Done: false,
+    quiz2Done: false,
+    quiz3Done: false,
+    quiz4Done: false,
   };
 }
 

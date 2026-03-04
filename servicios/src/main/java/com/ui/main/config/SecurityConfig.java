@@ -2,7 +2,6 @@ package com.ui.main.config;
 
 import com.ui.main.security.JwtReactiveAuthManager;
 import com.ui.main.security.JwtServerAuthenticationConverter;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
