@@ -475,13 +475,13 @@ export default function CourseDetail() {
           resourceLabel={quizModalOpen.resourceLabel}
           onClose={() => setQuizModalOpen(null)}
           onPassed={() => {
-            // Remove from failed set if it was there and refresh progress
+            // Remove from failed set if it was there and refresh progress.
+            // Modal closes itself after the user sees the result and clicks Continuar.
             setLocalQuizFailed((prev) => {
               const next = new Set(prev);
               next.delete(quizModalOpen.quizNum);
               return next;
             });
-            setQuizModalOpen(null);
             fetchProgress();
           }}
           onFailed={() => {

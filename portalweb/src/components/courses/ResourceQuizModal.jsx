@@ -102,7 +102,7 @@ function QuestionCard({ index, question, selected, onChange }) {
 // Result overlay (shown after submission)
 // ---------------------------------------------------------------------------
 
-function ResultOverlay({ correct, total, onRetry, onClose, onFailed, isPassing }) {
+function ResultOverlay({ correct, total, onRetry, onClose, onFailed, onPassed, isPassing }) {
   const pct = Math.round((correct / total) * 100);
   const ringColor = isPassing ? "#34d399" : "#f87171";
 
@@ -167,7 +167,7 @@ function ResultOverlay({ correct, total, onRetry, onClose, onFailed, isPassing }
 
         {isPassing ? (
           <button
-            onClick={onClose}
+            onClick={onPassed}
             className="w-full rounded-xl py-3 bg-emerald-500 hover:brightness-110 text-white font-semibold transition shadow-[0_8px_20px_rgba(52,211,153,0.30)]"
           >
             Continuar
@@ -245,10 +245,8 @@ export default function ResourceQuizModal({
 
     setSubmitting(false);
     setResult({ correct, total, isPassing });
-
-    if (isPassing) {
-      onPassed?.();
-    }
+    // onPassed is called by the user clicking "Continuar" in the result overlay,
+    // NOT here — so the overlay has time to display the score.
   };
 
   // Scroll to top when retrying
@@ -377,6 +375,7 @@ export default function ResourceQuizModal({
               scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
             }}
             onClose={onClose}
+            onPassed={() => { onPassed?.(); onClose?.(); }}
             onFailed={() => { onFailed?.(); onClose?.(); }}
           />
         )}
