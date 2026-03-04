@@ -10,13 +10,16 @@ import {
   isMonedaEarned,
 } from "@/services/progressService";
 import { COURSE_DATA } from "@/data/courseData";
+import recursoIconSrc from "@/assets/recurso.png";
+import quizIconSrc from "@/assets/quiz.png";
 
 import Hero from "@/components/courses/Hero";
 import ActionList from "@/components/courses/ActionList";
 import ProgressCard from "@/components/courses/ProgressCard";
 import RatingModal from "@/components/courses/RatingModal";
 import LockedTooltip from "@/components/ui/LockedTooltip";
-import ChatNia from "@/components/courses/ChatNia";
+import ChatWidget from "../components/courses/ChatWidget";
+import ResourceQuizModal from "@/components/courses/ResourceQuizModal";
 
 export default function CourseDetail() {
   const { courseKey } = useParams();
@@ -30,6 +33,10 @@ export default function CourseDetail() {
   const [experienciaDone, setExperienciaDone] = useState(
     () => (modulo ? isExperienciaDone(modulo) : false)
   );
+  // Quiz modal: null | { quizNum: 1-4, resourceLabel: string }
+  const [quizModalOpen, setQuizModalOpen] = useState(null);
+  // Locally-tracked quiz failures (quizNum) so the button turns red on fail
+  const [localQuizFailed, setLocalQuizFailed] = useState(() => new Set());
 
   const fetchProgress = async () => {
     try {
@@ -63,6 +70,10 @@ export default function CourseDetail() {
     m.set("pdf2",          !!mp.pdf2Done);
     m.set("pdf3",          !!mp.pdf3Done);
     m.set("pdf4",          !!mp.pdf4Done);
+    m.set("quiz1",         !!mp.quiz1Done);
+    m.set("quiz2",         !!mp.quiz2Done);
+    m.set("quiz3",         !!mp.quiz3Done);
+    m.set("quiz4",         !!mp.quiz4Done);
     return m;
   }, [mp, progress, modulo]);
 
@@ -71,10 +82,10 @@ export default function CourseDetail() {
     if (!mp) return false;
     return (
       mp.introduccionDone &&
-      mp.pdf1Done &&
-      mp.pdf2Done &&
-      mp.pdf3Done &&
-      mp.pdf4Done &&
+      mp.quiz1Done &&
+      mp.quiz2Done &&
+      mp.quiz3Done &&
+      mp.quiz4Done &&
       mp.testInitialDone &&
       experienciaDone
     );
@@ -86,7 +97,7 @@ export default function CourseDetail() {
     return (
       mp.testInitialDone && mp.testExitDone && mp.calificationDone &&
       mp.introduccionDone &&
-      mp.pdf1Done && mp.pdf2Done && mp.pdf3Done && mp.pdf4Done &&
+      mp.quiz1Done && mp.quiz2Done && mp.quiz3Done && mp.quiz4Done &&
       isMonedaEarned(progress, modulo)
     );
   }, [mp, progress, modulo]);
@@ -100,7 +111,7 @@ export default function CourseDetail() {
     }
     if (!canDoTestSalida) {
       items["test-salida"] =
-        "Completa la introduccion, los 4 documentos, el test inicial y la experiencia 3D primero";
+        "Completa la introduccion, los 4 quizes de recursos, el test inicial y la experiencia 3D primero";
     }
     if (!mp.testExitDone) {
       items["califica"] = "Completa el test de salida primero";
@@ -200,10 +211,10 @@ export default function CourseDetail() {
                 "test-inicial":  5,
                 "test-salida":   5,
                 califica:        5,
-                pdf1:            5,
-                pdf2:            5,
-                pdf3:            5,
-                pdf4:            5,
+                quiz1:           5,
+                quiz2:           5,
+                quiz3:           5,
+                quiz4:           5,
                 experiencia:    60,
               }}
             />
@@ -336,7 +347,7 @@ export default function CourseDetail() {
             </div>
 
             {/* Chat con NIA */}
-            <ChatNia locked={courseData.locked} />
+            <ChatWidget locked={courseData.locked} />
 
             {/* Recursos */}
             <div className="rounded-[22px] ring-1 ring-white/10 bg-white/5 p-5">
@@ -345,39 +356,93 @@ export default function CourseDetail() {
               <div className="space-y-2">
                 {courseData.resources?.length ? (
                   courseData.resources.map((r, idx) => {
-                    const pdfKey = `pdf${idx + 1}Done`;
-                    const pdfDone = mp?.[pdfKey] ?? false;
+                    const quizNum  = idx + 1;
+                    const pdfKey   = `pdf${quizNum}Done`;
+                    const quizKey  = `quiz${quizNum}Done`;
+                    const pdfDone  = mp?.[pdfKey]  ?? false;
+                    const quizDone = mp?.[quizKey] ?? false;
+                    const quizFailed = localQuizFailed.has(quizNum);
+
                     return (
-                      <button
+                      <div
                         key={r.id}
-                        disabled={courseData.locked}
-                        onClick={() => openResource(idx)}
                         className={[
-                          "w-full flex items-center justify-between gap-3",
-                          "rounded-full px-4 py-[10px] transition",
-                          "focus:outline-none focus-visible:ring-2",
-                          pdfDone
-                            ? "ring-2 ring-emerald-400 bg-emerald-400/8 text-emerald-300 hover:bg-emerald-400/14 focus-visible:ring-emerald-400"
-                            : "ring-1 ring-white/20 bg-white/4 text-white/85 hover:bg-white/8 focus-visible:ring-white/40",
-                          courseData.locked ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
+                          "w-full flex items-center gap-2 rounded-full px-4 py-[10px] ring-1 transition-all duration-300",
+                          quizDone
+                            ? "ring-2 ring-emerald-400 bg-emerald-400/8 text-emerald-300"
+                            : "ring-1 ring-white/20 bg-white/4 text-white/85",
+                          courseData.locked ? "opacity-50" : "",
                         ].join(" ")}
                       >
-                        <span className="text-sm font-medium truncate text-left">{r.label}</span>
-                        {/* Download icon */}
-                        <span
-                          className={[
-                            "shrink-0 h-7 w-7 rounded-full flex items-center justify-center ring-1 transition",
-                            pdfDone
-                              ? "ring-emerald-400 bg-emerald-400/15 text-emerald-400"
-                              : "ring-white/25 bg-white/8 text-white/55",
-                          ].join(" ")}
-                          aria-hidden="true"
+                        {/* Label — clickable to open PDF */}
+                        <button
+                          disabled={courseData.locked}
+                          onClick={() => openResource(idx)}
+                          className="flex-1 text-left text-sm font-medium truncate transition-colors hover:text-white focus:outline-none cursor-pointer disabled:cursor-not-allowed"
                         >
-                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-                            <path d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        </span>
-                      </button>
+                          {r.label}
+                        </button>
+
+                        {/* Recurso visto — icon circle: grey until opened, green when done. Also opens the PDF. */}
+                        <button
+                          disabled={courseData.locked}
+                          onClick={() => openResource(idx)}
+                          title={pdfDone ? "Recurso visto — abrir de nuevo" : "Abrir recurso"}
+                          className={[
+                            "shrink-0 h-7 w-7 rounded-full flex items-center justify-center ring-1 transition-all duration-300 focus:outline-none",
+                            pdfDone
+                              ? "ring-emerald-400 bg-emerald-400/20 cursor-pointer hover:bg-emerald-400/30"
+                              : "ring-white/20 bg-white/6 cursor-pointer hover:ring-white/40 hover:bg-white/12",
+                            courseData.locked ? "cursor-not-allowed opacity-40" : "",
+                          ].join(" ")}
+                        >
+                          <img
+                            src={recursoIconSrc}
+                            alt=""
+                            draggable={false}
+                            className={[
+                              "h-4 w-4 object-contain select-none transition-all duration-300",
+                              pdfDone ? "" : "grayscale opacity-50",
+                            ].join(" ")}
+                          />
+                        </button>
+
+                        {/* Quiz button */}
+                        <button
+                          disabled={!pdfDone || courseData.locked || quizDone}
+                          onClick={() =>
+                            !quizDone &&
+                            pdfDone &&
+                            setQuizModalOpen({ quizNum, resourceLabel: r.label })
+                          }
+                          title={
+                            quizDone
+                              ? "Quiz superado ✅"
+                              : quizFailed
+                              ? "Quiz fallado — reintenta"
+                              : pdfDone
+                              ? "Hacer quiz"
+                              : "Abre el recurso primero"
+                          }
+                          className={[
+                            "shrink-0 h-7 w-7 rounded-full flex items-center justify-center ring-1 transition-all duration-200",
+                            quizDone
+                              ? "ring-emerald-400 bg-emerald-400/15 cursor-default"
+                              : quizFailed
+                              ? "ring-red-400 bg-red-400/10 cursor-pointer hover:bg-red-400/20"
+                              : pdfDone
+                              ? "ring-white/35 bg-white/8 cursor-pointer hover:ring-[#00b5e2] hover:bg-[#00b5e2]/15"
+                              : "ring-white/10 bg-white/3 cursor-not-allowed opacity-40",
+                          ].join(" ")}
+                        >
+                          <img
+                            src={quizIconSrc}
+                            alt="Quiz"
+                            className="h-4 w-4 object-contain"
+                            draggable={false}
+                          />
+                        </button>
+                      </div>
                     );
                   })
                 ) : (
@@ -401,6 +466,30 @@ export default function CourseDetail() {
           fetchProgress();
         }}
       />
+
+      {/* Resource quiz modal */}
+      {quizModalOpen && (
+        <ResourceQuizModal
+          modulo={modulo}
+          quizNum={quizModalOpen.quizNum}
+          resourceLabel={quizModalOpen.resourceLabel}
+          onClose={() => setQuizModalOpen(null)}
+          onPassed={() => {
+            // Remove from failed set if it was there and refresh progress.
+            // Modal closes itself after the user sees the result and clicks Continuar.
+            setLocalQuizFailed((prev) => {
+              const next = new Set(prev);
+              next.delete(quizModalOpen.quizNum);
+              return next;
+            });
+            fetchProgress();
+          }}
+          onFailed={() => {
+            // Mark this quiz failed locally so the button turns red
+            setLocalQuizFailed((prev) => new Set(prev).add(quizModalOpen.quizNum));
+          }}
+        />
+      )}
     </>
   );
 }
