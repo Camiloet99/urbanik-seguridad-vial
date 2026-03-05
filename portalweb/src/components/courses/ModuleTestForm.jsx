@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MODULE_TESTS, MODULO_TO_COURSE_KEY } from "@/data/moduleTests";
 import { submitInitialTest, submitExitTest } from "@/services/testsService";
 
+/* ─── Progress Ring — original ──────────────────────────────────────────── */
 function ProgressRing({ percent, size = 84, stroke = 10 }) {
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
@@ -29,19 +30,21 @@ function ProgressRing({ percent, size = 84, stroke = 10 }) {
   );
 }
 
-function RatingCard({ index, question, selected, onChange, scaleLabels }) {
+/* ─── Rating Card — responsive: vertical en móvil, horizontal en desktop ─── */
+function RatingCard({ index, question, selected, onChange }) {
   return (
-    <div className="rounded-[18px] ring-1 ring-white/10 bg-white/[0.04] p-5">
-      <div className="flex items-center justify-between mb-1">
-        <span className="text-xs font-semibold uppercase tracking-wide text-[#00b5e2]/80">
-          {question.category}
-        </span>
-        <span className="text-xs text-white/40">{index + 1}</span>
-      </div>
-      <p className="text-[15px] font-medium text-white/90 mb-5 leading-relaxed">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-[18px] ring-1 ring-white/10 bg-white/[0.04] px-6 py-5">
+      {/* Texto de la pregunta */}
+      <p className="text-[15px] text-white/90 leading-relaxed flex-1">
+        <span className="font-semibold mr-1">{index + 1}.</span>
+        {question.category && (
+          <span className="font-semibold">({question.category}) </span>
+        )}
         {question.text}
       </p>
-      <div className="flex items-center gap-2 mb-2">
+
+      {/* Botones circulares 1-5 */}
+      <div className="flex items-center gap-2 sm:flex-shrink-0">
         {[1, 2, 3, 4, 5].map((n) => {
           const isSel = selected === n;
           return (
@@ -50,10 +53,10 @@ function RatingCard({ index, question, selected, onChange, scaleLabels }) {
               type="button"
               onClick={() => onChange(n)}
               className={[
-                "flex-1 h-10 rounded-xl text-sm font-bold transition ring-1",
+                "flex-1 sm:flex-none w-full sm:w-9 h-9 rounded-full text-sm font-bold transition-all ring-1",
                 isSel
-                  ? "bg-[#00b5e2] ring-[#00b5e2] text-white shadow-[0_4px_16px_rgba(0,181,226,0.30)]"
-                  : "bg-white/[0.04] ring-white/10 text-white/60 hover:bg-white/[0.10] hover:ring-white/25",
+                  ? "bg-[#00b5e2] ring-[#00b5e2] text-white shadow-[0_4px_16px_rgba(0,181,226,0.35)] scale-110"
+                  : "bg-white/[0.04] ring-white/20 text-white/60 hover:bg-white/[0.10] hover:ring-white/40",
               ].join(" ")}
             >
               {n}
@@ -61,22 +64,11 @@ function RatingCard({ index, question, selected, onChange, scaleLabels }) {
           );
         })}
       </div>
-      {scaleLabels && (
-        <div className="flex justify-between items-center gap-3 mt-1 px-0.5">
-          <div className="flex items-center gap-1.5">
-            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-white/10 ring-1 ring-white/20 grid place-items-center text-[11px] font-bold text-white/60">1</span>
-            <span className="text-xs font-medium text-white/55">{scaleLabels.minLabel}</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs font-medium text-white/55 text-right">{scaleLabels.maxLabel}</span>
-            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-[#00b5e2]/20 ring-1 ring-[#00b5e2]/40 grid place-items-center text-[11px] font-bold text-[#00b5e2]">5</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
 
+/* ─── MCQ Question Card — original ──────────────────────────────────────── */
 function QuestionCard({ index, question, selected, onChange }) {
   return (
     <div className="rounded-[18px] ring-1 ring-white/10 bg-white/[0.04] p-5">
@@ -120,8 +112,8 @@ function QuestionCard({ index, question, selected, onChange }) {
   );
 }
 
+/* ─── Result Modal — original ────────────────────────────────────────────── */
 function ResultModal({ result, onContinue }) {
-  // Rating test: show completion card (no pass/fail)
   if (result.isRating) {
     const avg = result.avg.toFixed(1);
     const avgPct = Math.round((result.avg / 5) * 100);
@@ -167,7 +159,6 @@ function ResultModal({ result, onContinue }) {
     );
   }
 
-  // MCQ test: original pass/fail modal
   const pct = Math.round((result.correct / result.total) * 100);
   const passed = pct >= 60;
 
@@ -224,9 +215,9 @@ function ResultModal({ result, onContinue }) {
   );
 }
 
+/* ─── Main Form ──────────────────────────────────────────────────────────── */
 export default function ModuleTestForm({ type }) {
   const { modulo } = useParams();
-  // parseInt("0") || 1 === 1, so we must NOT use ||. Use explicit null-check instead.
   const moduloNum = modulo !== undefined ? parseInt(modulo, 10) : 1;
   const navigate = useNavigate();
 
@@ -351,7 +342,6 @@ export default function ModuleTestForm({ type }) {
                 question={q}
                 selected={answers[i]}
                 onChange={(val) => handleAnswer(i, val)}
-                scaleLabels={i === 0 ? scaleLabels : null}
               />
             ) : (
               <QuestionCard
@@ -365,6 +355,7 @@ export default function ModuleTestForm({ type }) {
           )}
         </div>
 
+        {/* ── Aside panel — original sin cambios ── */}
         <aside className="xl:sticky xl:top-6 self-start rounded-[22px] ring-1 ring-white/10 bg-white/[0.04] backdrop-blur-md p-6 space-y-5">
           <div className="flex items-center gap-4">
             <div className="relative">
@@ -384,7 +375,6 @@ export default function ModuleTestForm({ type }) {
               : `Responde las ${total - answered} pregunta(s) restante(s) para habilitar el envío.`}
           </p>
 
-          {/* Error */}
           <AnimatePresence>
             {error && (
               <motion.div
@@ -413,6 +403,7 @@ export default function ModuleTestForm({ type }) {
         </aside>
       </div>
 
+      {/* ── Mobile bottom bar — original ── */}
       <div className="xl:hidden fixed bottom-0 left-0 right-0 z-30 bg-[#202329]/95 backdrop-blur-sm border-t border-white/10 p-4">
         <div className="flex items-center gap-3 max-w-lg mx-auto">
           <div className="flex-1">

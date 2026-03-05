@@ -37,7 +37,7 @@ export default function LockedTooltip({
       onBlur={() => setVisible(false)}
     >
       {/* Slightly dim the locked child */}
-      <div className="opacity-50 pointer-events-none select-none">
+      <div className="opacity-100 pointer-events-none select-none">
         {children}
       </div>
 

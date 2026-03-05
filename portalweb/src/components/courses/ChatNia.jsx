@@ -6,7 +6,7 @@ export default function ChatNia({ locked = false }) {
       <div className="flex items-center gap-3">
         <div className="h-14 w-14 rounded-full bg-white/10 ring-2 ring-white/30" />
         <div>
-          <p className="text-white font-medium">Pregúntale a NIA</p>
+          <p className="text-white font-medium">Pregúntale a NIA </p>
           <p className="text-white/70 text-xs">Asistente del módulo</p>
         </div>
       </div>
