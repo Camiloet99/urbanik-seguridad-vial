@@ -19,7 +19,6 @@ import {
 
 import brandLogo from "../assets/agencianacional.png";
 import hero from "../assets/login-hero.png";
-import expoLogo from "../assets/logo_expo_blanco.png";
 
 /* ------- Tabs ------- */
 const tabs = [
@@ -685,8 +684,6 @@ export default function AuthGateway() {
                     "linear-gradient(180deg, rgba(15,20,34,0.0) 0%, rgba(15,20,34,0.08) 60%, rgba(15,20,34,0.18) 100%)",
                 }}
               />
-
-             
             </motion.div>
           </div>
         </div>

@@ -16,11 +16,11 @@ public class WebCorsConfig {
 
         // Orígenes explícitos
         cors.setAllowedOrigins(List.of(
-                "http://9.234.153.13",      // frontend en Azure (puerto 80)
+                "http://48.211.210.195",      // frontend en Azure (puerto 80)
                 "http://localhost:5173",    // dev Vite (si usas)
                 "http://127.0.0.1:5173",
-                "http://metaverso.urbanik-hub.com",
-                "https://metaverso.urbanik-hub.com"
+                "http://vial.urbanik-hub.com",
+                "https://vial.urbanik-hub.com"
         ));
 
         cors.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
