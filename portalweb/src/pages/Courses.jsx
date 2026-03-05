@@ -74,12 +74,12 @@ export default function Courses() {
         ctaIcon: <CardIcons.MdLock />,
       },
       {
-        key: "vehiculos-carga-operacion-segura",
-        title: "Vehículos de Carga y Operación Segura",
-        subtitle: "Módulo 6",
-        img: card6,
-        ctaBg: "#6acdb8",
-        ctaIcon: <CardIcons.MdLock />,
+      key: "vehiculos-carga-operacion-segura",
+      title: "Vehículos de Carga y Operación Segura",
+      subtitle: "Módulo 6",
+      img: card6,
+      ctaBg: "#6acdb8",
+      ctaIcon: <CardIcons.MdArrowForward />,
       },
     ],
     []
