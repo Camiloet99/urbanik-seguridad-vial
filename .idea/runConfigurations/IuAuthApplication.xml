@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="IuAuthApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <envs>
+      <env name="DB_HOST" value="localhost" />
+      <env name="DB_PORT" value="3307" />
+      <env name="DB_NAME" value="iu_auth" />
+      <env name="DB_USER" value="root" />
+      <env name="DB_PASSWORD" value="root" />
+    </envs>
+    <module name="iudigital" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.ui.main.IuAuthApplication" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

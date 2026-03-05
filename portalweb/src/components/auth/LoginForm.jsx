@@ -93,15 +93,15 @@ export default function LoginForm({
           Crea una aquí.
         </button>
       </div>
-
-      <div className="mt-auto pt-8 flex flex-col items-center gap-2">
+         {/* <div className="mt-auto pt-8 flex flex-col items-center gap-2">
         <p className="text-xs text-white/60">Powered by:</p>
         <img
           src={brandLogo}
           alt="Brand"
           className="h-8"
         />
-      </div>
+      </div>*/} 
+   
     </motion.form>
   );
 }
