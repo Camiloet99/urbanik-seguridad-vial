@@ -154,20 +154,32 @@ export default function Courses() {
   }, [fetchProgress]);
 
   const certificateStatus = useMemo(() => {
-    if (!rawProgress) return { unlocked: false, pendingModules: [1, 2, 3, 4, 5, 6] };
+    const pendingTests = [];
+    if (!testFlags.initial) pendingTests.push("test de inicio");
+    if (!testFlags.exit)    pendingTests.push("test de salida");
+
+    if (!rawProgress) {
+      return { unlocked: false, pendingModules: [1, 2, 3, 4, 5, 6], pendingTests };
+    }
     const pending = [];
     for (let n = 1; n <= 6; n++) {
       const m = getModuleProgress(rawProgress, n);
       const hasMedal = isMonedaEarned(rawProgress, n);
       const done =
-        m.testInitialDone && m.testExitDone && m.calificationDone &&
         m.introduccionDone &&
-        m.pdf1Done && m.pdf2Done && m.pdf3Done && m.pdf4Done &&
-        hasMedal;
+        m.testInitialDone &&
+        m.quiz1Done && m.quiz2Done && m.quiz3Done && m.quiz4Done &&
+        hasMedal &&
+        m.testExitDone &&
+        m.calificationDone;
       if (!done) pending.push(n);
     }
-    return { unlocked: pending.length === 0, pendingModules: pending };
-  }, [rawProgress]);
+    return {
+      unlocked: pending.length === 0 && pendingTests.length === 0,
+      pendingModules: pending,
+      pendingTests,
+    };
+  }, [rawProgress, testFlags]);
 
   const isFirstTime = useMemo(() => {
     const anyMedal = progress.some((p) => p.completed);
@@ -178,8 +190,22 @@ export default function Courses() {
     const map = new Map(progress.map((p) => [p.key, p.completed]));
     map.set("test-inicial", !!testFlags.initial);
     map.set("test-salida", !!testFlags.exit);
+    // Module-level completion keys used by ProgressCard weights
+    for (let n = 1; n <= 6; n++) {
+      const m = getModuleProgress(rawProgress, n);
+      const hasMedal = isMonedaEarned(rawProgress, n);
+      const done = rawProgress
+        ? m.introduccionDone &&
+          m.testInitialDone &&
+          m.quiz1Done && m.quiz2Done && m.quiz3Done && m.quiz4Done &&
+          hasMedal &&
+          m.testExitDone &&
+          m.calificationDone
+        : false;
+      map.set(`modulo-${n}`, done);
+    }
     return map;
-  }, [progress, testFlags]);
+  }, [progress, testFlags, rawProgress]);
 
   const buildStatusLogoSrc = (index, completed) => {
     const folder = completed ? "complete" : "nocomplete";
@@ -368,24 +394,37 @@ export default function Courses() {
                 className="h-full"
               >
                 <div className="h-full flex flex-col gap-3">
-                  <ProgressCard progressMap={progressMap} className="flex-1" />
+                  <ProgressCard
+                    progressMap={progressMap}
+                    className="flex-1"
+                    weights={{
+                      "test-inicial": 5,
+                      "test-salida":  5,
+                      "modulo-1":    15,
+                      "modulo-2":    15,
+                      "modulo-3":    15,
+                      "modulo-4":    15,
+                      "modulo-5":    15,
+                      "modulo-6":    15,
+                    }}
+                  />
 
                   {/* Certificate download */}
                   <LockedTooltip
                     disabled={!certificateStatus.unlocked}
                     placement="top"
-                    message={
-                      certificateStatus.pendingModules.length > 0
-                        ? `Pendiente: ${certificateStatus.pendingModules
-                            .slice(0, 2)
-                            .map((n) => MODULE_NAMES[n])
-                            .join(", ")}${
-                            certificateStatus.pendingModules.length > 2
-                              ? ` y ${certificateStatus.pendingModules.length - 2} más`
-                              : ""
-                          }`
-                        : ""
-                    }
+                    message={(() => {
+                      const parts = [];
+                      if (certificateStatus.pendingTests.length > 0)
+                        parts.push(certificateStatus.pendingTests.join(" y "));
+                      if (certificateStatus.pendingModules.length > 0) {
+                        const shown = certificateStatus.pendingModules.slice(0, 2).map((n) => MODULE_NAMES[n]).join(", ");
+                        const extra = certificateStatus.pendingModules.length > 2
+                          ? ` y ${certificateStatus.pendingModules.length - 2} más` : "";
+                        parts.push(`Módulos: ${shown}${extra}`);
+                      }
+                      return parts.length ? `Pendiente — ${parts.join(" · ")}` : "";
+                    })()}
                   >
                     <button
                       disabled={!certificateStatus.unlocked}
@@ -440,11 +479,13 @@ export default function Courses() {
                           <p className="text-[11px] mt-0.5 opacity-60 truncate">
                             {certificateStatus.unlocked
                               ? "Listo para descargar"
-                              : `${certificateStatus.pendingModules.length} módulo${
-                                  certificateStatus.pendingModules.length > 1 ? "s" : ""
-                                } pendiente${
-                                  certificateStatus.pendingModules.length > 1 ? "s" : ""
-                                }`}
+                              : (() => {
+                                  const mp = certificateStatus.pendingModules.length;
+                                  const tp = certificateStatus.pendingTests.length;
+                                  const mLabel = mp > 0 ? `${mp} módulo${mp > 1 ? "s" : ""}` : "";
+                                  const tLabel = tp > 0 ? `${tp} test${tp > 1 ? "s" : ""}` : "";
+                                  return [mLabel, tLabel].filter(Boolean).join(" y ") + " pendiente";
+                                })()}
                           </p>
                         </div>
                       </div>
