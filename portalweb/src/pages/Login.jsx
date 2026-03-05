@@ -19,7 +19,6 @@ import {
 
 import brandLogo from "../assets/agencianacional.png";
 import hero from "../assets/login-hero.png";
-import expoLogo from "../assets/logo_expo_blanco.png";
 
 /* ------- Tabs ------- */
 const tabs = [
@@ -686,15 +685,7 @@ export default function AuthGateway() {
                 }}
               />
 
-              {/* Logo empresa centrado abajo */}
-              {/* <div className="absolute bottom-7 left-1/2 -translate-x-1/2 z-10">
-                <img
-                  src={expoLogo}
-                  alt="Logo"
-                  className="h-16 w-auto object-contain drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]"
-                  draggable={false}
-                />
-              </div>*/}
+             
             </motion.div>
           </div>
         </div>
