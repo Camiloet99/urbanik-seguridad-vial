@@ -89,7 +89,7 @@ public class ProgressService {
                 .toList();
 
         ProgressMeRes.MonedaStatus monedaStatus = new ProgressMeRes.MonedaStatus(
-                /*monedas.isMoneda1()*/ true,
+                monedas.isMoneda1(),
                 monedas.isMoneda2(), monedas.isMoneda3(),
                 monedas.isMoneda4(), monedas.isMoneda5(), monedas.isMoneda6()
         );
