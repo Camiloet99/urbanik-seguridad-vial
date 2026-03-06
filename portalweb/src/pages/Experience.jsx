@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { ArcwareInit } from "@arcware-cloud/pixelstreaming-websdk";
 import { useAuth } from "@/context/AuthContext";
-import { getMyProgress } from "@/services/progressService";
-import { useNavigate, useLocation, useRevalidator } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { MdHome } from "react-icons/md";
 
 export default function Experience() {
@@ -15,20 +14,17 @@ export default function Experience() {
   );
   const avatarId = useMemo(
     () =>
-      typeof user?.avatarId === "number" ? String(user.avatarId + 1) : null,
+      typeof user?.avatarId === "number" ? String(user.avatarId) : null,
     [user?.avatarId]
   );
 
-  const shareId = "share-f64f05e0-961f-4711-bba2-7de316cdb5fd";
+  const location = useLocation();
+  const shareId = location.state?.shareId ?? "";
   const containerRef = useRef(null);
 
   const appRef = useRef(null);
   const streamRef = useRef(null);
   const initedRef = useRef(false);
-
-  const hasRedirectedRef = useRef(false);
-  const navigate = useNavigate();
-  const location = useLocation();
 
   const emittedOnStreamRef = useRef(false);
   const emittedAfter1sRef = useRef(false);
@@ -57,11 +53,11 @@ export default function Experience() {
       const app = appRef.current;
       if (!app?.emitUIInteraction || !studentId || !avatarId) return;
       setTimeout(() => {
-        app.emitUIInteraction({ id_estudiante: studentId });
+        app.emitUIInteraction({ cedula: studentId });
         app.emitUIInteraction({ id_avatar: avatarId });
       }, 1000);
       setTimeout(() => {
-        app.emitUIInteraction({ id_estudiante: studentId });
+        app.emitUIInteraction({ cedula: studentId });
       }, 10000);
     } catch (e) {
       console.error("[Arcware] emit error:", e);
@@ -213,41 +209,6 @@ export default function Experience() {
     emittedAfter1sRef.current = false;
     emittedOnVideoRef.current = false;
   }, [studentId, avatarId]);
-
-  // Redirect a test de salida cuando tiene todas las medallas
-  useEffect(() => {
-    if (loadingAuth) return;
-
-    let timerId;
-    let cancelled = false;
-
-    async function checkProgressAndRedirect() {
-      try {
-        const prog = await getMyProgress();
-        if (cancelled) return;
-
-        const allMedals =
-          !!prog?.medalla1 &&
-          !!prog?.medalla2 &&
-          !!prog?.medalla3 &&
-          !!prog?.medalla4;
-
-        if (allMedals && !hasRedirectedRef.current) {
-          hasRedirectedRef.current = true;
-          navigate("/test-salida", { replace: true });
-          return;
-        }
-      } catch (err) {}
-    }
-
-    checkProgressAndRedirect();
-    timerId = setInterval(checkProgressAndRedirect, 5000);
-
-    return () => {
-      cancelled = true;
-      if (timerId) clearInterval(timerId);
-    };
-  }, [loadingAuth, navigate, location.pathname]);
 
   useEffect(() => {
     const onKey = (e) => {

@@ -126,8 +126,6 @@ export default function DashboardLayout() {
   const { logout, session } = useAuth();
   const location = useLocation();
 
-  console.log(session);
-
   return (
     <div className="min-h-screen bg-[#202329] text-white">
       <aside className="fixed left-0 top-0 z-40 hidden h-screen w-24 flex-col items-center bg-white/5 p-3 lg:flex">

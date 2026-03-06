@@ -170,7 +170,7 @@ export default function CourseDetail() {
     if (!mp?.testInitialDone || !modulo) return;
     markExperienciaDone(modulo);
     setExperienciaDone(true);
-    navigate("/experience");
+    navigate("/experience", { state: { shareId: courseData.shareId ?? "" } });
   };
 
   // Open PDF in-portal viewer — backend marks pdfNDone inside PdfVisor on mount

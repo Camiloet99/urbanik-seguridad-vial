@@ -17,6 +17,7 @@ export const COURSE_DATA = {
     subtitle: "Conoce el sistema vial y tus responsabilidades como actor vial",
     bgImage: card1,
     locked: false,
+    shareId: "share-658d10c5-cdbd-4a26-9477-e60f9768a2f2",
     introPdf: "modulo-1/intro.pdf",
     resources: [
       {
@@ -46,6 +47,7 @@ export const COURSE_DATA = {
     subtitle: "Protege tu vida y la de los demás en la vía pública",
     bgImage: card2,
     locked: false,
+    shareId: "",
     introPdf: "modulo-2/intro.pdf",
     resources: [
       { id: "be-pdf-1", label: "Documento 1", fileName: "seguridad-vial.pdf" },
@@ -59,6 +61,7 @@ export const COURSE_DATA = {
     subtitle: "Bicicletas, patinetas y micromovilidad segura",
     bgImage: card3,
     locked: false,
+    shareId: "",
     introPdf: "modulo-3/intro.pdf",
     resources: [
       { id: "jm-pdf-1", label: "Documento 1", fileName: "seguridad-vial.pdf" },
@@ -72,6 +75,7 @@ export const COURSE_DATA = {
     subtitle: "Domina la vía y protege tu vida sobre dos ruedas",
     bgImage: card4,
     locked: false,
+    shareId: "",
     introPdf: "modulo-4/intro.pdf",
     resources: [
       { id: "ls-pdf-1", label: "Documento 1", fileName: "seguridad-vial.pdf" },
@@ -85,6 +89,7 @@ export const COURSE_DATA = {
     subtitle: "Conducción segura y primeros auxilios en la vía",
     bgImage: card4,
     locked: false,
+    shareId: "",
     introPdf: "modulo-5/intro.pdf",
     resources: [
       { id: "m5-pdf-1", label: "Documento 1", fileName: "seguridad-vial.pdf" },
@@ -98,6 +103,7 @@ export const COURSE_DATA = {
     subtitle: "Conducción profesional de vehículos pesados rígidos (C2)",
     bgImage: card4,
     locked: false,
+    shareId: "",
     introPdf: "modulo-6/intro.pdf",
     resources: [
       { id: "m6-pdf-1", label: "Documento 1", fileName: "seguridad-vial.pdf" },
