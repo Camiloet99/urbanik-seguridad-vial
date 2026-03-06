@@ -175,14 +175,14 @@ export default function ChatWidget({ locked = false }) {
               canSend && handleSend();
             }
           }}
-          className="flex-1 bg-transparent text-sm text-white/90 placeholder:text-white/35 focus:outline-none"
+          className="flex-1 min-w-0 bg-transparent text-sm text-white/90 placeholder:text-white/35 focus:outline-none"
           placeholder={locked ? "Módulo bloqueado" : "Escribe tu pregunta…"}
           disabled={locked || loading}
         />
         <button
           onClick={handleSend}
           disabled={!canSend}
-          className="shrink-0 rounded-full px-4 py-1.5 text-xs font-semibold
+          className="shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold
                      bg-sky-500 hover:bg-sky-400 active:scale-[0.97] transition
                      text-white shadow-sm
                      focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60
