@@ -115,7 +115,7 @@ export default function Profile() {
   return (
     <div className={`mx-auto w-full max-w-[1200px] px-2 sm:px-4 lg:px-0${isSetupFlow ? " pb-28" : ""}`}>
       {isSetupFlow && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#202329]/95 backdrop-blur-md border-t border-white/10 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#202329]/95 backdrop-blur-md border-t border-white/10 p-4 pb-[calc(8rem+env(safe-area-inset-bottom))] lg:pb-4">
           <div className="max-w-sm mx-auto">
             <p className="text-xs text-white/50 text-center mb-2">Paso 1 de 2 &middot; Personaliza tu avatar</p>
             <button
