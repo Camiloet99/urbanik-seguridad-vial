@@ -7,4 +7,6 @@ public class UpdateUserReq {
     private String name;
     private String phone;
     private Integer avatarId;
+    private Integer riskScore;
+    private String riskProfile;
 }

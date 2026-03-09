@@ -31,6 +31,8 @@ public class UserMeRes {
 
     private Integer avatarId;
     private String role;
+    private Integer riskScore;
+    private String riskProfile;
 
     public static UserMeRes of(UserEntity u) {
         return UserMeRes.builder()
@@ -44,6 +46,7 @@ public class UserMeRes {
                 .differentialFocus(u.getDifferentialFocus())
                 .programa(u.getPrograma()).nivel(u.getNivel())
                 .avatarId(u.getAvatarId()).role(u.getRole())
+                .riskScore(u.getRiskScore()).riskProfile(u.getRiskProfile())
                 .build();
     }
 }

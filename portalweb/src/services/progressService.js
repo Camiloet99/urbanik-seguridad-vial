@@ -331,17 +331,22 @@ export async function submitDiagnostico(result) {
   // Persist locally first — this is the gate used by the UI
   localStorage.setItem(DIAG_KEY, JSON.stringify(payload));
 
-  // Mark testInicialGeneral on the backend (modulo 0, type "test-inicial")
+  // Persist risk result + mark testInicialGeneral — both best-effort
   try {
     const token = getAuthToken();
-    await http.post(
-      "/progress/me/tests",
-      { modulo: 0, type: "test-inicial" },
-      { token }
-    );
+    await Promise.all([
+      http.post(
+        "/progress/me/tests",
+        { modulo: 0, type: "test-inicial" },
+        { token }
+      ),
+      http.put(
+        "/users/me",
+        { riskScore: result.score, riskProfile: result.profile },
+        { token }
+      ),
+    ]);
   } catch (err) {
-    // Local flag is the UI gate; backend sync is best-effort.
-    // Log so it's visible in DevTools if something is wrong.
     console.warn("[submitDiagnostico] backend sync failed:", err);
   }
   return payload;

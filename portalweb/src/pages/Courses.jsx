@@ -362,7 +362,7 @@ export default function Courses() {
                   onClick={(key) => {
                     if (key === "contacto") {
                       const msg = encodeURIComponent(
-                        "Hola, vengo de la plataforma de Seguridad Vial y necesito ayuda."
+                        "Hola 👋 Necesito ayuda en el Metaverso de Seguridad Vial."
                       );
                       window.open(`https://wa.me/573507679627?text=${msg}`, "_blank");
                       return;

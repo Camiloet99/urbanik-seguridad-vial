@@ -22,9 +22,11 @@ public class UserService {
 
     public Mono<UserEntity> patchUser(String email, UpdateUserReq req) {
         return getByEmail(email).flatMap(u -> {
-            if (req.getName() != null) u.setFullName(req.getName());
-            if (req.getPhone() != null) u.setPhone(req.getPhone());
-            if (req.getAvatarId() != null) u.setAvatarId(req.getAvatarId());
+            if (req.getName()        != null) u.setFullName(req.getName());
+            if (req.getPhone()       != null) u.setPhone(req.getPhone());
+            if (req.getAvatarId()    != null) u.setAvatarId(req.getAvatarId());
+            if (req.getRiskScore()   != null) u.setRiskScore(req.getRiskScore());
+            if (req.getRiskProfile() != null) u.setRiskProfile(req.getRiskProfile());
             return users.save(u);
         });
     }

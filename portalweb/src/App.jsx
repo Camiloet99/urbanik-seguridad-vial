@@ -48,7 +48,6 @@ const router = createBrowserRouter([
           { path: "/diagnostico",               element: <RiskProfileTest /> },
           { path: "/courses/:courseKey/intro", element: <PdfVisor /> },
           {
-            
             path: "/admin",
             element: (
               <AdminRoute>

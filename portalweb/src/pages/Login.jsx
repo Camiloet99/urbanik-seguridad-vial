@@ -523,7 +523,7 @@ export default function AuthGateway() {
                 initial="initial"
                 animate="animate"
                 exit="exit"
-                className="min-h-[420px] flex flex-col"
+                className="flex flex-col"
               >
                 <AnimatePresence mode="wait" initial={false}>
                   {mode === "login" && (

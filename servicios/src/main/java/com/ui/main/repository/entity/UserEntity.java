@@ -76,6 +76,12 @@ public class UserEntity {
     @Column("exit_test_done")
     private Boolean exitTestDone;
 
+    @Column("risk_score")
+    private Integer riskScore;
+
+    @Column("risk_profile")
+    private String riskProfile;
+
     @Column("created_at")
     private LocalDateTime createdAt;
 

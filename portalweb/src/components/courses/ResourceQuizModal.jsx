@@ -1,24 +1,7 @@
-/**
- * ResourceQuizModal.jsx
- *
- * Full-screen quiz overlay for resource quizzes.
- *
- * Props:
- *   modulo        {number}   – Module number 1–6
- *   quizNum       {number}   – Quiz number 1–4 (matches pdf index)
- *   resourceLabel {string}   – Display name of the resource
- *   onClose       {function} – Called when the user closes without passing
- *   onPassed      {function} – Called after a successful submission to the backend
- */
-
 import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MODULE_QUIZZES, QUIZ_PASS_THRESHOLD } from "@/data/moduleQuizzes";
 import { submitQuizResult } from "@/services/progressService";
-
-// ---------------------------------------------------------------------------
-// Sub-components
-// ---------------------------------------------------------------------------
 
 function ProgressRing({ percent, size = 84, stroke = 10, color = "#00b5e2" }) {
   const r = (size - stroke) / 2;

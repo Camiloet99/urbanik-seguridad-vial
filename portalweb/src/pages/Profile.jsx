@@ -302,11 +302,37 @@ export default function Profile() {
             </button>
           </div>
 
-          {/* Nivel de riesgo */}
-          <div className="mt-4 pt-4 border-t border-white/10 flex items-center gap-2 text-sm">
-            <span className="text-white/55">Nivel de riesgo:</span>
-            <span className="text-amber-400 text-base leading-none">⚠</span>
-            <span className="font-semibold text-white">{user?.nivel ?? 0}</span>
+          {/* Perfil de riesgo vial */}
+          <div className="mt-4 pt-4 border-t border-white/10">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-white/40 mb-3">
+              Diagnóstico de riesgo vial
+            </p>
+            {user?.riskProfile ? (() => {
+              const cfg = {
+                BAJO:  { bg: "bg-emerald-500/10", ring: "ring-emerald-500/30", text: "text-emerald-300", badge: "bg-emerald-500/20 text-emerald-300", dot: "🟢" },
+                MEDIO: { bg: "bg-amber-500/10",   ring: "ring-amber-500/30",   text: "text-amber-300",   badge: "bg-amber-500/20   text-amber-300",   dot: "🟡" },
+                ALTO:  { bg: "bg-red-500/10",     ring: "ring-red-500/30",     text: "text-red-300",     badge: "bg-red-500/20     text-red-300",     dot: "🔴" },
+              }[user.riskProfile] ?? { bg: "bg-white/5", ring: "ring-white/10", text: "text-white", badge: "bg-white/10 text-white", dot: "⚪" };
+              return (
+                <div className={`rounded-2xl ring-1 ${cfg.ring} ${cfg.bg} px-4 py-3 flex items-center justify-between gap-3`}>
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-xl leading-none">{cfg.dot}</span>
+                    <div>
+                      <p className={`text-sm font-bold ${cfg.text}`}>RIESGO {user.riskProfile}</p>
+                      <p className="text-xs text-white/45 mt-0.5">Score: {user.riskScore} pts · v1.0</p>
+                    </div>
+                  </div>
+                  <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ${cfg.badge}`}>
+                    {user.riskProfile === "BAJO" ? "Bajo" : user.riskProfile === "MEDIO" ? "Medio" : "Alto"}
+                  </span>
+                </div>
+              );
+            })() : (
+              <div className="rounded-2xl ring-1 ring-white/8 bg-white/[0.03] px-4 py-3 flex items-center gap-2.5 text-sm text-white/40">
+                <span className="text-base">⏳</span>
+                <span>Diagnóstico no realizado aún</span>
+              </div>
+            )}
           </div>
         </aside>
       </div>

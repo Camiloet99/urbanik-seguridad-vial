@@ -1,43 +1,4 @@
-﻿﻿/**
- * moduleTests.js
- *
- * Questions for the initial and exit tests of each module.
- *
- * Shape:
- *   MODULE_TESTS[modulo] = {
- *     title:   string,
- *     initial: Question[],   // pre-test
- *     exit:    Question[],   // post-test
- *   }
- *
- *   Question = {
- *     id:      string,
- *     text:    string,
- *     options: { id: string, text: string }[],
- *     correct: string,   // option id
- *   }
- */
-
-/**
- * moduleTests.js
- *
- * Questions for the initial and exit tests of each module.
- *
- * Shape:
- *   MODULE_TESTS[modulo] = {
- *     title:   string,
- *     initial: Question[],   // pre-test
- *     exit:    Question[],   // post-test
- *   }
- *
- *   Question = {
- *     id:      string,
- *     text:    string,
- *     options: { id: string, text: string }[],
- *     correct: string,   // option id
- *   }
- */
-
+﻿﻿
 export const MODULE_TESTS = {
   // ─────────────────────────────────────────────────────────────────────────
   // MÓDULO 0 — General (test inicial manejado por RiskProfileTest; exit aquí)

@@ -49,7 +49,6 @@ export default function Experience() {
 
   const emitPair = (tag) => {
     try {
-      console.log("enviado", studentId);
       const app = appRef.current;
       if (!app?.emitUIInteraction || !studentId || !avatarId) return;
       setTimeout(() => {
@@ -127,6 +126,7 @@ export default function Experience() {
               StartVideoMuted: false,
               AutoConnect: true,
               AutoPlayVideo: true,
+              AutoPlayAudio: true,
             },
             settings: {
               infoButton: true,

@@ -201,7 +201,7 @@ function ResultModal({ score, profile, onContinue }) {
 
 export default function RiskProfileTest() {
   const navigate = useNavigate();
-  const { session } = useAuth();
+  const { session, updateUser } = useAuth();
   const ageRange = session?.user?.ageRange ?? "25-34";
 
   const [form, setForm] = useState({
@@ -241,6 +241,10 @@ export default function RiskProfileTest() {
         responses: form,
         ageRange,
       });
+      // Refresh live session so Profile.jsx shows the result immediately
+      try {
+        await updateUser({ riskScore: score, riskProfile: profile });
+      } catch { /* best-effort */ }
       setResult({ score, profile });
     } catch (err) {
       console.error(err);
