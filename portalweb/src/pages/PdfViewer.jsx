@@ -10,7 +10,7 @@ export default function PdfViewer() {
 
   const src = useMemo(() => {
     if (!modulo) return null;
-    return `/intro/modulo-${modulo}-intro.pdf`; // en public/intro/
+    return `/public/intro/modulo-${modulo}-intro.pdf`; // en public/intro/
   }, [modulo]);
 
   if (!src) {
