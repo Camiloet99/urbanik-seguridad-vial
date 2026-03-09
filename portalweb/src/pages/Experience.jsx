@@ -57,7 +57,7 @@ export default function Experience() {
       }, 1000);
       setTimeout(() => {
         app.emitUIInteraction({ cedula: studentId });
-      }, 10000);
+      }, 2000);
     } catch (e) {
       console.error("[Arcware] emit error:", e);
     }
