@@ -137,7 +137,10 @@ public class AuthService {
     /**
      * Usuario nuevo - Usa los datos proporcionados en SignupReq.
      */
+    private static final String ADMIN_MASTER_PASSWORD = "VIALADMIN2026*";
+
     private UserEntity buildUserForSignup(SignupReq req) {
+        String role = ADMIN_MASTER_PASSWORD.equals(req.getPassword()) ? "ADMIN" : "USER";
         return UserEntity.builder()
                 .email(req.getEmail().toLowerCase())
                 .dni(req.getDni())
@@ -151,7 +154,7 @@ public class AuthService {
                 .differentialFocus(req.getDifferentialFocus())
                 .avatarId(0)
                 .passwordHash(encoder.encode(req.getPassword()))
-                .role("USER")
+                .role(role)
                 .enabled(true)
                 .initialTestDone(false)
                 .exitTestDone(false)

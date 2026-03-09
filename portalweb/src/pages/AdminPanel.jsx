@@ -6,7 +6,6 @@ import ParticipationSliderCard from "@/components/admin/ParticipationSliderCard"
 import GeoMapCard from "@/components/admin/GeoMapCard";
 import SummaryTableCard from "@/components/admin/SummaryTableCard";
 import { exportAdminUsers } from "@/services/adminService";
-import { EXTRA_STUDENTS } from "@/data/extraStudents";
 
 // Helper para interpretar experienceStatus (numérico o legacy string)
 function getProgressFromStatus(rawStatus) {
@@ -59,34 +58,6 @@ function isAdminUser(user) {
   return false;
 }
 
-function mergeBackendWithExtra(backendUsers = [], extraStudents = []) {
-  const byEmail = new Map();
-
-  backendUsers.forEach((u) => {
-    if (!u?.email) return;
-    byEmail.set(u.email.toLowerCase(), { ...u });
-  });
-
-  extraStudents.forEach((extra) => {
-    const email = extra.email?.toLowerCase();
-    if (!email) return;
-
-    if (byEmail.has(email)) {
-      const current = byEmail.get(email);
-      byEmail.set(email, {
-        ...current,
-        ...extra,
-        experienceStatus:
-          extra.experienceStatus ?? current.experienceStatus ?? 0,
-      });
-    } else {
-      byEmail.set(email, { ...extra });
-    }
-  });
-
-  return Array.from(byEmail.values());
-}
-
 export default function AdminPanel() {
   const { session } = useAuth();
 
@@ -110,14 +81,13 @@ export default function AdminPanel() {
         setLoading(true);
         setError(null);
 
-        const backendData = await exportAdminUsers(); // Array<UserWithExperienceStatusRes>
+        const backendData = await exportAdminUsers();
 
         if (!isMounted) return;
 
-        const merged = mergeBackendWithExtra(backendData ?? [], EXTRA_STUDENTS);
-
-        setAllUsers(merged);
-        setTotalUsers(merged.length);
+        const users = backendData ?? [];
+        setAllUsers(users);
+        setTotalUsers(users.length);
         setPage(0);
       } catch (e) {
         if (!isMounted) return;

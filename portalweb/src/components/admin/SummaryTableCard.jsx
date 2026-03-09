@@ -1,6 +1,41 @@
 // src/components/admin/SummaryTableCard.jsx
 import { useMemo, useState } from "react";
 import Spinner from "@/components/ui/Spinner";
+import { DEPARTMENTS } from "@/data/colombiaData";
+
+// ── Label maps ────────────────────────────────────────────────────────────────
+const DEPT_MAP = Object.fromEntries(DEPARTMENTS.map((d) => [d.value, d.label]));
+
+const GENERO_MAP = {
+  male:              "Hombre",
+  female:            "Mujer",
+  "non-binary":      "No binario/a",
+  "prefer-not-say":  "Prefiero no decirlo",
+};
+
+const FOCUS_MAP = {
+  lgbtiq:           "Población LGBTIQ+",
+  ethnic:           "Población étnica",
+  "armed-conflict": "Víctima del conflicto",
+  disability:       "Persona con discapacidad",
+  "female-head":    "Mujer cabeza de hogar",
+  none:             "Ninguno",
+  "prefer-not-say": "Prefiero no decirlo",
+};
+
+const AGE_MAP = {
+  "16-25": "16 – 25",
+  "16-24": "16 – 24",
+  "25-34": "25 – 34",
+  "35-59": "35 – 59",
+  "60+":   "60+",
+};
+
+// Capitalize first letter of each word (for raw municipality slugs like "rionegro" → "Rionegro")
+const toLabel = (slug) =>
+  slug
+    ? slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+    : null;
 
 function getCompletionState(rawStatus) {
   const progress = getProgressFromStatus(rawStatus);
@@ -22,6 +57,21 @@ function StatusPill({ status }) {
     >
       <span className="h-2 w-2 rounded-full bg-current" />
       {isComplete ? "Finalizado" : "En proceso"}
+    </span>
+  );
+}
+
+function RiskPill({ profile }) {
+  if (!profile) return <span className="text-white/30 text-[11px]">–</span>;
+  const cfg = {
+    BAJO:  { cls: "bg-emerald-500/10 text-emerald-300 border-emerald-500/40", dot: "🟢" },
+    MEDIO: { cls: "bg-amber-500/10   text-amber-300   border-amber-500/40",   dot: "🟡" },
+    ALTO:  { cls: "bg-red-500/10     text-red-300     border-red-500/40",     dot: "🔴" },
+  }[profile] ?? { cls: "bg-white/5 text-white/50 border-white/20", dot: "⚪" };
+  return (
+    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium border ${cfg.cls}`}>
+      <span className="text-[10px] leading-none">{cfg.dot}</span>
+      {profile}
     </span>
   );
 }
@@ -117,32 +167,17 @@ export default function SummaryTableCard({
 
     const getValue = (u) => {
       switch (sortConfig.field) {
-        case "name":
-          return u.name || "";
-        case "subregion":
-          return u.subregion || "";
-        case "municipio":
-          return u.municipio || "";
-        case "genero":
-          return u.genero || "";
-        case "edad":
-          return typeof u.edad === "number"
-            ? u.edad
-            : parseInt(u.edad ?? "0", 10) || 0;
-        case "enfoque":
-          return u.enfoqueDiferencial || "";
-        case "programa":
-          return u.programa || "";
-        case "nivel":
-          return typeof u.nivel === "number"
-            ? u.nivel
-            : parseInt(u.nivel ?? "0", 10) || 0;
-        case "avance":
-          return getProgressFromStatus(u.experienceStatus);
-        case "status":
-          return u.experienceStatus || "";
-        default:
-          return "";
+        case "name":       return u.fullName || u.name || "";
+        case "document":   return u.dni || "";
+        case "department": return u.department || "";
+        case "municipality": return u.municipality || "";
+        case "phone":      return u.phone || "";
+        case "genero":     return u.genero || "";
+        case "edad":       return u.ageRange || u.edad || "";
+        case "enfoque":    return u.differentialFocus || u.enfoqueDiferencial || "";
+        case "riesgo":     return u.riskProfile || "";
+        case "avance":     return getProgressFromStatus(u.experienceStatus);
+        default:           return "";
       }
     };
 
@@ -201,66 +236,16 @@ export default function SummaryTableCard({
             <table className="min-w-full text-xs md:text-sm">
               <thead>
                 <tr className="border-b border-white/10">
-                  <SortableHeader
-                    label="Estudiante"
-                    field="name"
-                    sortConfig={sortConfig}
-                    onSort={handleSort}
-                  />
-                  <SortableHeader
-                    label="Subregión"
-                    field="subregion"
-                    sortConfig={sortConfig}
-                    onSort={handleSort}
-                  />
-                  <SortableHeader
-                    label="Municipio"
-                    field="municipio"
-                    sortConfig={sortConfig}
-                    onSort={handleSort}
-                  />
-                  <SortableHeader
-                    label="Género"
-                    field="genero"
-                    sortConfig={sortConfig}
-                    onSort={handleSort}
-                  />
-                  <SortableHeader
-                    label="Edad"
-                    field="edad"
-                    sortConfig={sortConfig}
-                    onSort={handleSort}
-                  />
-                  <SortableHeader
-                    label="Enfoque diferencial"
-                    field="enfoque"
-                    sortConfig={sortConfig}
-                    onSort={handleSort}
-                  />
-                  <SortableHeader
-                    label="Programa"
-                    field="programa"
-                    sortConfig={sortConfig}
-                    onSort={handleSort}
-                  />
-                  <SortableHeader
-                    label="Nivel"
-                    field="nivel"
-                    sortConfig={sortConfig}
-                    onSort={handleSort}
-                  />
-                  <SortableHeader
-                    label="% de avance"
-                    field="avance"
-                    sortConfig={sortConfig}
-                    onSort={handleSort}
-                  />
-                  <SortableHeader
-                    label="Tasa de finalización"
-                    field="status"
-                    sortConfig={sortConfig}
-                    onSort={handleSort}
-                  />
+                  <SortableHeader label="Estudiante"          field="name"       sortConfig={sortConfig} onSort={handleSort} />
+                  <SortableHeader label="Documento"           field="document"   sortConfig={sortConfig} onSort={handleSort} />
+                  <SortableHeader label="Departamento"        field="department" sortConfig={sortConfig} onSort={handleSort} />
+                  <SortableHeader label="Municipio"           field="municipality" sortConfig={sortConfig} onSort={handleSort} />
+                  <SortableHeader label="Teléfono"            field="phone"      sortConfig={sortConfig} onSort={handleSort} />
+                  <SortableHeader label="Género"              field="genero"     sortConfig={sortConfig} onSort={handleSort} />
+                  <SortableHeader label="Rango de edad"       field="edad"       sortConfig={sortConfig} onSort={handleSort} />
+                  <SortableHeader label="Enfoque diferencial" field="enfoque"    sortConfig={sortConfig} onSort={handleSort} />
+                  <SortableHeader label="Perfil de riesgo"    field="riesgo"     sortConfig={sortConfig} onSort={handleSort} />
+                  <SortableHeader label="% de avance"         field="avance"     sortConfig={sortConfig} onSort={handleSort} />
                 </tr>
               </thead>
               <tbody>
@@ -268,64 +253,67 @@ export default function SummaryTableCard({
                   const progress = getProgressFromStatus(u.experienceStatus);
                   return (
                     <tr
-                      key={u.id}
+                      key={u.id ?? u.email}
                       className="border-b border-white/5 last:border-b-0 hover:bg-white/5"
                     >
                       {/* Estudiante */}
                       <td className="py-2 pr-4 align-middle">
                         <div className="flex flex-col">
                           <span className="text-xs md:text-sm text-white/75">
-                            {u.name || "-"}
+                            {u.fullName || u.name || "-"}
                           </span>
-                          <span className="text-[11px] text-white/50">
-                            {u.email}
-                          </span>
+                          <span className="text-[11px] text-white/50">{u.email}</span>
                         </div>
                       </td>
 
-                      {/* Subregión */}
+                      {/* Documento */}
+                      <td className="py-2 px-4 align-middle text-[11px] md:text-xs whitespace-nowrap">
+                        <span className="text-white/40 mr-1 uppercase">{u.documentType || "CC"}</span>
+                        {u.dni || "-"}
+                      </td>
+
+                      {/* Departamento */}
                       <td className="py-2 px-4 align-middle text-[11px] md:text-xs">
-                        {u.subregion || "-"}
+                        {DEPT_MAP[u.department] || toLabel(u.department) || "-"}
                       </td>
 
                       {/* Municipio */}
                       <td className="py-2 px-4 align-middle text-[11px] md:text-xs">
-                        {u.municipio || "-"}
+                        {toLabel(u.municipality) || "-"}
+                      </td>
+
+                      {/* Teléfono */}
+                      <td className="py-2 px-4 align-middle text-[11px] md:text-xs whitespace-nowrap">
+                        {u.phone || "-"}
                       </td>
 
                       {/* Género */}
                       <td className="py-2 px-4 align-middle text-[11px] md:text-xs">
-                        {u.genero || "-"}
+                        {GENERO_MAP[u.genero] || toLabel(u.genero) || "-"}
                       </td>
 
-                      {/* Edad */}
-                      <td className="py-2 px-4 align-middle text-[11px] md:text-xs">
-                        {u.edad ?? "-"}
+                      {/* Rango de edad */}
+                      <td className="py-2 px-4 align-middle text-[11px] md:text-xs whitespace-nowrap">
+                        {AGE_MAP[u.ageRange ?? u.edad] || u.ageRange || u.edad || "-"}
                       </td>
 
                       {/* Enfoque diferencial */}
-                      <td className="py-2 px-4 align-middle text-[11px] md:text-xs max-w-[200px]">
+                      <td className="py-2 px-4 align-middle text-[11px] md:text-xs max-w-[160px]">
                         <span className="line-clamp-2">
-                          {u.enfoqueDiferencial || "-"}
+                          {FOCUS_MAP[u.differentialFocus ?? u.enfoqueDiferencial] ||
+                            u.differentialFocus || u.enfoqueDiferencial || "-"}
                         </span>
                       </td>
 
-                      {/* Programa */}
-                      <td className="py-2 px-4 align-middle text-[11px] md:text-xs max-w-[200px]">
-                        <span className="line-clamp-2">
-                          {u.programa || "-"}
-                        </span>
-                      </td>
-
-                      {/* Nivel */}
-                      <td className="py-2 px-4 align-middle text-[11px] md:text-xs">
-                        {u.nivel ?? "-"}
+                      {/* Perfil de riesgo */}
+                      <td className="py-2 px-4 align-middle">
+                        <RiskPill profile={u.riskProfile} />
                       </td>
 
                       {/* % de avance */}
                       <td className="py-2 px-4 align-middle">
-                        <div className="flex items-center gap-3">
-                          <div className="relative h-2 w-20 sm:w-24 md:w-28 rounded-full bg-white/10 overflow-hidden">
+                        <div className="flex items-center gap-2">
+                          <div className="relative h-2 w-16 sm:w-20 md:w-24 rounded-full bg-white/10 overflow-hidden">
                             <div
                               className="h-full rounded-full bg-sky-400"
                               style={{ width: `${progress}%` }}
@@ -335,11 +323,6 @@ export default function SummaryTableCard({
                             {progress}%
                           </span>
                         </div>
-                      </td>
-
-                      {/* Tasa de finalización */}
-                      <td className="py-2 px-4 align-middle">
-                        <StatusPill status={u.experienceStatus} />
                       </td>
                     </tr>
                   );

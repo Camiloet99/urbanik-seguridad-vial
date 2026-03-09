@@ -7,7 +7,6 @@ import chatIcon from "@/assets/layout/chat.png";
 import profileIcon from "@/assets/layout/profile.png";
 import logoutIcon from "@/assets/layout/logout.png";
 import dataIcon from "@/assets/layout/data.png";
-
 import partner2 from "@/assets/partner-2-white.png";
 
 function Item({ to, imgSrc, label }) {

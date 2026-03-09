@@ -101,7 +101,7 @@ export default function GeoMapCard({ users = [] }) {
       const body = combined.map((u) => [
         u.name ?? "",
         u.email ?? "",
-        u.municipio ?? "",
+        u.municipality ?? "",
         u.subregion ?? "",
         u.experienceStatus ?? "",
         u.genero ?? "",
