@@ -40,8 +40,9 @@ function QuestionCard({ index, question, selected, onChange }) {
         {question.text}
       </p>
       <div className="grid gap-2 sm:grid-cols-2">
-        {question.options.map((opt) => {
+        {question.options.map((opt, optIdx) => {
           const isSelected = selected === opt.id;
+          const letter = ["A", "B", "C", "D"][optIdx] ?? opt.id.toUpperCase();
           return (
             <button
               key={opt.id}
@@ -56,21 +57,11 @@ function QuestionCard({ index, question, selected, onChange }) {
             >
               <span
                 className={[
-                  "mt-0.5 flex-shrink-0 h-5 w-5 rounded-full border-2 grid place-items-center transition",
-                  isSelected ? "border-[#00b5e2] bg-[#00b5e2]" : "border-white/30",
+                  "mt-0.5 flex-shrink-0 h-5 w-5 rounded-full border-2 grid place-items-center transition text-[11px] font-bold",
+                  isSelected ? "border-[#00b5e2] bg-[#00b5e2] text-white" : "border-white/30 text-white/50",
                 ].join(" ")}
               >
-                {isSelected && (
-                  <svg viewBox="0 0 10 10" className="h-3 w-3" fill="none">
-                    <path
-                      d="M2 5l2.5 2.5L8 3"
-                      stroke="#fff"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                )}
+                {letter}
               </span>
               <span>{opt.text}</span>
             </button>
