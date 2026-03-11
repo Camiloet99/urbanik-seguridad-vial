@@ -3,6 +3,7 @@ import { ArcwareInit } from "@arcware-cloud/pixelstreaming-websdk";
 import { useAuth } from "@/context/AuthContext";
 import { useLocation } from "react-router-dom";
 import { MdHome } from "react-icons/md";
+import { submitMedal } from "@/services/progressService";
 
 export default function Experience() {
   const { session, loadingAuth } = useAuth();
@@ -172,9 +173,25 @@ export default function Experience() {
           }
         });
 
-        Application.getApplicationResponse?.((resp) =>
-          console.log("[UE ApplicationResponse]", resp)
-        );
+        Application.getApplicationResponse?.((resp) => {
+          console.log("[UE ApplicationResponse]", resp);
+
+          // El mensaje de UE llega como string JSON o ya parseado.
+          // Formato esperado: { "mensaje": "Hola desde Unreal", "estado": "medalla1" }
+          try {
+            const data = typeof resp === "string" ? JSON.parse(resp) : resp;
+            const match = data?.estado && String(data.estado).match(/^medalla(\d+)$/i);
+            if (match) {
+              const numero = parseInt(match[1], 10);
+              console.log(`[Medal] medalla ${numero} obtenida — guardando en BD...`);
+              submitMedal(numero).catch((e) =>
+                console.warn(`[Medal] medalla ${numero} no se pudo guardar:`, e)
+              );
+            }
+          } catch (e) {
+            console.warn("[UE] fallo parseando respuesta:", e);
+          }
+        });
       } catch (e) {
         console.error("[Arcware] init error:", e);
       }

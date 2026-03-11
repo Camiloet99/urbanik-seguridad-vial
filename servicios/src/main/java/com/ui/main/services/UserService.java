@@ -27,6 +27,7 @@ public class UserService {
             if (req.getAvatarId()    != null) u.setAvatarId(req.getAvatarId());
             if (req.getRiskScore()   != null) u.setRiskScore(req.getRiskScore());
             if (req.getRiskProfile() != null) u.setRiskProfile(req.getRiskProfile());
+            if (req.getActorVial()   != null) u.setActorVial(req.getActorVial());
             return users.save(u);
         });
     }

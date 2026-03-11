@@ -4,9 +4,11 @@ import com.ui.main.model.dto.PagedUsersWithExperienceStatusRes;
 import com.ui.main.model.dto.ProgressMeRes;
 import com.ui.main.model.dto.UserWithExperienceStatusRes;
 import com.ui.main.repository.ModuleProgressRepository;
+import com.ui.main.repository.UserProgressRepository;
 import com.ui.main.repository.UserRepository;
 import com.ui.main.repository.entity.ModuleProgressEntity;
 import com.ui.main.repository.entity.UserEntity;
+import com.ui.main.repository.entity.UserProgressEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -27,9 +30,9 @@ public class ProgressService {
 
     private static final int TOTAL_MODULOS = 6;
 
-    private final ExternalProgressService external;
     private final UserRepository users;
     private final ModuleProgressRepository moduleProgress;
+    private final UserProgressRepository userProgressRepo;
 
     // -------------------------------------------------------------------------
     // Progreso personal del usuario autenticado
@@ -39,19 +42,20 @@ public class ProgressService {
         return users.findByEmailIgnoreCase(email)
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
                 .flatMap(u -> {
-                    Mono<ExternalProgressService.MonedaDto> monedaMono =
-                            external.readByDni(u.getDni());
+                    Mono<UserProgressEntity> medalsMono =
+                            userProgressRepo.findByEmailIgnoreCase(email)
+                                    .defaultIfEmpty(new UserProgressEntity());
 
                     Mono<List<ModuleProgressEntity>> modulosMono =
                             moduleProgress.findAllByEmailIgnoreCase(email).collectList();
 
-                    return Mono.zip(monedaMono, modulosMono)
+                    return Mono.zip(medalsMono, modulosMono)
                             .map(t -> buildProgressMeRes(t.getT1(), t.getT2()));
                 });
     }
 
     private ProgressMeRes buildProgressMeRes(
-            ExternalProgressService.MonedaDto monedas,
+            UserProgressEntity medals,
             List<ModuleProgressEntity> entities
     ) {
         Map<Integer, ModuleProgressEntity> byModulo = entities.stream()
@@ -89,9 +93,12 @@ public class ProgressService {
                 .toList();
 
         ProgressMeRes.MonedaStatus monedaStatus = new ProgressMeRes.MonedaStatus(
-                monedas.isMoneda1(),
-                monedas.isMoneda2(), monedas.isMoneda3(),
-                monedas.isMoneda4(), monedas.isMoneda5(), monedas.isMoneda6()
+                medals != null && Boolean.TRUE.equals(medals.getMedalla1()),
+                medals != null && Boolean.TRUE.equals(medals.getMedalla2()),
+                medals != null && Boolean.TRUE.equals(medals.getMedalla3()),
+                medals != null && Boolean.TRUE.equals(medals.getMedalla4()),
+                medals != null && Boolean.TRUE.equals(medals.getMedalla5()),
+                medals != null && Boolean.TRUE.equals(medals.getMedalla6())
         );
 
         return new ProgressMeRes(general, modulos, monedaStatus);
@@ -177,6 +184,43 @@ public class ProgressService {
     }
 
     // -------------------------------------------------------------------------
+    // Medallas de la experiencia gamificada (Pixel Streaming)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Marca la medalla N (1-6) como obtenida para el usuario autenticado.
+     * Crea el registro en user_progress si aún no existe.
+     */
+    public Mono<Void> markMedalDone(String email, int numero) {
+        if (numero < 1 || numero > 6) {
+            return Mono.error(new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "numero debe estar entre 1 y 6"));
+        }
+        return users.findByEmailIgnoreCase(email)
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
+                .flatMap(u ->
+                        userProgressRepo.findByEmailIgnoreCase(email)
+                                .defaultIfEmpty(UserProgressEntity.builder()
+                                        .userId(u.getId())
+                                        .email(email.toLowerCase())
+                                        .build())
+                                .flatMap(entity -> {
+                                    switch (numero) {
+                                        case 1 -> entity.setMedalla1(true);
+                                        case 2 -> entity.setMedalla2(true);
+                                        case 3 -> entity.setMedalla3(true);
+                                        case 4 -> entity.setMedalla4(true);
+                                        case 5 -> entity.setMedalla5(true);
+                                        case 6 -> entity.setMedalla6(true);
+                                    }
+                                    entity.setUpdatedAt(LocalDateTime.now());
+                                    return userProgressRepo.save(entity);
+                                })
+                )
+                .then();
+    }
+
+    // -------------------------------------------------------------------------
     // Panel de administrador
     // -------------------------------------------------------------------------
 
@@ -184,7 +228,6 @@ public class ProgressService {
         int safePage = Math.max(page, 0);
         int safeSize = Math.min(Math.max(size, 1), 100);
 
-        Mono<List<ExternalProgressService.UserProgressDto>> progressMono = external.readAll();
         Mono<Long> totalUsersMono = users.count();
         Mono<List<UserEntity>> pageUsersMono = users.findAll()
                 .skip((long) safePage * safeSize)
@@ -195,19 +238,30 @@ public class ProgressService {
                         .collectList()
                         .map(list -> list.stream().collect(Collectors.groupingBy(
                                 e -> e.getEmail() == null ? "" : e.getEmail().toLowerCase())));
+        Mono<Map<String, UserProgressEntity>> medalsMono =
+                userProgressRepo.findAll()
+                        .collectList()
+                        .map(list -> list.stream().collect(Collectors.toMap(
+                                e -> e.getEmail() == null ? "" : e.getEmail().toLowerCase(),
+                                Function.identity(),
+                                (a, b) -> a)));
 
-        return Mono.zip(progressMono, totalUsersMono, pageUsersMono, modulesMono)
+        return Mono.zip(totalUsersMono, pageUsersMono, modulesMono, medalsMono)
                 .map(t -> {
-                    List<UserWithExperienceStatusRes> mapped = t.getT3().stream()
+                    List<UserWithExperienceStatusRes> mapped = t.getT2().stream()
                             .map(u -> {
                                 String key = u.getEmail() == null ? "" : u.getEmail().toLowerCase();
-                                List<ModuleProgressEntity> mods = t.getT4().getOrDefault(key, List.of());
-                                return UserWithExperienceStatusRes.of(u, computeExperienceStatus(u, mods, t.getT1()));
+                                List<ModuleProgressEntity> mods = t.getT3().getOrDefault(key, List.of());
+                                UserProgressEntity medals = t.getT4().get(key);
+                                return UserWithExperienceStatusRes.of(
+                                        u,
+                                        computeExperienceStatus(mods),
+                                        computeModulosDone(medals, mods));
                             })
                             .toList();
                     return PagedUsersWithExperienceStatusRes.builder()
                             .userList(mapped)
-                            .totalUsers(t.getT2())
+                            .totalUsers(t.getT1())
                             .page(safePage)
                             .size(safeSize)
                             .build();
@@ -215,33 +269,39 @@ public class ProgressService {
     }
 
     public Flux<UserWithExperienceStatusRes> getAllUsersExperienceStatus() {
-        Mono<List<ExternalProgressService.UserProgressDto>> progressMono = external.readAll();
         Mono<Map<String, List<ModuleProgressEntity>>> modulesMono =
                 moduleProgress.findAll()
                         .collectList()
                         .map(list -> list.stream().collect(Collectors.groupingBy(
                                 e -> e.getEmail() == null ? "" : e.getEmail().toLowerCase())));
+        Mono<Map<String, UserProgressEntity>> medalsMono =
+                userProgressRepo.findAll()
+                        .collectList()
+                        .map(list -> list.stream().collect(Collectors.toMap(
+                                e -> e.getEmail() == null ? "" : e.getEmail().toLowerCase(),
+                                Function.identity(),
+                                (a, b) -> a)));
 
-        return Mono.zip(progressMono, modulesMono)
+        return Mono.zip(modulesMono, medalsMono)
                 .flatMapMany(t -> users.findAll()
                         .map(u -> {
                             String key = u.getEmail() == null ? "" : u.getEmail().toLowerCase();
-                            List<ModuleProgressEntity> mods = t.getT2().getOrDefault(key, List.of());
-                            return UserWithExperienceStatusRes.of(u, computeExperienceStatus(u, mods, t.getT1()));
+                            List<ModuleProgressEntity> mods = t.getT1().getOrDefault(key, List.of());
+                            UserProgressEntity medals = t.getT2().get(key);
+                            return UserWithExperienceStatusRes.of(
+                                    u,
+                                    computeExperienceStatus(mods),
+                                    computeModulosDone(medals, mods));
                         }));
     }
 
     /**
-     * Computes a 0–100 progress score using the same formula as the frontend:
+     * Computes a 0–100 progress score:
      *   modulo 0 testInitialDone → +5 pts
      *   modulo 0 testExitDone    → +5 pts
      *   each module 1–6         → up to +15 pts (proportional to 8 DB flags)
      */
-    private int computeExperienceStatus(
-            UserEntity u,
-            List<ModuleProgressEntity> modules,
-            List<ExternalProgressService.UserProgressDto> extProgress
-    ) {
+    private int computeExperienceStatus(List<ModuleProgressEntity> modules) {
         Map<Integer, ModuleProgressEntity> byModulo = modules.stream()
                 .collect(Collectors.toMap(ModuleProgressEntity::getModulo, Function.identity()));
 
@@ -271,17 +331,36 @@ public class ProgressService {
         return Math.min(score, 100);
     }
 
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
-
-    private static ExternalProgressService.UserProgressDto findByDni(
-            List<ExternalProgressService.UserProgressDto> list, String dni) {
-        if (dni == null) return null;
-        String ndni = dni.trim();
-        return list.stream()
-                .filter(p -> ndni.equals(p.getIdEstudiante()))
-                .findFirst()
-                .orElse(null);
+    /**
+     * Returns a 6-element list (index 0 = módulo 1) where true means
+     * the module is 100% complete: all 8 activity flags + medal earned.
+     */
+    private List<Boolean> computeModulosDone(
+            UserProgressEntity medals,
+            List<ModuleProgressEntity> modules
+    ) {
+        Map<Integer, ModuleProgressEntity> byModulo = modules.stream()
+                .collect(Collectors.toMap(ModuleProgressEntity::getModulo, Function.identity()));
+        List<Boolean> result = new ArrayList<>(TOTAL_MODULOS);
+        for (int n = 1; n <= TOTAL_MODULOS; n++) {
+            ModuleProgressEntity e = byModulo.get(n);
+            boolean allFlags = e != null
+                    && e.isIntroduccionDone()
+                    && e.isTestInitialDone()
+                    && e.isQuiz1Done() && e.isQuiz2Done() && e.isQuiz3Done() && e.isQuiz4Done()
+                    && e.isTestExitDone()
+                    && e.isCalificationDone();
+            boolean hasMedal = switch (n) {
+                case 1 -> medals != null && Boolean.TRUE.equals(medals.getMedalla1());
+                case 2 -> medals != null && Boolean.TRUE.equals(medals.getMedalla2());
+                case 3 -> medals != null && Boolean.TRUE.equals(medals.getMedalla3());
+                case 4 -> medals != null && Boolean.TRUE.equals(medals.getMedalla4());
+                case 5 -> medals != null && Boolean.TRUE.equals(medals.getMedalla5());
+                case 6 -> medals != null && Boolean.TRUE.equals(medals.getMedalla6());
+                default -> false;
+            };
+            result.add(allFlags && hasMedal);
+        }
+        return result;
     }
 }

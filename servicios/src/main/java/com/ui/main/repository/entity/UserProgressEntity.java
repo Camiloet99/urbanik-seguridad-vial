@@ -25,6 +25,8 @@ public class UserProgressEntity {
     private Boolean medalla2;
     private Boolean medalla3;
     private Boolean medalla4;
+    private Boolean medalla5;
+    private Boolean medalla6;
 
     @Column("test_initial_done")
     private Boolean testInitialDone;

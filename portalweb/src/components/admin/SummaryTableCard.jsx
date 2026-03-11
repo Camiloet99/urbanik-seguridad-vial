@@ -37,42 +37,43 @@ const toLabel = (slug) =>
     ? slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
     : null;
 
-function getCompletionState(rawStatus) {
-  const progress = getProgressFromStatus(rawStatus);
-  return progress >= 100 ? "complete" : "progress";
-}
-
-function StatusPill({ status }) {
-  const state = getCompletionState(status); // "complete" o "progress"
-  const isComplete = state === "complete";
-
+function RiskPill({ profile }) {
+  if (!profile) return <span className="text-white/30 text-[11px]">–</span>;
+  const cfg = {
+    BAJO:  { text: "text-emerald-300", iconCls: "text-emerald-400" },
+    MEDIO: { text: "text-amber-300",   iconCls: "text-amber-400"   },
+    ALTO:  { text: "text-red-300",     iconCls: "text-red-400"     },
+  }[profile] ?? { text: "text-white/50", iconCls: "text-white/40" };
   return (
-    <span
-      className={[
-        "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-medium",
-        isComplete
-          ? "bg-emerald-500/10 text-emerald-300 border border-emerald-500/60"
-          : "bg-sky-500/10 text-sky-300 border border-sky-500/60",
-      ].join(" ")}
-    >
-      <span className="h-2 w-2 rounded-full bg-current" />
-      {isComplete ? "Finalizado" : "En proceso"}
+    <span className={`inline-flex items-center gap-1.5 text-[11px] font-medium ${cfg.text}`}>
+      <svg viewBox="0 0 20 20" className={`h-3.5 w-3.5 flex-shrink-0 ${cfg.iconCls}`} aria-hidden="true" fill="currentColor">
+        <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 6a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 6Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clipRule="evenodd" />
+      </svg>
+      {profile.charAt(0) + profile.slice(1).toLowerCase()}
     </span>
   );
 }
 
-function RiskPill({ profile }) {
-  if (!profile) return <span className="text-white/30 text-[11px]">–</span>;
-  const cfg = {
-    BAJO:  { cls: "bg-emerald-500/10 text-emerald-300 border-emerald-500/40", dot: "🟢" },
-    MEDIO: { cls: "bg-amber-500/10   text-amber-300   border-amber-500/40",   dot: "🟡" },
-    ALTO:  { cls: "bg-red-500/10     text-red-300     border-red-500/40",     dot: "🔴" },
-  }[profile] ?? { cls: "bg-white/5 text-white/50 border-white/20", dot: "⚪" };
+/** 6 coloured dots showing per-module completion */
+function ModuleDots({ modulosDone }) {
+  const dots = Array.isArray(modulosDone) ? modulosDone : Array(6).fill(false);
+  // Pad to 6 just in case
+  while (dots.length < 6) dots.push(false);
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium border ${cfg.cls}`}>
-      <span className="text-[10px] leading-none">{cfg.dot}</span>
-      {profile}
-    </span>
+    <div className="flex items-center gap-[5px]">
+      {dots.slice(0, 6).map((done, i) => (
+        <span
+          key={i}
+          title={`Módulo ${i + 1}: ${done ? "Completado" : "Pendiente"}`}
+          className={[
+            "h-[10px] w-[10px] rounded-full flex-shrink-0 transition-colors",
+            done
+              ? "bg-[#29C6F8] shadow-[0_0_6px_rgba(41,198,248,0.65)]"
+              : "bg-white/15",
+          ].join(" ")}
+        />
+      ))}
+    </div>
   );
 }
 
@@ -214,9 +215,15 @@ export default function SummaryTableCard({
       <div className="mb-4 flex items-center justify-between">
         <h3 className="text-base md:text-lg font-semibold">Tabla resumen</h3>
         <span className="text-[11px] md:text-xs text-white/60">
-          Estados:{" "}
-          <span className="text-emerald-300 font-medium">Finalizado</span> /{" "}
-          <span className="text-sky-300 font-medium">En proceso</span>
+          <span className="inline-flex items-center gap-1">
+            <span className="h-2 w-2 rounded-full bg-[#29C6F8]" />
+            Módulo completo
+          </span>
+          {" · "}
+          <span className="inline-flex items-center gap-1">
+            <span className="h-2 w-2 rounded-full bg-white/15" />
+            Pendiente
+          </span>
         </span>
       </div>
 
@@ -249,9 +256,7 @@ export default function SummaryTableCard({
                 </tr>
               </thead>
               <tbody>
-                {sortedUsers.map((u) => {
-                  const progress = getProgressFromStatus(u.experienceStatus);
-                  return (
+                {sortedUsers.map((u) => (
                     <tr
                       key={u.id ?? u.email}
                       className="border-b border-white/5 last:border-b-0 hover:bg-white/5"
@@ -312,21 +317,10 @@ export default function SummaryTableCard({
 
                       {/* % de avance */}
                       <td className="py-2 px-4 align-middle">
-                        <div className="flex items-center gap-2">
-                          <div className="relative h-2 w-16 sm:w-20 md:w-24 rounded-full bg-white/10 overflow-hidden">
-                            <div
-                              className="h-full rounded-full bg-sky-400"
-                              style={{ width: `${progress}%` }}
-                            />
-                          </div>
-                          <span className="text-[11px] md:text-xs text-white/70">
-                            {progress}%
-                          </span>
-                        </div>
+                        <ModuleDots modulosDone={u.modulosDone} />
                       </td>
                     </tr>
-                  );
-                })}
+                  ))}
               </tbody>
             </table>
           </div>
