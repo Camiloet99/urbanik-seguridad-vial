@@ -10,12 +10,56 @@ import tag3 from "@/assets/admin/tags/tag3.png";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
-import { EXTRA_STUDENTS } from "@/data/extraStudents";
-
 const TAG_IMAGES = [tag1, tag2, tag3];
 
 // 🔹 Activa esto en true mientras ajustas posiciones
 const DEBUG_SHOW_ALL_SUBREGIONS = false;
+
+// Label maps (sync with SummaryTableCard)
+const GENERO_MAP = {
+  male: "Masculino",
+  female: "Femenino",
+  "non-binary": "No binario/a",
+  "prefer-not-say": "Prefiero no decirlo",
+};
+
+const FOCUS_MAP = {
+  lgbtiq: "Población LGBTIQ+",
+  ethnic: "Población étnica",
+  "armed-conflict": "Víctima del conflicto",
+  disability: "Persona con discapacidad",
+  "female-head": "Mujer cabeza de hogar",
+  none: "Ninguno",
+  "prefer-not-say": "Prefiero no decirlo",
+};
+
+const AGE_MAP = {
+  "16-25": "16 – 25",
+  "16-24": "16 – 24",
+  "25-34": "25 – 34",
+  "35-59": "35 – 59",
+  "60+": "60+",
+};
+
+const toLabel = (slug) =>
+  slug
+    ? slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+    : null;
+
+const getProgressFromStatus = (rawStatus) => {
+  if (typeof rawStatus === "number" && !Number.isNaN(rawStatus)) {
+    return Math.min(Math.max(rawStatus, 0), 100);
+  }
+  if (typeof rawStatus === "string") {
+    const parsed = parseInt(rawStatus, 10);
+    if (!Number.isNaN(parsed)) {
+      return Math.min(Math.max(parsed, 0), 100);
+    }
+  }
+  if (rawStatus === "complete") return 100;
+  if (rawStatus === "progress") return 60;
+  return 0;
+};
 
 const SUBREGION_CONFIG = {
   "Bajo Cauca": { top: "30%", left: "65%" },
@@ -69,47 +113,55 @@ export default function GeoMapCard({ users = [] }) {
     try {
       setIsExporting(true);
 
-      // 1) Traer todos los usuarios del backend
+      // Traer todos los usuarios del backend
       const data = await exportAdminUsers(); // Array<UserWithExperienceStatusRes>
 
-      // 2) Combinar BE + estáticos para el informe
-      const combined = [...(data ?? []), ...EXTRA_STUDENTS];
+      if (!data || data.length === 0) {
+        alert("No hay usuarios para exportar");
+        return;
+      }
 
       const doc = new jsPDF({ orientation: "landscape" });
 
       doc.setFontSize(14);
-      doc.text("Informe de participación – Antioquia", 14, 15);
+      doc.text("Informe de Progreso de Estudiantes – Antioquia", 14, 15);
 
       doc.setFontSize(10);
       doc.text(`Generado: ${new Date().toLocaleString("es-CO")}`, 14, 22);
 
       const head = [
         [
-          "Nombre",
-          "Email",
+          "Estudiante",
+          "Correo",
+          "Documento",
           "Municipio",
-          "Subregión",
-          "Estado experiencia",
+          "Teléfono",
           "Género",
           "Edad",
-          "Enfoque diferencial",
-          "Nivel",
-          "Programa",
+          "Enfoque Diferencial",
+          "Perfil de Riesgo",
+          "% Avance",
         ],
       ];
 
-      const body = combined.map((u) => [
-        u.name ?? "",
-        u.email ?? "",
-        u.municipality ?? "",
-        u.subregion ?? "",
-        u.experienceStatus ?? "",
-        u.genero ?? "",
-        u.edad != null ? String(u.edad) : "",
-        u.enfoqueDiferencial ?? "",
-        u.nivel != null ? String(u.nivel) : "",
-        u.programa ?? "",
-      ]);
+      const body = data.map((u) => {
+        const progress = getProgressFromStatus(u.experienceStatus);
+        return [
+          u.fullName || u.name || "-",
+          u.email || "-",
+          (u.documentType || "CC") + " " + (u.dni || "-"),
+          toLabel(u.municipality) || "-",
+          u.phone || "-",
+          GENERO_MAP[u.genero] || toLabel(u.genero) || "-",
+          AGE_MAP[u.ageRange ?? u.edad] || u.ageRange || u.edad || "-",
+          FOCUS_MAP[u.differentialFocus ?? u.enfoqueDiferencial] ||
+            u.differentialFocus ||
+            u.enfoqueDiferencial ||
+            "-",
+          u.riskProfile || "-",
+          `${progress}%`,
+        ];
+      });
 
       autoTable(doc, {
         head,
@@ -121,13 +173,27 @@ export default function GeoMapCard({ users = [] }) {
         headStyles: {
           fillColor: [41, 55, 92],
           textColor: 255,
+          fontStyle: "bold",
         },
         alternateRowStyles: {
           fillColor: [245, 245, 245],
         },
+        columnStyles: {
+          0: { halign: "left" },
+          1: { halign: "left" },
+          2: { halign: "center" },
+          3: { halign: "left" },
+          4: { halign: "center" },
+          5: { halign: "center" },
+          6: { halign: "center" },
+          7: { halign: "left" },
+          8: { halign: "center" },
+          9: { halign: "center", fillColor: [220, 240, 255] },
+        },
       });
 
-      doc.save("informe-participacion-antioquia.pdf");
+      const timestamp = new Date().toISOString().split("T")[0];
+      doc.save(`informe-participacion-antioquia_${timestamp}.pdf`);
     } catch (err) {
       console.error("Error exportando PDF", err);
       alert("Error al generar el PDF. Intenta de nuevo.");

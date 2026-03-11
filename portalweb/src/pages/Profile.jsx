@@ -55,39 +55,39 @@ export default function Profile() {
   const [showPicker, setShowPicker] = useState(false);
   const [saving, setSaving] = useState(false);
   const [pickerLoading, setPickerLoading] = useState(false);
-  const [toast, setToast] = useState({ type: "", msg: "" }); 
-  const [errors, setErrors] = useState({ name: "", phone: "" });
+  const [toast, setToast] = useState({ type: "", msg: "" });
+  const [errors, setErrors] = useState({ fullName: "" });
 
-  const [form, setForm] = useState({
-    email: user?.email || "",
-    name: user?.name || "",
-    phone: user?.phone || "",
+  const buildForm = (u) => ({
+    fullName: u?.fullName || "",
+    genero: u?.genero || "",
+    ageRange: u?.ageRange || "",
+    department: u?.department || "",
+    municipality: u?.municipality || "",
+    differentialFocus: u?.differentialFocus || "",
   });
 
-  console.log(user)
+  const [form, setForm] = useState(() => buildForm(user));
 
   useEffect(() => {
-    setForm({
-      email: user?.email || "",
-      name: user?.name || "",
-      phone: user?.phone || "",
-    });
-  }, [user?.email, user?.name, user?.phone]);
+    setForm(buildForm(user));
+  }, [user?.fullName, user?.genero, user?.ageRange, user?.department, user?.municipality, user?.differentialFocus]);
 
   const validate = () => {
-    const next = { name: "", phone: "" };
-    if (!form.name?.trim()) next.name = "Nombre requerido";
-    if (form.phone && !/^[0-9+\s()-]{7,20}$/.test(form.phone)) {
-      next.phone = "Teléfono inválido";
-    }
+    const next = { fullName: "" };
+    if (!form.fullName?.trim()) next.fullName = "Nombre requerido";
     setErrors(next);
-    return !next.name && !next.phone;
+    return !next.fullName;
   };
 
   const isDirty = useMemo(() => {
     return (
-      (form.name ?? "") !== (user?.name ?? "") ||
-      (form.phone ?? "") !== (user?.phone ?? "")
+      (form.fullName         ?? "") !== (user?.fullName         ?? "") ||
+      (form.genero           ?? "") !== (user?.genero           ?? "") ||
+      (form.ageRange         ?? "") !== (user?.ageRange         ?? "") ||
+      (form.department       ?? "") !== (user?.department       ?? "") ||
+      (form.municipality     ?? "") !== (user?.municipality     ?? "") ||
+      (form.differentialFocus ?? "") !== (user?.differentialFocus ?? "")
     );
   }, [form, user]);
 
@@ -97,11 +97,24 @@ export default function Profile() {
   const avatarSrc = CHARACTERS[avatarId];
   const profileSrc = PROFILES[avatarId];
 
+  const handleCancel = () => {
+    setEdit(false);
+    setErrors({ fullName: "" });
+    setForm(buildForm(user));
+  };
+
   const handleSave = async () => {
     if (!validate()) return;
     try {
       setSaving(true);
-      await updateUser({ name: form.name.trim(), phone: form.phone?.trim() || null });
+      await updateUser({
+        name: form.fullName.trim(),
+        genero: form.genero || null,
+        ageRange: form.ageRange || null,
+        department: form.department || null,
+        municipality: form.municipality || null,
+        differentialFocus: form.differentialFocus || null,
+      });
       setEdit(false);
       setToast({ type: "ok", msg: "Cambios guardados" });
     } catch (e) {
@@ -238,23 +251,39 @@ export default function Profile() {
             Datos personales
           </h3>
 
-          {/* Edad pill */}
-          <div className="flex justify-center mb-5">
-            <div className="flex flex-col items-center rounded-2xl border border-white/12 bg-white/5 px-8 py-2.5 text-center">
-              <span className="text-[10px] font-semibold uppercase tracking-widest text-white/38">
-                Grupo de edad
-              </span>
-              <span className="text-sm font-medium text-white mt-0.5">
-                {AGE_LABELS[user?.ageRange] || "–"}
-              </span>
+          {/* Edad pill / select editable */}
+          {edit ? (
+            <div className="mb-5">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-white/38 text-center mb-1.5">Grupo de edad</p>
+              <select
+                value={form.ageRange}
+                onChange={(e) => setForm((f) => ({ ...f, ageRange: e.target.value }))}
+                className="h-11 w-full rounded-full border border-white/12 bg-[#1c1f2a] px-4 text-sm text-white/80 focus:outline-none focus:border-[#6EB9FF]/50 cursor-pointer"
+              >
+                <option value="">– Selecciona –</option>
+                {Object.entries(AGE_LABELS).map(([v, l]) => (
+                  <option key={v} value={v}>{l}</option>
+                ))}
+              </select>
             </div>
-          </div>
+          ) : (
+            <div className="flex justify-center mb-5">
+              <div className="flex flex-col items-center rounded-2xl border border-white/12 bg-white/5 px-8 py-2.5 text-center">
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-white/38">
+                  Grupo de edad
+                </span>
+                <span className="text-sm font-medium text-white mt-0.5">
+                  {AGE_LABELS[user?.ageRange] || "–"}
+                </span>
+              </div>
+            </div>
+          )}
 
           <div className="space-y-2.5">
-            {/* Email */}
+            {/* Email - siempre solo lectura */}
             <InfoRow icon={<MdEmail size={16} />} value={user?.email} />
 
-            {/* Documento */}
+            {/* Documento - siempre solo lectura */}
             <div className="flex gap-2">
               <div className="flex h-11 shrink-0 items-center rounded-full border border-white/12 bg-white/5 px-4 text-sm font-medium text-white/70">
                 {DOC_LABELS[user?.documentType] || "–"}
@@ -263,24 +292,78 @@ export default function Profile() {
             </div>
 
             {/* Nombre */}
-            <InfoRow icon={<MdPerson size={16} />} value={user?.fullName} />
+            {edit ? (
+              <div>
+                <input
+                  type="text"
+                  value={form.fullName}
+                  onChange={(e) => setForm((f) => ({ ...f, fullName: e.target.value }))}
+                  placeholder="Nombre completo"
+                  className="h-11 w-full rounded-full border border-white/12 bg-[#1c1f2a] px-4 text-sm text-white/85 focus:outline-none focus:border-[#6EB9FF]/50 placeholder:text-white/30"
+                />
+                {errors.fullName && (
+                  <p className="text-xs text-red-400 mt-1 pl-4">{errors.fullName}</p>
+                )}
+              </div>
+            ) : (
+              <InfoRow icon={<MdPerson size={16} />} value={user?.fullName} />
+            )}
 
             {/* Género */}
-            <InfoRow icon={<MdPerson size={16} />} value={GENDER_LABELS[user?.genero]} />
+            {edit ? (
+              <select
+                value={form.genero}
+                onChange={(e) => setForm((f) => ({ ...f, genero: e.target.value }))}
+                className="h-11 w-full rounded-full border border-white/12 bg-[#1c1f2a] px-4 text-sm text-white/80 focus:outline-none focus:border-[#6EB9FF]/50 cursor-pointer"
+              >
+                <option value="">– Género –</option>
+                {Object.entries(GENDER_LABELS).map(([v, l]) => (
+                  <option key={v} value={v}>{l}</option>
+                ))}
+              </select>
+            ) : (
+              <InfoRow icon={<MdPerson size={16} />} value={GENDER_LABELS[user?.genero]} />
+            )}
 
             {/* Departamento */}
-            <InfoRow
-              icon={<MdLocationOn size={16} />}
-              value={DEPT_MAP[user?.department] || user?.department}
-            />
+            {edit ? (
+              <select
+                value={form.department}
+                onChange={(e) => setForm((f) => ({ ...f, department: e.target.value, municipality: "" }))}
+                className="h-11 w-full rounded-full border border-white/12 bg-[#1c1f2a] px-4 text-sm text-white/80 focus:outline-none focus:border-[#6EB9FF]/50 cursor-pointer"
+              >
+                <option value="">– Departamento –</option>
+                {DEPARTMENTS.map((d) => (
+                  <option key={d.value} value={d.value}>{d.label}</option>
+                ))}
+              </select>
+            ) : (
+              <InfoRow
+                icon={<MdLocationOn size={16} />}
+                value={DEPT_MAP[user?.department] || user?.department}
+              />
+            )}
 
             {/* Municipio */}
-            <InfoRow
-              icon={<MdLocationOn size={16} />}
-              value={MUN_MAP[user?.municipality] || user?.municipality}
-            />
+            {edit ? (
+              <select
+                value={form.municipality}
+                onChange={(e) => setForm((f) => ({ ...f, municipality: e.target.value }))}
+                className="h-11 w-full rounded-full border border-white/12 bg-[#1c1f2a] px-4 text-sm text-white/80 focus:outline-none focus:border-[#6EB9FF]/50 cursor-pointer"
+              >
+                <option value="">– Municipio –</option>
+                {MUNICIPALITIES_ANTIOQUIA.map((m) => (
+                  <option key={m.value} value={m.value}>{m.label}</option>
+                ))}
+              </select>
+            ) : (
+              <InfoRow
+                icon={<MdLocationOn size={16} />}
+                value={MUN_MAP[user?.municipality] || user?.municipality}
+              />
+            )}
 
-            {/* Teléfono */}
+            {/* Teléfono - siempre solo lectura */}
             <div className="flex gap-2">
               <div className="flex h-11 shrink-0 items-center rounded-full border border-white/12 bg-white/5 px-4 text-sm font-medium text-white/70">
                 +57
@@ -289,18 +372,68 @@ export default function Profile() {
             </div>
 
             {/* Enfoque diferencial */}
-            <InfoRow icon={<MdShield size={16} />} value={FOCUS_LABELS[user?.differentialFocus]} />
+            {edit ? (
+              <select
+                value={form.differentialFocus}
+                onChange={(e) => setForm((f) => ({ ...f, differentialFocus: e.target.value }))}
+                className="h-11 w-full rounded-full border border-white/12 bg-[#1c1f2a] px-4 text-sm text-white/80 focus:outline-none focus:border-[#6EB9FF]/50 cursor-pointer"
+              >
+                <option value="">– Enfoque diferencial –</option>
+                {Object.entries(FOCUS_LABELS).map(([v, l]) => (
+                  <option key={v} value={v}>{l}</option>
+                ))}
+              </select>
+            ) : (
+              <InfoRow icon={<MdShield size={16} />} value={FOCUS_LABELS[user?.differentialFocus]} />
+            )}
           </div>
 
-          {/* Editar */}
-          <div className="mt-5 flex items-center justify-end">
-            <button
-              className="text-sm text-white/75 hover:text-white underline underline-offset-4 cursor-pointer transition-colors"
-              onClick={() => setEdit(true)}
+          {/* Toast de guardado */}
+          {toast.msg && (
+            <div
+              role="status"
+              aria-live="polite"
+              className={[
+                "mt-3 text-sm px-3 py-2 rounded-md text-center transition-opacity",
+                toast.type === "ok"
+                  ? "bg-emerald-500/15 text-emerald-200 border border-emerald-400/30"
+                  : "bg-red-500/15 text-red-200 border border-red-400/30",
+              ].join(" ")}
             >
-              Editar
-            </button>
-          </div>
+              {toast.msg}
+            </div>
+          )}
+
+          {/* Botones editar / guardar / cancelar */}
+          {edit ? (
+            <div className="mt-5 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                className="text-sm text-white/50 hover:text-white/80 underline underline-offset-4 cursor-pointer transition-colors"
+                onClick={handleCancel}
+                disabled={saving}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                disabled={!canSave}
+                onClick={handleSave}
+                className="h-9 rounded-full px-5 bg-[#00b5e2] hover:brightness-105 active:brightness-95 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold transition cursor-pointer"
+              >
+                {saving ? "Guardando…" : "Guardar"}
+              </button>
+            </div>
+          ) : (
+            <div className="mt-5 flex items-center justify-end">
+              <button
+                className="text-sm text-white/75 hover:text-white underline underline-offset-4 cursor-pointer transition-colors"
+                onClick={() => setEdit(true)}
+              >
+                Editar
+              </button>
+            </div>
+          )}
 
           {/* Perfil de riesgo vial */}
           <div className="mt-4 pt-4 border-t border-white/10">

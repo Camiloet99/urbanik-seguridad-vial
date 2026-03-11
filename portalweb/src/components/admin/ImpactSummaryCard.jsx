@@ -20,7 +20,7 @@ function StatusRow({ value, label, color }) {
   );
 }
 
-export default function ImpactSummaryCard({ total, completed, inProgress }) {
+export default function ImpactSummaryCard({ total, modulo1Done, modulo2Plus }) {
   return (
     <div
       className="
@@ -67,8 +67,8 @@ export default function ImpactSummaryCard({ total, completed, inProgress }) {
           self-center sm:self-auto
         "
       >
-        <StatusRow value={completed} label="Finalizado" color="#22c55e" />
-        <StatusRow value={inProgress} label="En proceso" color="#06b6d4" />
+        <StatusRow value={modulo1Done} label="Finalizado M1" color="#22c55e" />
+        <StatusRow value={modulo2Plus} label="Finalizado 2M2" color="#06b6d4" />
       </div>
     </div>
   );

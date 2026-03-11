@@ -10,4 +10,9 @@ public class UpdateUserReq {
     private Integer riskScore;
     private String riskProfile;
     private String actorVial;
+    private String genero;
+    private String ageRange;
+    private String differentialFocus;
+    private String department;
+    private String municipality;
 }
