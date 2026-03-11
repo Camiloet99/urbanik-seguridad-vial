@@ -2,20 +2,19 @@
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
-const COLORS_SUBREGION = ["#5D5FEF", "#29C6F8", "#A855F7", "#facc15"];
-const COLORS_GENERO = ["#38bdf8", "#fbbf24"];
-const COLORS_EDAD = ["#a3e635", "#f97316", "#ef4444"];
-const COLORS_ENFOQUE = [
-  "#22c55e",
-  "#eab308",
-  "#8b5cf6",
-  "#ec4899",
-  "#0ea5e9",
-  "#9ca3af",
+// ── Paletas ────────────────────────────────────────────────────────────────────
+const COLORS_MUN = [
+  "#f97316", "#29C6F8", "#A855F7", "#facc15",
+  "#22c55e", "#ef4444", "#38bdf8", "#ec4899",
+  "#a3e635", "#0ea5e9", "#fb923c", "#818cf8",
 ];
+const COLORS_GENERO = ["#38bdf8", "#f472b6", "#a855f7", "#9ca3af"];
+const COLORS_EDAD   = ["#a3e635", "#f97316", "#ef4444", "#29C6F8", "#facc15"];
+const COLORS_ENFOQUE = ["#22c55e", "#eab308", "#8b5cf6", "#ec4899", "#0ea5e9", "#f97316", "#9ca3af"];
 
-function buildPercentSeries(counts) {
-  const total = Object.values(counts).reduce((acc, v) => acc + v, 0) || 1;
+// ── Helpers ────────────────────────────────────────────────────────────────────
+function buildSeries(counts) {
+  const total = Object.values(counts).reduce((a, v) => a + v, 0) || 1;
   return Object.entries(counts)
     .map(([label, count]) => ({
       label,
@@ -25,194 +24,128 @@ function buildPercentSeries(counts) {
     .sort((a, b) => b.count - a.count);
 }
 
-// 🔹 Normaliza subregión: agrupa ignore case y devuelve un label “bonito”
-function normalizeSubregion(raw) {
-  const value = (raw || "").trim();
-  if (!value) return "Sin subregión";
+const toLabel = (slug) =>
+  slug
+    ? slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+    : "Sin dato";
 
-  const upper = value.toUpperCase();
+const GENERO_MAP = {
+  male:             "Masculino",
+  female:           "Femenino",
+  "non-binary":     "No binario/a",
+  "prefer-not-say": "Prefiero no decirlo",
+};
 
-  switch (upper) {
-    case "BAJO CAUCA":
-      return "Bajo Cauca";
-    case "MAGDALENA MEDIO":
-      return "Magdalena Medio";
-    case "NORDESTE":
-      return "Nordeste";
-    case "NORTE":
-      return "Norte";
-    case "OCCIDENTE":
-      return "Occidente";
-    case "ORIENTE":
-      return "Oriente";
-    case "SUROESTE":
-      return "Suroeste";
-    case "URABA":
-    case "URABÁ":
-      return "Uraba";
-    case "VALLE DEL ABURRA":
-    case "VALLE DEL ABURRÁ":
-      return "Valle del Aburra";
-    default:
-      // Si no está mapeada, devolvemos tal cual venía, pero sin espacios extra
-      return value;
-  }
+const AGE_LABEL = {
+  "16-25": "16 – 25 años",
+  "16-24": "16 – 24 años",
+  "25-34": "25 – 34 años",
+  "35-59": "35 – 59 años",
+  "60+":   "60+ años",
+};
+
+const FOCUS_MAP = {
+  lgbtiq:           "Población LGBTIQ+",
+  ethnic:           "Población étnica",
+  "armed-conflict": "Víctima del conflicto",
+  disability:       "Persona con discapacidad",
+  "female-head":    "Mujer cabeza de hogar",
+  none:             "Ninguno",
+  "prefer-not-say": "Prefiero no decirlo",
+};
+
+// ── Donut cónico ───────────────────────────────────────────────────────────────
+function buildDonut(series, colors) {
+  if (!series.length) return "conic-gradient(from -90deg, #4f46e5 0 100%)";
+  const total = series.reduce((a, s) => a + s.count, 0) || 1;
+  let acc = 0;
+  const segs = series.map((s, i) => {
+    const start = acc;
+    acc += (s.count / total) * 100;
+    const color = colors[i] || colors[colors.length - 1] || "#64748b";
+    return `${color} ${start}% ${acc}%`;
+  });
+  return `conic-gradient(from -90deg, ${segs.join(",")})`;
 }
 
+// ── Animación ──────────────────────────────────────────────────────────────────
+const variants = {
+  enter:  (d) => ({ opacity: 0, x: d > 0 ?  32 : -32 }),
+  center:      ({ opacity: 1, x: 0 }),
+  exit:   (d) => ({ opacity: 0, x: d > 0 ? -32 :  32 }),
+};
+
+// ══════════════════════════════════════════════════════════════════════════════
 export default function ParticipationSliderCard({ users }) {
-  const [index, setIndex] = useState(0);
-  const [direction, setDirection] = useState(1); // 1 → derecha, -1 → izquierda
+  const [index,     setIndex]     = useState(0);
+  const [direction, setDirection] = useState(1);
 
   const slides = useMemo(() => {
-    // Subregión (agrupando ignore case)
-    const subregionCounts = users.reduce((acc, u) => {
-      const key = normalizeSubregion(u.subregion);
+    // ── Municipio ────────────────────────────────────────────────────────────
+    const munCounts = users.reduce((acc, u) => {
+      const key = toLabel(u.municipality ?? u.municipio);
       acc[key] = (acc[key] || 0) + 1;
       return acc;
     }, {});
-    const subregionSeries = buildPercentSeries(subregionCounts);
+    const munSeries = buildSeries(munCounts);
 
-    // Género
-    const generoCounts = users.reduce((acc, u) => {
-      const raw = (u.genero || "").toUpperCase();
-      let key = raw;
-      if (raw.includes("MASC")) key = "Hombres";
-      if (raw.includes("FEM")) key = "Mujeres";
-      if (!key) key = "Sin dato";
+    // ── Género ───────────────────────────────────────────────────────────────
+    const genCounts = users.reduce((acc, u) => {
+      const raw = (u.genero || "").toLowerCase().trim();
+      const key = GENERO_MAP[raw] || toLabel(raw) || "Sin dato";
       acc[key] = (acc[key] || 0) + 1;
       return acc;
     }, {});
-    const generoSeries = buildPercentSeries(generoCounts);
+    const genSeries = buildSeries(genCounts);
 
-    // Edad (rangos)
-    const edadCounts = users.reduce(
-      (acc, u) => {
-        const edad = typeof u.edad === "number" ? u.edad : parseInt(u.edad, 10);
-        if (!edad || Number.isNaN(edad)) {
-          acc["Sin dato"] = (acc["Sin dato"] || 0) + 1;
-          return acc;
-        }
-        if (edad <= 17) acc["15 - 17"] = (acc["15 - 17"] || 0) + 1;
-        else if (edad <= 24) acc["18 - 24"] = (acc["18 - 24"] || 0) + 1;
-        else acc["25 en adelante"] = (acc["25 en adelante"] || 0) + 1;
-        return acc;
-      },
-      { "15 - 17": 0, "18 - 24": 0, "25 en adelante": 0 }
-    );
-    const edadSeries = buildPercentSeries(edadCounts);
+    // ── Rango de edad ────────────────────────────────────────────────────────
+    const edadCounts = users.reduce((acc, u) => {
+      const raw = (u.ageRange ?? u.edad ?? "").toString().trim();
+      const key = AGE_LABEL[raw] || raw || "Sin dato";
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
+    const edadSeries = buildSeries(edadCounts);
 
-    // Enfoque diferencial
+    // ── Enfoque diferencial ────────────────────────────────────────────────────────────────
     const enfoqueCounts = users.reduce((acc, u) => {
-      const key = u.enfoqueDiferencial || "No aplica";
+      const raw = (u.differentialFocus ?? u.enfoqueDiferencial ?? "").toLowerCase().trim();
+      const key = FOCUS_MAP[raw] || toLabel(raw) || "Sin dato";
       acc[key] = (acc[key] || 0) + 1;
       return acc;
     }, {});
-    const enfoqueSeries = buildPercentSeries(enfoqueCounts);
+    const enfoqueSeries = buildSeries(enfoqueCounts);
 
     return [
-      {
-        key: "subregion",
-        title: "% de participación por subregión",
-        series: subregionSeries,
-        colors: COLORS_SUBREGION,
-      },
-      {
-        key: "genero",
-        title: "% de participación por género",
-        series: generoSeries,
-        colors: COLORS_GENERO,
-      },
-      {
-        key: "edad",
-        title: "% de participación por edad",
-        series: edadSeries,
-        colors: COLORS_EDAD,
-      },
-      {
-        key: "enfoque",
-        title: "% de participación enfoque diferencial",
-        series: enfoqueSeries,
-        colors: COLORS_ENFOQUE,
-      },
+      { key: "municipio", title: "% de participación por municipio",        series: munSeries,     colors: COLORS_MUN     },
+      { key: "genero",    title: "% de participación por género",            series: genSeries,     colors: COLORS_GENERO  },
+      { key: "edad",      title: "% de participación por rango de edad",     series: edadSeries,    colors: COLORS_EDAD    },
+      { key: "enfoque",   title: "% de participación por enfoque diferencial", series: enfoqueSeries, colors: COLORS_ENFOQUE },
     ];
   }, [users]);
 
-  const totalSlides = slides.length;
+  const total   = slides.length;
   const current = slides[index] ?? slides[0];
 
-  const handlePrev = () => {
-    setDirection(-1);
-    setIndex((prev) => (prev - 1 + totalSlides) % totalSlides);
-  };
-
-  const handleNext = () => {
-    setDirection(1);
-    setIndex((prev) => (prev + 1) % totalSlides);
-  };
+  const prev = () => { setDirection(-1); setIndex((i) => (i - 1 + total) % total); };
+  const next = () => { setDirection( 1); setIndex((i) => (i + 1)         % total); };
 
   if (!current) return null;
 
-  const donutGradient = (() => {
-    const series = current.series || [];
-    if (!series.length) {
-      return "conic-gradient(from -90deg, #4f46e5 0 100%)";
-    }
-
-    const total = series.reduce((acc, item) => acc + item.count, 0) || 1;
-    let accPercent = 0;
-    const segments = series.map((item, idx) => {
-      const fraction = item.count / total;
-      const start = accPercent;
-      const end = accPercent + fraction * 100;
-      accPercent = end;
-      const color =
-        current.colors[idx] ||
-        current.colors[current.colors.length - 1] ||
-        "#64748b";
-      return `${color} ${start}% ${end}%`;
-    });
-
-    return `conic-gradient(from -90deg, ${segments.join(",")})`;
-  })();
-
-  const variants = {
-    enter: (dir) => ({
-      opacity: 0,
-      x: dir > 0 ? 32 : -32,
-    }),
-    center: {
-      opacity: 1,
-      x: 0,
-    },
-    exit: (dir) => ({
-      opacity: 0,
-      x: dir > 0 ? -32 : 32,
-    }),
-  };
+  const donut = buildDonut(current.series, current.colors);
 
   return (
-    <div className="rounded-[32px] bg-[#2a2e40] border border-black/20 px-6 py-5 md:px-7 md:py-6 shadow-[0_16px_36px_rgba(0,0,0,0.45)] overflow-hidden">
-      {/* Header con flechas y título */}
-      <div className="mb-4 flex items-center justify-between">
+    <div className="rounded-[32px] bg-[#2a2e40] border border-black/20 px-6 py-4 md:px-7 shadow-[0_16px_36px_rgba(0,0,0,0.45)] overflow-hidden">
+
+      {/* ── Header ─────────────────────────────────────────────────────────── */}
+      <div className="mb-3 flex items-center justify-between">
         <button
-          type="button"
-          onClick={handlePrev}
+          type="button" onClick={prev}
           className="grid h-8 w-8 place-items-center rounded-full bg-white/5 text-white/70 hover:bg-white/10 transition"
         >
           <span className="sr-only">Anterior</span>
-          <svg
-            className="h-4 w-4"
-            viewBox="0 0 20 20"
-            fill="none"
-            aria-hidden="true"
-          >
-            <path
-              d="M12.5 4.5L7 10l5.5 5.5"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
+          <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M12.5 4.5L7 10l5.5 5.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
 
@@ -221,27 +154,17 @@ export default function ParticipationSliderCard({ users }) {
         </h3>
 
         <button
-          type="button"
-          onClick={handleNext}
+          type="button" onClick={next}
           className="grid h-8 w-8 place-items-center rounded-full bg-white/5 text-white/70 hover:bg-white/10 transition"
         >
           <span className="sr-only">Siguiente</span>
-          <svg
-            className="h-4 w-4"
-            viewBox="0 0 20 20"
-            fill="none"
-            aria-hidden="true"
-          >
-            <path
-              d="M7.5 4.5L13 10l-5.5 5.5"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
+          <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M7.5 4.5L13 10l-5.5 5.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
       </div>
+
+      {/* ── Slide ──────────────────────────────────────────────────────────── */}
       <AnimatePresence custom={direction} mode="wait">
         <motion.div
           key={current.key}
@@ -251,74 +174,65 @@ export default function ParticipationSliderCard({ users }) {
           animate="center"
           exit="exit"
           transition={{ duration: 0.25, ease: "easeOut" }}
-          className="flex flex-col lg:flex-row gap-6 mt-2"
+          className="flex flex-row gap-6 items-center justify-center"
         >
           {/* Donut */}
-          <div className="flex-1 flex items-center justify-center">
+          <div className="flex-shrink-0 flex items-center justify-center">
             <motion.div
               initial={{ scale: 0.92, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
+              animate={{ scale: 1,    opacity: 1  }}
               transition={{ duration: 0.25, ease: "easeOut" }}
-              className="relative h-40 w-40 md:h-48 md:w-48"
+              className="relative h-44 w-44 md:h-52 md:w-52"
             >
-              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-indigo-500/40 to-sky-400/30 blur-xl" />
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-indigo-500/30 to-sky-400/20 blur-xl" />
               <div className="relative flex h-full w-full items-center justify-center">
-                <div className="relative h-[82%] w-[82%] rounded-full bg-[#24293F] border border-white/10 overflow-hidden">
+                <div className="relative h-[84%] w-[84%] rounded-full bg-[#24293F] border border-white/10 overflow-hidden">
                   <div
                     className="absolute inset-0 opacity-90"
-                    style={{ background: donutGradient }}
+                    style={{ background: donut }}
                   />
+                  {/* hueco interior */}
                   <div className="absolute inset-[26%] rounded-full bg-[#1F2336]" />
                 </div>
               </div>
             </motion.div>
           </div>
 
-          {/* Leyenda derecha */}
-          <div className="flex-1 space-y-3">
-            {current.series.map((item, idx) => {
-              const color =
-                current.colors[idx] ||
-                current.colors[current.colors.length - 1] ||
-                "#64748b";
-              return (
-                <div
-                  key={item.label}
-                  className="flex items-center justify-between gap-3"
-                >
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="h-2.5 w-2.5 rounded-full"
-                      style={{ backgroundColor: color }}
-                    />
-                    <span className="text-xs md:text-sm text-white/85">
-                      {item.label}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-[11px] md:text-xs text-white/70">
-                    <span>{item.percent}%</span>
-                    <span className="text-white/40">·</span>
-                    <span>
-                      {item.count}{" "}
-                      {item.count === 1 ? "estudiante" : "estudiantes"}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-
-            {current.series.length === 0 && (
-              <p className="text-xs text_WHITE/60">
-                Aún no hay datos suficientes para esta vista.
-              </p>
+          {/* Leyenda — grid 2 cols */}
+          <div className="shrink-0">
+            {current.series.length === 0 ? (
+              <p className="text-xs text-white/50">Sin datos suficientes.</p>
+            ) : (
+              <div className={`grid gap-x-4 gap-y-2 ${current.series.length > 4 ? "grid-cols-2" : "grid-cols-1"}`}>
+                {current.series.map((item, idx) => {
+                  const color =
+                    current.colors[idx] ||
+                    current.colors[current.colors.length - 1] ||
+                    "#64748b";
+                  return (
+                    <div key={item.label} className="flex items-center gap-1.5 min-w-0">
+                      <span
+                        className="h-2 w-2 flex-shrink-0 rounded-full"
+                        style={{ backgroundColor: color }}
+                      />
+                      <span className="text-[11px] md:text-xs text-white/85 truncate">
+                        {item.label}
+                      </span>
+                      <span className="ml-auto flex-shrink-0 text-[10px] md:text-[11px] text-white/55 whitespace-nowrap">
+                        {item.count}&nbsp;–&nbsp;{item.percent}%
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             )}
           </div>
         </motion.div>
       </AnimatePresence>
-      <div className="mt-4 flex justify-end">
-        <span className="text-xs text-white/60">
-          {index + 1}/{totalSlides}
-        </span>
+
+      {/* ── Contador ───────────────────────────────────────────────────────── */}
+      <div className="mt-2 flex justify-end">
+        <span className="text-xs text-white/50">{index + 1}/{total}</span>
       </div>
     </div>
   );

@@ -7,8 +7,8 @@ import { DEPARTMENTS } from "@/data/colombiaData";
 const DEPT_MAP = Object.fromEntries(DEPARTMENTS.map((d) => [d.value, d.label]));
 
 const GENERO_MAP = {
-  male:              "Hombre",
-  female:            "Mujer",
+  male:              "Masculino",
+  female:            "Femenino",
   "non-binary":      "No binario/a",
   "prefer-not-say":  "Prefiero no decirlo",
 };
