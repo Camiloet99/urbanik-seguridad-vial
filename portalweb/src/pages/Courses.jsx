@@ -331,6 +331,8 @@ export default function Courses() {
                   ctaLabel={smartCtaLabel}
                   onCtaClick={goSmart}
                   ctaNewRow
+                  statusLogoSrc={buildStatusLogoSrc(3, isMonedaEarned(rawProgress, 1))}
+                  onLogoClick={goSmart}
                   quickLinks={[
                     { label: "Personalizar avatar 3D", onClick: () => navigate(avatarDone ? "/profile" : "/profile?setup=1") },
                     { label: "Ir a mi perfil",          onClick: () => navigate("/profile") },

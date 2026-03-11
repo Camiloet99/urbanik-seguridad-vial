@@ -12,16 +12,11 @@ export default function Hero({
   className = "",
   /** @deprecated use quickLinks instead */
   reminder = null,
-  /**
-   * Array of ghost-pill quick-action buttons displayed in the row above the CTA.
-   * Each entry: { label: string, onClick: () => void }
-   */
   quickLinks = [],
-  /**
-   * When true, the CTA is rendered on its own line below the quickLinks row.
-   * When false (default), all pills + CTA share one flex-wrap row.
-   */
   ctaNewRow = false,
+  /** Logo flotante abajo-derecha (igual que CourseCard) */
+  statusLogoSrc = null,
+  onLogoClick = null,
 }) {
   // Merge legacy reminder into quickLinks so old callers still work
   const links = quickLinks.length
@@ -123,6 +118,30 @@ export default function Hero({
           {badge}
         </span>
       )}
+
+      {/* Logo flotante abajo-derecha — mismo patrón que CourseCard */}
+      {statusLogoSrc && (
+        <button
+          type="button"
+          onClick={onLogoClick ?? onCtaClick}
+          className="group absolute bottom-4 right-4 -mb-0.5 p-0 bg-transparent border-0
+                     focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70
+                     transition-transform duration-200 ease-out
+                     hover:scale-105 active:scale-95 cursor-pointer
+                     hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.25)]"
+          aria-label="Abrir"
+        >
+          <img
+            src={statusLogoSrc}
+            alt=""
+            className="h-12 w-auto object-contain select-none pointer-events-none
+                       transition-all duration-200 ease-out
+                       group-hover:-translate-y-[1px] group-hover:brightness-110
+                       group-active:brightness-95"
+            draggable={false}
+          />
+        </button>
+      )}
     </section>
   );
 }
@@ -135,6 +154,8 @@ Hero.propTypes = {
   bgImage: PropTypes.string,
   badge: PropTypes.string,
   className: PropTypes.string,
+  statusLogoSrc: PropTypes.string,
+  onLogoClick: PropTypes.func,
   quickLinks: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string.isRequired,

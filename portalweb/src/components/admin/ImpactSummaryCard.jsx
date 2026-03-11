@@ -40,7 +40,7 @@ export default function ImpactSummaryCard({ total, completed, inProgress }) {
         <img
           src={estudiantesImg}
           alt="Estudiantes"
-          className="h-9 sm:h-12 lg:h-14 w-auto object-contain"
+          className="h-9 sm:h-4 lg:h-10 w-auto object-contain"
           draggable={false}
         />
       </div>
@@ -51,8 +51,8 @@ export default function ImpactSummaryCard({ total, completed, inProgress }) {
           {total}
         </span>
         <div className="flex flex-col justify-center leading-tight text-xs sm:text-sm text-center sm:text-left">
-          <p className="text-white/85">Estudiantes</p>
-          <p className="text-white/85">impactados</p>
+          <p className="text-white/85">Usuarios</p>
+          <p className="text-white/85">registrados</p>
         </div>
       </div>
 
