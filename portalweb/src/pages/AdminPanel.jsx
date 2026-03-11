@@ -120,22 +120,27 @@ export default function AdminPanel() {
   }, [allUsers, page, size]);
 
   // Métricas globales usando SOLO participantes (sin admin)
-  const { total, completed, inProgress } = useMemo(() => {
+  const { total, modulo1Done, modulo2Plus } = useMemo(() => {
     const total = participants.length;
-    let completed = 0;
-    let inProgress = 0;
+    let modulo1Done = 0;
+    let modulo2Plus = 0;
 
     participants.forEach((u) => {
-      const progress = getProgressFromStatus(u.experienceStatus);
-
-      if (progress >= 100) {
-        completed += 1;
-      } else {
-        inProgress += 1;
+      // Módulo 1 es el índice 0 en modulosDone
+      if (Array.isArray(u.modulosDone) && u.modulosDone[0] === true) {
+        modulo1Done += 1;
+      }
+      
+      // Módulo 2+ es si al menos uno de los índices 1-5 es true
+      if (Array.isArray(u.modulosDone)) {
+        const hasModulo2Plus = u.modulosDone.slice(1).some(done => done === true);
+        if (hasModulo2Plus) {
+          modulo2Plus += 1;
+        }
       }
     });
 
-    return { total, completed, inProgress };
+    return { total, modulo1Done, modulo2Plus };
   }, [participants]);
 
   const handlePageChange = (nextPage) => {
@@ -158,8 +163,8 @@ export default function AdminPanel() {
         <div className="order-2 lg:order-1 flex flex-col gap-6">
           <ImpactSummaryCard
             total={total}
-            completed={completed}
-            inProgress={inProgress}
+            modulo1Done={modulo1Done}
+            modulo2Plus={modulo2Plus}
           />
           <ParticipationSliderCard users={participants} />
         </div>
