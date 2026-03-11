@@ -189,6 +189,12 @@ export function buildMonedaMap(progress) {
   return map;
 }
 
+/** Marks medal N (1-6) as earned after the Pixel Streaming experience reports it. */
+export async function submitMedal(numero) {
+  const token = getAuthToken();
+  return http.patch("/progress/me/medals", { numero }, { token });
+}
+
 /** Marks avatar as configured on the backend (dedicated convenience endpoint). */
 export async function submitAvatarDone() {
   const token = getAuthToken();
@@ -342,7 +348,7 @@ export async function submitDiagnostico(result) {
       ),
       http.put(
         "/users/me",
-        { riskScore: result.score, riskProfile: result.profile },
+        { riskScore: result.score, riskProfile: result.profile, actorVial: result.responses?.actorVial ?? null },
         { token }
       ),
     ]);

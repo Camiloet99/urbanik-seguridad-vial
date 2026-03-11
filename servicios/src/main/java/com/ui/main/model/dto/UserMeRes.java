@@ -33,6 +33,7 @@ public class UserMeRes {
     private String role;
     private Integer riskScore;
     private String riskProfile;
+    private String actorVial;
 
     public static UserMeRes of(UserEntity u) {
         return UserMeRes.builder()
@@ -47,6 +48,7 @@ public class UserMeRes {
                 .programa(u.getPrograma()).nivel(u.getNivel())
                 .avatarId(u.getAvatarId()).role(u.getRole())
                 .riskScore(u.getRiskScore()).riskProfile(u.getRiskProfile())
+                .actorVial(u.getActorVial())
                 .build();
     }
 }

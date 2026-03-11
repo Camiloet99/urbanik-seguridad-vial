@@ -82,6 +82,9 @@ public class UserEntity {
     @Column("risk_profile")
     private String riskProfile;
 
+    @Column("actor_vial")
+    private String actorVial;
+
     @Column("created_at")
     private LocalDateTime createdAt;
 

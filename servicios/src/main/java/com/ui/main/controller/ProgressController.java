@@ -55,6 +55,21 @@ public class ProgressController {
                 .then();
     }
 
+    /**
+     * Marks a medal (1-6) as earned for the authenticated user.
+     * Called from the frontend when the Pixel Streaming experience reports a medal.
+     * Body: { "numero": 1 }
+     */
+    @PatchMapping("/me/medals")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public Mono<Void> markMedal(Mono<Authentication> auth,
+                                @RequestBody Mono<MedalMarkReq> body) {
+        return auth.map(a -> (String) a.getPrincipal())
+                .zipWith(body)
+                .flatMap(t -> progress.markMedalDone(t.getT1(), t.getT2().numero()))
+                .then();
+    }
+
     /** Convenience endpoint — marks the user's avatar as configured for the first time. */
     @PostMapping("/me/avatar")
     @ResponseStatus(HttpStatus.NO_CONTENT)

@@ -347,7 +347,14 @@ export default function CourseDetail() {
 
             {/* Experiencia gamificada */}
             <div className="rounded-[22px] ring-1 ring-white/10 bg-white/5 overflow-hidden">
-              <div className="relative h-[260px]">
+              <div
+                className="relative h-[260px] bg-cover bg-center"
+                style={{
+                  backgroundImage: modulo
+                    ? `url(${new URL(`../assets/courses/modules/module${modulo}.png`, import.meta.url).href})`
+                    : undefined,
+                }}
+              >
                 <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/20 to-transparent" />
                 <div className="absolute inset-0 flex items-center justify-center">
                   <LockedTooltip
@@ -367,7 +374,14 @@ export default function CourseDetail() {
                       disabled={!experienceCanPlay}
                       aria-label="Entrar a la experiencia"
                     >
-                      &#9654;
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        className="w-7 h-7 translate-x-0.5 text-white"
+                        aria-hidden="true"
+                      >
+                        <path d="M6 4.75a.75.75 0 0 1 1.14-.638l12 7.25a.75.75 0 0 1 0 1.276l-12 7.25A.75.75 0 0 1 6 19.25V4.75Z" />
+                      </svg>
                     </button>
                   </LockedTooltip>
                 </div>

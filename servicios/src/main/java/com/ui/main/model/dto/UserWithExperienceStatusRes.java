@@ -1,6 +1,9 @@
 package com.ui.main.model.dto;
 
 import com.ui.main.repository.entity.UserEntity;
+import com.ui.main.repository.entity.UserProgressEntity;
+
+import java.util.List;
 
 public record UserWithExperienceStatusRes(
         Long id,
@@ -20,9 +23,12 @@ public record UserWithExperienceStatusRes(
         String department,
         String phone,
         Integer riskScore,
-        String riskProfile
+        String riskProfile,
+        String actorVial,
+        List<Boolean> modulosDone
 ) {
-    public static UserWithExperienceStatusRes of(UserEntity u, int experienceStatus) {
+    public static UserWithExperienceStatusRes of(
+            UserEntity u, int experienceStatus, List<Boolean> modulosDone) {
         return new UserWithExperienceStatusRes(
                 u.getId(),
                 u.getEmail(),
@@ -41,7 +47,9 @@ public record UserWithExperienceStatusRes(
                 u.getDepartment(),
                 u.getPhone(),
                 u.getRiskScore(),
-                u.getRiskProfile()
+                u.getRiskProfile(),
+                u.getActorVial(),
+                modulosDone
         );
     }
 }

@@ -8,9 +8,19 @@ const COLORS_MUN = [
   "#22c55e", "#ef4444", "#38bdf8", "#ec4899",
   "#a3e635", "#0ea5e9", "#fb923c", "#818cf8",
 ];
-const COLORS_GENERO = ["#38bdf8", "#f472b6", "#a855f7", "#9ca3af"];
-const COLORS_EDAD   = ["#a3e635", "#f97316", "#ef4444", "#29C6F8", "#facc15"];
+const COLORS_GENERO  = ["#38bdf8", "#f472b6", "#a855f7", "#9ca3af"];
+const COLORS_EDAD    = ["#a3e635", "#f97316", "#ef4444", "#29C6F8", "#facc15"];
 const COLORS_ENFOQUE = ["#22c55e", "#eab308", "#8b5cf6", "#ec4899", "#0ea5e9", "#f97316", "#9ca3af"];
+const COLORS_ACTOR   = ["#29C6F8", "#f97316", "#A855F7", "#facc15", "#22c55e", "#ef4444"];
+
+const ACTOR_VIAL_LABEL = {
+  "peatón":            "Peatón",
+  "motociclista":      "Motociclista",
+  "ciclista":          "Ciclista",
+  "micromovilidad":    "Micromovilidad",
+  "conductor_liviano": "Vehículo particular",
+  "conductor_pesado":  "Transporte Carga – Pasajeros",
+};
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 function buildSeries(counts) {
@@ -115,12 +125,20 @@ export default function ParticipationSliderCard({ users }) {
       return acc;
     }, {});
     const enfoqueSeries = buildSeries(enfoqueCounts);
-
+    // ── Actor vial ────────────────────────────────────────────────────────────────────────────────────
+    const actorCounts = users.reduce((acc, u) => {
+      const raw = (u.actorVial ?? "").toLowerCase().trim();
+      const key = ACTOR_VIAL_LABEL[raw] || toLabel(raw) || "Sin dato";
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
+    const actorSeries = buildSeries(actorCounts);
     return [
-      { key: "municipio", title: "% de participación por municipio",        series: munSeries,     colors: COLORS_MUN     },
-      { key: "genero",    title: "% de participación por género",            series: genSeries,     colors: COLORS_GENERO  },
-      { key: "edad",      title: "% de participación por rango de edad",     series: edadSeries,    colors: COLORS_EDAD    },
+      { key: "municipio", title: "% de participación por municipio",          series: munSeries,     colors: COLORS_MUN     },
+      { key: "genero",    title: "% de participación por género",              series: genSeries,     colors: COLORS_GENERO  },
+      { key: "edad",      title: "% de participación por rango de edad",       series: edadSeries,    colors: COLORS_EDAD    },
       { key: "enfoque",   title: "% de participación por enfoque diferencial", series: enfoqueSeries, colors: COLORS_ENFOQUE },
+      { key: "actor",     title: "% de avance por actor vial",                 series: actorSeries,   colors: COLORS_ACTOR   },
     ];
   }, [users]);
 

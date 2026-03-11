@@ -9,4 +9,5 @@ public class UpdateUserReq {
     private Integer avatarId;
     private Integer riskScore;
     private String riskProfile;
+    private String actorVial;
 }
