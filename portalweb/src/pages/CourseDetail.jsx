@@ -1,5 +1,6 @@
 ﻿import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
+import CertificateModal from "@/components/courses/CertificateModal";
 import {
   getMyProgress,
   getModuleProgress,
@@ -37,7 +38,7 @@ export default function CourseDetail() {
   const [quizModalOpen, setQuizModalOpen] = useState(null);
   // Locally-tracked quiz failures (quizNum) so the button turns red on fail
   const [localQuizFailed, setLocalQuizFailed] = useState(() => new Set());
-
+  const [certModal, setCertModal] = useState(null);
   const fetchProgress = async () => {
     try {
       const p = await getMyProgress();
@@ -266,12 +267,7 @@ export default function CourseDetail() {
                 disabled={!moduleCertUnlocked}
                 onClick={() => {
                   if (!moduleCertUnlocked) return;
-                  const a = document.createElement("a");
-                  a.href = `/documents/certificado-modulo-${modulo}.pdf`;
-                  a.download = `certificado-modulo-${modulo}.pdf`;
-                  document.body.appendChild(a);
-                  a.click();
-                  a.remove();
+                  setCertModal({ type: "modulo", n: modulo });
                 }}
                 className={[
                   "w-full flex items-center justify-between gap-3",
@@ -542,6 +538,7 @@ export default function CourseDetail() {
       />
 
       {/* Resource quiz modal */}
+      <CertificateModal certConfig={certModal} onClose={() => setCertModal(null)} />
       {quizModalOpen && (
         <ResourceQuizModal
           modulo={modulo}

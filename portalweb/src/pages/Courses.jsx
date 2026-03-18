@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
+import CertificateModal from "@/components/courses/CertificateModal";
 import { motion, AnimatePresence } from "framer-motion";
 import Hero from "@/components/courses/Hero";
 import CourseCard, { CardIcons } from "@/components/courses/CourseCard";
@@ -92,6 +93,7 @@ export default function Courses() {
   const [diagDone, setDiagDone] = useState(() => isDiagnosticoDone());
   const [avatarDone, setAvatarDone] = useState(() => isAvatarConfigured());
   const [loading, setLoading] = useState(true);
+  const [certModal, setCertModal] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
@@ -432,12 +434,7 @@ export default function Courses() {
                       disabled={!certificateStatus.unlocked}
                       onClick={() => {
                         if (!certificateStatus.unlocked) return;
-                        const a = document.createElement("a");
-                        a.href = "/documents/certificado-seguridad-vial.pdf";
-                        a.download = "certificado-seguridad-vial.pdf";
-                        document.body.appendChild(a);
-                        a.click();
-                        a.remove();
+                        setCertModal({ type: "general" });
                       }}
                       className={[
                         "w-full flex items-center justify-between gap-3",
@@ -534,6 +531,7 @@ export default function Courses() {
           </motion.div>
         )}
       </AnimatePresence>
+      <CertificateModal certConfig={certModal} onClose={() => setCertModal(null)} />
 
       <style>{`@keyframes shimmer { 100% { transform: translateX(100%); } }`}</style>
     </div>

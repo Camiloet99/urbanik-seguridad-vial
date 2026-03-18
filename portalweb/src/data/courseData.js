@@ -46,7 +46,7 @@ export const COURSE_DATA = {
     subtitle: "Protege tu vida y la de los demás en la vía pública",
     bgImage: card2,
     locked: false,
-    shareId: "TODO shareId para módulo 2",
+    shareId: "share-32824f53-1f59-4c81-a3fd-29deabed7f02",
     introPdf: "modulo-2/intro.pdf",
     resources: [
       {
