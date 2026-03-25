@@ -15,7 +15,7 @@ export const COURSE_DATA = {
     subtitle: "Conoce el sistema vial y tus responsabilidades como actor vial",
     bgImage: card1,
     locked: false,
-    shareId: "share-658d10c5-cdbd-4a26-9477-e60f9768a2f2",
+    shareId: "share-d3591ded-3f11-4f7d-ae52-02fd1901a7c4",
     introPdf: "modulo-1/intro.pdf",
     resources: [
       {
