@@ -252,7 +252,7 @@ export default function Courses() {
   const cards = useMemo(() => {
     return cardsBase.map((c, i) => {
       const isCompleted = progressMap.get(c.key) ?? false;
-      const statusLogoSrc = buildStatusLogoSrc(i, isCompleted);
+      const statusLogoSrc = buildStatusLogoSrc(i + 1, isCompleted);
       // Destructure key out so it is never spread into JSX props
       const { key, ...rest } = c;
       return {
@@ -333,7 +333,7 @@ export default function Courses() {
                   ctaLabel={smartCtaLabel}
                   onCtaClick={goSmart}
                   ctaNewRow
-                  statusLogoSrc={buildStatusLogoSrc(3, isMonedaEarned(rawProgress, 1))}
+                  statusLogoSrc={buildStatusLogoSrc(0, isMonedaEarned(rawProgress, 1))}
                   onLogoClick={goSmart}
                   quickLinks={[
                     { label: "Personalizar avatar 3D", onClick: () => navigate(avatarDone ? "/profile" : "/profile?setup=1") },
