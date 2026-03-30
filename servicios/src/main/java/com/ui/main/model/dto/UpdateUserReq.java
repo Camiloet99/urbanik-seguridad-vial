@@ -15,4 +15,6 @@ public class UpdateUserReq {
     private String differentialFocus;
     private String department;
     private String municipality;
+    private String documentType;
+    private String dni; 
 }

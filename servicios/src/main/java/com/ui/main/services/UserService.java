@@ -33,6 +33,9 @@ public class UserService {
             if (req.getDifferentialFocus()  != null) u.setDifferentialFocus(req.getDifferentialFocus());
             if (req.getDepartment()         != null) u.setDepartment(req.getDepartment());
             if (req.getMunicipality()       != null) u.setMunicipality(req.getMunicipality());
+            if (req.getDocumentType() != null) u.setDocumentType(req.getDocumentType());
+            if (req.getDni()          != null) u.setDni(req.getDni());
+            
             return users.save(u);
         });
     }
