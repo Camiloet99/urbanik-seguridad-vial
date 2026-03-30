@@ -50,8 +50,7 @@ const DOC_TYPES = [
   { value: "CE",  label: "Cédula de Extranjería",           display: "C.E."  },
   { value: "TI",  label: "Tarjeta de Identidad",            display: "T.I."  },
   { value: "PP",  label: "Pasaporte",                       display: "PP"    },
-  { value: "NIT", label: "NIT",                             display: "NIT"   },
-  { value: "PEP", label: "Permiso Especial de Permanencia", display: "PEP"   },
+
 ];
 function displayDoc(v) { return DOC_TYPES.find((d) => d.value === v)?.display ?? v ?? "C.C."; }
 function labelDoc(v)   { return DOC_TYPES.find((d) => d.value === v)?.label   ?? v ?? ""; }
