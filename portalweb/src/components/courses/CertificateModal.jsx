@@ -155,7 +155,7 @@ async function generatePdf({ certConfig, nombre, tipoDoc, numDoc }) {
   /* Fecha — abajo izquierda, tamaño 9 */
   page.drawText(fechaHoy(), {
     x: 220,
-    y: height - 510,
+    y: height - 517,
     size: 13,
     font: fontNormal,
     color: white,
