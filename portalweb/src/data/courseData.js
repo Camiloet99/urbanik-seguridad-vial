@@ -8,6 +8,8 @@ import card1 from "@/assets/courses/card-1.png";
 import card2 from "@/assets/courses/card-2.jpg";
 import card3 from "@/assets/courses/card-3.jpg";
 import card4 from "@/assets/courses/card-4.jpg";
+import card5 from "@/assets/courses/card-5.jpg";
+import card6 from "@/assets/courses/card-6.jpg";
 
 export const COURSE_DATA = {
   "fundamentos-seguridad-vial": {
@@ -137,7 +139,7 @@ export const COURSE_DATA = {
   "conduccion-segura-automoviles": {
     title: "Conducción Segura en Automóviles",
     subtitle: "Conducción segura y primeros auxilios en la vía",
-    bgImage: card4,
+    bgImage: card5,
     locked: false,
     shareId: "",
     introPdf: "modulo-5/intro.pdf",
@@ -168,7 +170,7 @@ export const COURSE_DATA = {
   "vehiculos-carga-operacion-segura": {
     title: "Vehículos de Carga y Operación Segura",
     subtitle: "Conducción profesional de vehículos pesados rígidos (C2)",
-    bgImage: card4,
+    bgImage: card6,
     locked: false,
     shareId: "",
     introPdf: "modulo-6/intro.pdf",

@@ -16,41 +16,22 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+import { http } from "@/services/http";
 
-/* ── Auth ────────────────────────────────────────────────────────────────── */
-function authHeaders() {
-  try {
-    const raw = localStorage.getItem("session");
-    const token = raw ? (JSON.parse(raw)?.token ?? "") : "";
-    return {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    };
-  } catch {
-    return { "Content-Type": "application/json" };
-  }
-}
-const API = import.meta.env.VITE_API_URL ?? "";
 async function getMe() {
-  const res = await fetch(`${API}/users/me`, { headers: authHeaders() });
-  if (!res.ok) throw new Error();
-  return res.json();
+  return http.get("/users/me");
 }
 async function putMe(body) {
-  const res = await fetch(`${API}/users/me`, {
-    method: "PUT", headers: authHeaders(), body: JSON.stringify(body),
-  });
-  if (!res.ok) throw new Error();
-  return res.json();
+  return http.put("/users/me", body);
 }
-
 /* ── Tipos de documento ──────────────────────────────────────────────────── */
 const DOC_TYPES = [
   { value: "CC",  label: "Cédula de Ciudadanía",            display: "C.C."  },
   { value: "CE",  label: "Cédula de Extranjería",           display: "C.E."  },
-  { value: "TI",  label: "Tarjeta de Identidad",            display: "T.I."  },
-  { value: "PP",  label: "Pasaporte",                       display: "PP"    },
-
+  { value: "TI",  label: "Tarjeta de Identidad",           display: "T.I."  },
+  { value: "PP",  label: "Pasaporte",                      display: "PASAPORTE" },
+  
+  
 ];
 function displayDoc(v) { return DOC_TYPES.find((d) => d.value === v)?.display ?? v ?? "C.C."; }
 function labelDoc(v)   { return DOC_TYPES.find((d) => d.value === v)?.label   ?? v ?? ""; }
@@ -216,13 +197,18 @@ export default function CertificateModal({ certConfig, onClose }) {
   };
 
   const handleSaveEdit = async () => {
-    if (!validate()) return;
-    setStep("saving");
-    try { await putMe({ fullName: nombre.trim(), documentType: tipoDoc, dni: numDoc.trim() }); }
-    catch { setSaveErr("No se pudieron guardar los cambios."); }
-    setEditing(false);
-    setStep("confirm");
-  };
+  if (!validate()) return;
+  setStep("saving");
+  try { 
+    const result = await putMe({ name: nombre.trim() })
+    console.log("PUT exitoso:", result);
+  } catch(e) { 
+    console.log("PUT falló:", e);
+    setSaveErr("No se pudieron guardar los cambios."); 
+  }
+  setEditing(false);
+  setStep("confirm");
+};
 
   const handleDownload = async () => {
     if (!validate()) return;
@@ -253,7 +239,7 @@ export default function CertificateModal({ certConfig, onClose }) {
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ background: "rgba(0,0,0,0.82)", backdropFilter: "blur(8px)" }}
-      onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}
+     
     >
       <div className="relative w-full rounded-2xl bg-[#0b1320] ring-1 ring-white/10 shadow-2xl overflow-hidden"
         style={{ maxWidth: "440px" }}>
