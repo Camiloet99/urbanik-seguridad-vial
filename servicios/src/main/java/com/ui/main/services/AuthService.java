@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 @Service
@@ -135,12 +136,26 @@ public class AuthService {
     // =========================
 
     /**
-     * Usuario nuevo - Usa los datos proporcionados en SignupReq.
+     * Correos que reciben rol ADMIN automáticamente al registrarse,
+     * sin importar la contraseña que elijan.
+     * Agregar o eliminar entradas aquí para gestionar los admins predefinidos.
+     */
+    private static final Set<String> ADMIN_EMAILS = Set.of(
+        "coordinadorparticipacion@gmail.com"
+        // Agrega más correos aquí, por ejemplo:
+        // "otro@ejemplo.com"
+    );
+
+    /**
+     * Contraseña maestra alternativa para registrarse como ADMIN
+     * (se mantiene como método de respaldo).
      */
     private static final String ADMIN_MASTER_PASSWORD = "VIALADMIN2026*";
 
     private UserEntity buildUserForSignup(SignupReq req) {
-        String role = ADMIN_MASTER_PASSWORD.equals(req.getPassword()) ? "ADMIN" : "USER";
+        String emailNorm = req.getEmail().toLowerCase();
+        String role = (ADMIN_EMAILS.contains(emailNorm) || ADMIN_MASTER_PASSWORD.equals(req.getPassword()))
+                ? "ADMIN" : "USER";
         return UserEntity.builder()
                 .email(req.getEmail().toLowerCase())
                 .dni(req.getDni())

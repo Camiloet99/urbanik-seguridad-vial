@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef } from "react";
 import { ArcwareInit } from "@arcware-cloud/pixelstreaming-websdk";
 import { useAuth } from "@/context/AuthContext";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { MdHome } from "react-icons/md";
 import { submitMedal } from "@/services/progressService";
+import { MODULO_TO_COURSE_KEY } from "@/data/moduleTests";
 
 export default function Experience() {
   const { session, loadingAuth } = useAuth();
@@ -20,7 +21,9 @@ export default function Experience() {
   );
 
   const location = useLocation();
+  const navigate = useNavigate();
   const shareId = location.state?.shareId ?? "";
+  const moduloFromState = location.state?.modulo ?? null;
   const containerRef = useRef(null);
 
   const appRef = useRef(null);
@@ -55,6 +58,7 @@ export default function Experience() {
       setTimeout(() => {
         app.emitUIInteraction({ cedula: studentId });
         app.emitUIInteraction({ id_avatar: avatarId });
+        if (moduloFromState != null) app.emitUIInteraction({ nivel: moduloFromState });
       }, 1000);
       setTimeout(() => {
         app.emitUIInteraction({ cedula: studentId });
@@ -184,9 +188,19 @@ export default function Experience() {
             if (match) {
               const numero = parseInt(match[1], 10);
               console.log(`[Medal] medalla ${numero} obtenida — guardando en BD...`);
-              submitMedal(numero).catch((e) =>
-                console.warn(`[Medal] medalla ${numero} no se pudo guardar:`, e)
-              );
+              submitMedal(numero)
+                .catch((e) =>
+                  console.warn(`[Medal] medalla ${numero} no se pudo guardar:`, e)
+                )
+                .finally(() => {
+                  const targetModulo = moduloFromState ?? numero;
+                  const courseKey = MODULO_TO_COURSE_KEY[targetModulo];
+                  if (courseKey) {
+                    navigate(`/courses/${courseKey}`, { replace: true });
+                  } else {
+                    navigate("/courses", { replace: true });
+                  }
+                });
             }
           } catch (e) {
             console.warn("[UE] fallo parseando respuesta:", e);
