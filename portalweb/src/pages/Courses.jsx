@@ -210,13 +210,12 @@ export default function Courses() {
   }, [progress, testFlags, rawProgress]);
 
   const buildStatusLogoSrc = (index, completed) => {
-    const folder = completed ? "complete" : "nocomplete";
-    return new URL(
-      `../assets/courses/${folder}/logo-${index + 1}.png`,
-      import.meta.url
-    ).href;
-  };
-
+  const folder = completed ? "complete" : "nocomplete";
+  return new URL(
+    `../assets/courses/${folder}/logo-${index}.png`,
+    import.meta.url
+  ).href;
+};
   /**
    * Hero CTA:
    *  - test-inicial NOT done → go do it first
@@ -252,7 +251,7 @@ export default function Courses() {
   const cards = useMemo(() => {
     return cardsBase.map((c, i) => {
       const isCompleted = progressMap.get(c.key) ?? false;
-      const statusLogoSrc = buildStatusLogoSrc(i + 1, isCompleted);
+      const statusLogoSrc = buildStatusLogoSrc(i + 2, isCompleted);
       // Destructure key out so it is never spread into JSX props
       const { key, ...rest } = c;
       return {
@@ -333,7 +332,7 @@ export default function Courses() {
                   ctaLabel={smartCtaLabel}
                   onCtaClick={goSmart}
                   ctaNewRow
-                  statusLogoSrc={buildStatusLogoSrc(0, isMonedaEarned(rawProgress, 1))}
+                  statusLogoSrc={buildStatusLogoSrc(1, isMonedaEarned(rawProgress, 1))}
                   onLogoClick={goSmart}
                   quickLinks={[
                     { label: "Personalizar avatar 3D", onClick: () => navigate(avatarDone ? "/profile" : "/profile?setup=1") },
