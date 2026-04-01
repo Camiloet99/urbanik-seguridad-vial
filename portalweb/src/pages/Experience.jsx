@@ -58,7 +58,7 @@ export default function Experience() {
       setTimeout(() => {
         app.emitUIInteraction({ cedula: studentId });
         app.emitUIInteraction({ id_avatar: avatarId });
-        if (moduloFromState != null) app.emitUIInteraction({ nivel: moduloFromState });
+        //if (moduloFromState != null) app.emitUIInteraction({ nivel: moduloFromState });
       }, 1000);
       setTimeout(() => {
         app.emitUIInteraction({ cedula: studentId });

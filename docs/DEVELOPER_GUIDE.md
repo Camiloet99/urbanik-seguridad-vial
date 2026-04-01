@@ -870,7 +870,7 @@ AP --> ADMIN : Renderiza:\n- ImpactSummaryCard\n- ParticipationSliderCard\n- Geo
 ### 9.4 Inyeccion y validacion de entradas
 
 - Los DTOs de entrada usan anotaciones Jakarta Validation (`@Valid`, `@NotBlank`, `@Email`, etc.).
-- `AuthService` aplica validacion adicional con expresiones regulares propias para email y cedula.
+- `AuthService` aplica val idacion adicional con expresiones regulares propias para email y cedula.
 - Las consultas a base de datos usan repositorios R2DBC parametrizados; no existe construccion dinamica de SQL.
 
 ### 9.5 Mecanismo de escalado de privilegios (deuda tecnica critica)

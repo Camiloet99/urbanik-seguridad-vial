@@ -48,7 +48,7 @@ export const COURSE_DATA = {
     subtitle: "Protege tu vida y la de los demás en la vía pública",
     bgImage: card2,
     locked: false,
-    shareId: "share-d3591ded-3f11-4f7d-ae52-02fd1901a7c4",
+    shareId: "share-a0a2c847-9bc4-4500-9d0a-c718e0f556b0",
     introPdf: "modulo-2/intro.pdf",
     resources: [
       {
@@ -79,7 +79,7 @@ export const COURSE_DATA = {
     subtitle: "Bicicletas, patinetas y micromovilidad segura",
     bgImage: card3,
     locked: false,
-    shareId: "share-d3591ded-3f11-4f7d-ae52-02fd1901a7c4",
+    shareId: "share-8bea0cac-7648-4ec5-b654-3a6c15491689",
     introPdf: "modulo-3/intro.pdf",
     resources: [
       {
@@ -110,7 +110,7 @@ export const COURSE_DATA = {
     subtitle: "Domina la vía y protege tu vida sobre dos ruedas",
     bgImage: card4,
     locked: false,
-    shareId: "share-d3591ded-3f11-4f7d-ae52-02fd1901a7c4",
+    shareId: "share-615e66bd-49e3-4b91-8013-abbb9ac46079",
     introPdf: "modulo-4/intro.pdf",
     resources: [
       {
@@ -141,7 +141,7 @@ export const COURSE_DATA = {
     subtitle: "Conducción segura y primeros auxilios en la vía",
     bgImage: card5,
     locked: false,
-    shareId: "share-d3591ded-3f11-4f7d-ae52-02fd1901a7c4",
+    shareId: "share-30c40eff-976e-4bb1-932a-318d7bdf09b5",
     introPdf: "modulo-5/intro.pdf",
     resources: [
       {
@@ -172,7 +172,7 @@ export const COURSE_DATA = {
     subtitle: "Conducción profesional de vehículos pesados rígidos (C2)",
     bgImage: card6,
     locked: false,
-    shareId: "share-d3591ded-3f11-4f7d-ae52-02fd1901a7c4",
+    shareId: "share-50bda840-0441-4413-8694-42307b049772",
     introPdf: "modulo-6/intro.pdf",
     resources: [
       {
