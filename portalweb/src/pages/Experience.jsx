@@ -195,11 +195,7 @@ export default function Experience() {
                 .finally(() => {
                   const targetModulo = moduloFromState ?? numero;
                   const courseKey = MODULO_TO_COURSE_KEY[targetModulo];
-                  if (courseKey) {
-                    navigate(`/courses/${courseKey}`, { replace: true });
-                  } else {
-                    navigate("/courses", { replace: true });
-                  }
+                  window.location.replace(courseKey ? `/courses/${courseKey}` : "/courses");
                 });
             }
           } catch (e) {
