@@ -11,7 +11,7 @@ export const MODULE_TESTS = {
         text: "¿Cuál es el principal objetivo de la seguridad vial?",
         options: [
           { id: "a", text: "Reducir el tráfico vehicular" },
-          { id: "b", text: "Prevenir accidentes y proteger la vida de todos los actores viales" },
+          { id: "b", text: "Prevenir siniestros viales y proteger la vida de todos los actores viales" },
           { id: "c", text: "Aumentar las multas por infracciones" },
           { id: "d", text: "Regular el transporte público" },
         ],
@@ -30,7 +30,7 @@ export const MODULE_TESTS = {
       },
       {
         id: "0i3",
-        text: "¿Qué factor es responsable de la mayoría de los accidentes de tránsito?",
+        text: "¿Qué factor es responsable de la mayoría de los siniestros viales?",
         options: [
           { id: "a", text: "Estado de las vías" },
           { id: "b", text: "Condiciones climáticas" },
@@ -46,7 +46,7 @@ export const MODULE_TESTS = {
           { id: "a", text: "Que sólo los conductores deben ser responsables" },
           { id: "b", text: "Que el sistema vial debe estar diseñado para tolerar los errores humanos" },
           { id: "c", text: "Que los errores en la vía son inevitables y aceptables" },
-          { id: "d", text: "Que hay que aumentar las sanciones para reducir accidentes" },
+          { id: "d", text: "Que hay que aumentar las sanciones para reducir siniestros viales" },
         ],
         correct: "b",
       },
@@ -120,7 +120,7 @@ export const MODULE_TESTS = {
       },
       {
         id: "0e3",
-        text: "¿Cuál de los siguientes hábitos reduce significativamente el riesgo de accidente?",
+        text: "¿Cuál de los siguientes hábitos reduce significativamente el riesgo de siniestro vial?",
         options: [
           { id: "a", text: "Conducir rápido para pasar menos tiempo en la vía" },
           { id: "b", text: "Mantener distancia de seguridad y respetar límites de velocidad" },
@@ -131,9 +131,9 @@ export const MODULE_TESTS = {
       },
       {
         id: "0e4",
-        text: "¿Qué deberías hacer si presencias un accidente de tránsito?",
+        text: "¿Qué deberías hacer si presencias un siniestro vial?",
         options: [
-          { id: "a", text: "Grabar el accidente y publicarlo en redes sociales" },
+          { id: "a", text: "Grabar el siniestro vial y publicarlo en redes sociales" },
           { id: "b", text: "Seguir tu camino para no obstruir el tráfico" },
           { id: "c", text: "Asegurar la escena, llamar a emergencias y prestar primera ayuda si estás capacitado" },
           { id: "d", text: "Mover a los heridos para alejarlos del peligro inmediatamente" },
@@ -145,7 +145,7 @@ export const MODULE_TESTS = {
         text: "¿Qué representa la 'visión cero' en seguridad vial?",
         options: [
           { id: "a", text: "Eliminar todos los vehículos de combustión interna" },
-          { id: "b", text: "La meta de que ningún accidente sea mortal o cause lesiones graves" },
+          { id: "b", text: "La meta de que ningún siniestro vial sea mortal o cause lesiones graves" },
           { id: "c", text: "Prohibir el tránsito nocturno" },
           { id: "d", text: "Reducir el número de vehículos en circulación" },
         ],
@@ -156,7 +156,7 @@ export const MODULE_TESTS = {
         text: "¿Por qué es importante el uso del casco en motociclistas?",
         options: [
           { id: "a", text: "Es solo un requisito legal sin impacto real" },
-          { id: "b", text: "Protege la cabeza y reduce hasta un 70% el riesgo de muerte en accidente" },
+          { id: "b", text: "Protege la cabeza y reduce hasta un 70% el riesgo de muerte en un siniestro vial" },
           { id: "c", text: "Mejora la aerodinámica del conductor" },
           { id: "d", text: "Aumenta la visibilidad del motociclista" },
         ],
@@ -200,7 +200,7 @@ export const MODULE_TESTS = {
     scaleInitial: { minLabel: "No conozco el tema", maxLabel: "Lo conozco perfectamente" },
     scaleExit:    { minLabel: "Sigo con dudas",     maxLabel: "Me siento totalmente capaz" },
     initial: [
-      { id: "1i1", type: "rating", category: "Siniestralidad y Ética",  text: "¿Qué tanto sabes sobre la realidad de los accidentes en Antioquia y de qué manera tu ética personal impacta en la seguridad de todos los actores viales?" },
+      { id: "1i1", type: "rating", category: "Siniestralidad y Ética",  text: "¿Qué tanto sabes sobre la realidad de los siniestros viales en Antioquia y de qué manera tu ética personal impacta en la seguridad de todos los actores viales?" },
       { id: "1i2", type: "rating", category: "Infraestructura",          text: "¿Cómo calificarías tu dominio sobre el uso del urbanismo táctico y el diseño de las calles como herramientas para obligar a reducir la velocidad?" },
       { id: "1i3", type: "rating", category: "Señalización",             text: "¿Cuál es tu grado de familiaridad con las nuevas reglas y tipos de señales (verticales, semáforos y marcas) que establece el Manual de Señalización 2024?" },
       { id: "1i4", type: "rating", category: "Marco Legal",              text: "¿Qué tanta claridad tienes sobre tus obligaciones en el Código Nacional de Tránsito y la verdadera función social del SOAT y la Tecnicomecánica?" },

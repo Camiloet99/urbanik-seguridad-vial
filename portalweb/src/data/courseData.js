@@ -32,7 +32,7 @@ export const COURSE_DATA = {
       },
       {
         id: "pcc-pdf-3",
-        label: "ABC Víctimas en Accidentes de Tránsito",
+        label: "ABC Víctimas de Siniestros Viales",
         fileName: "modulo-1/3_ABC_Victimas_en_accidentes_de_transito.pdf",
       },
       {

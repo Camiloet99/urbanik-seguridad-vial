@@ -36,7 +36,7 @@ function buildSeries(counts) {
 
 const toLabel = (slug) =>
   slug
-    ? slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+    ? slug.replace(/[-_]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
     : "Sin dato";
 
 const GENERO_MAP = {

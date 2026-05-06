@@ -34,7 +34,7 @@ const AGE_MAP = {
 // Capitalize first letter of each word (for raw municipality slugs like "rionegro" → "Rionegro")
 const toLabel = (slug) =>
   slug
-    ? slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+    ? slug.replace(/[-_]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
     : null;
 
 function RiskPill({ profile }) {

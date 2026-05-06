@@ -43,7 +43,7 @@ const AGE_MAP = {
 
 const toLabel = (slug) =>
   slug
-    ? slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+    ? slug.replace(/[-_]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
     : null;
 
 const getProgressFromStatus = (rawStatus) => {

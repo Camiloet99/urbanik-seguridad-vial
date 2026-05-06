@@ -143,7 +143,7 @@ export default function DashboardLayout() {
 
         <nav className="mt-12 flex w-full flex-col items-stretch gap-4">
           <Item to="/courses" imgSrc={homeIcon} label="Inicio" />
-          <Item to="/chat" imgSrc={chatIcon} label="Chat Nio" />
+          <Item to="/chat" imgSrc={chatIcon} label="Chat Nia" />
           {session?.user?.role === "ADMIN" && (
             <Item to="/admin" imgSrc={dataIcon} label="Datos" />
           )}

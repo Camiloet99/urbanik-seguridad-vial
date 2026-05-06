@@ -30,7 +30,7 @@ function ph(modulo, quiz, title) {
     ["el concepto principal de este recurso", "a", "b", "c", "d", "b"],
     ["el objetivo central del documento", "Mejorar trámites", "Proteger la vida y reducir siniestros viales", "Aumentar el parque automotor", "Regular impuestos vehiculares", "a"],
     ["el principal actor responsable de la seguridad vial", "Solo las autoridades", "Solo los conductores", "Todos los actores viales de forma compartida", "Las empresas de transporte", "a"],
-    ["el indicador clave de evaluación del plan", "Ingreso nacional bruto", "Tasa de mortalidad por accidentes de tránsito", "PIB per cápita", "Nivel de urbanización", "a"],
+    ["el indicador clave de evaluación del plan", "Ingreso nacional bruto", "Tasa de mortalidad por siniestros viales", "PIB per cápita", "Nivel de urbanización", "a"],
     ["la definición de factor de riesgo vial", "Una infracción de tránsito sin consecuencias", "Una condición o comportamiento que aumenta la probabilidad de un siniestro", "El valor de la multa por exceso de velocidad", "El número de vehículos en circulación", "a"],
     ["el enfoque de la visión cero aplicado a este recurso", "Aceptar un número tolerable de muertes viales", "Reducir costos del seguro vehicular", "Lograr que ninguna muerte o lesión grave sea aceptable en las vías", "Eliminar todos los vehículos privados", "a"],
     ["la jerarquía de usuarios vulnerables en la vía", "Conductores de vehículos pesados primero", "Peatones, ciclistas y motociclistas tienen prioridad", "Los vehículos de carga tienen prelación absoluta", "Todos los usuarios tienen exactamente el mismo nivel de riesgo", "a"],
@@ -46,7 +46,7 @@ function ph(modulo, quiz, title) {
     ["la fuente de financiación principal para iniciativas de seguridad vial", "Donaciones de empresas privadas únicamente", "Presupuesto nacional, recursos de regalías y aportes del SOAT", "Solo cooperación internacional", "Impuesto a nuevos vehículos eléctricos", "a"],
     ["el indicador de resultado más utilizado en el documento", "Número de vehículos inspeccionados", "Número de fallecidos y heridos graves en siniestros de tránsito", "Cantidad de policías de tránsito capacitados", "Kilómetros de vía construidos anualmente", "a"],
     ["la relación entre velocidad y gravedad de las lesiones según el recurso", "No existe relación comprobada", "A mayor velocidad, exponencialmente mayor probabilidad de muerte o lesion grave", "La velocidad solo afecta en zonas rurales", "Solo importa en motos, no en autos", "a"],
-    ["la meta de reducción de siniestros como referencia en el documento", "Mantener la tasa actual sin variación", "Reducir al menos un 50% las muertes viales en el período del plan", "Eliminar el 100% de accidentes en el primer año", "Aumentar las multas para generar ingresos", "a"],
+    ["la meta de reducción de siniestros como referencia en el documento", "Mantener la tasa actual sin variación", "Reducir al menos un 50% las muertes viales en el período del plan", "Eliminar el 100% de siniestros viales en el primer año", "Aumentar las multas para generar ingresos", "a"],
   ];
 
   return {
@@ -492,11 +492,11 @@ const M1_Q2 = {
 // ---------------------------------------------------------------------------
 
 const M1_Q3 = {
-  title: "Quiz — ABC para las víctimas en accidente de tránsito",
+  title: "Quiz — ABC para las víctimas de siniestros viales",
   questions: [
     {
       id: "m1q3_01",
-      text: "Según el documento, un accidente de tránsito se entiende como:",
+      text: "Según el documento, un siniestro vial se entiende como:",
       options: [
         { id: "a", text: "Cualquier choque donde haya daños materiales, aunque no haya vehículos en movimiento." },
         { id: "b", text: "Un evento generalmente involuntario, generado al menos por un vehículo en movimiento, que causa daños y afecta la circulación." },
@@ -507,7 +507,7 @@ const M1_Q3 = {
     },
     {
       id: "m1q3_02",
-      text: "Para que exista accidente de tránsito con víctima, debe estar involucrado al menos un vehículo automotor. (Verdadero / Falso)",
+      text: "Para que exista un siniestro vial con víctima, debe estar involucrado al menos un vehículo automotor. (Verdadero / Falso)",
       options: [
         { id: "a", text: "Verdadero" },
         { id: "b", text: "Falso" },
@@ -519,7 +519,7 @@ const M1_Q3 = {
       text: "En el documento, \"víctima\" es:",
       options: [
         { id: "a", text: "Solo la persona que iba conduciendo." },
-        { id: "b", text: "Toda persona que sufre daño en su salud como consecuencia de un accidente de tránsito." },
+        { id: "b", text: "Toda persona que sufre daño en su salud como consecuencia de un siniestro vial." },
         { id: "c", text: "Solo quien fallece." },
         { id: "d", text: "Solo quien queda con incapacidad permanente." },
       ],
@@ -3283,7 +3283,7 @@ const M4_Q4 = {
     },
     {
       id: "m4q4_02",
-      text: "El protocolo busca proporcionar herramientas de fácil aplicación a empresas, entidades y trabajadores independientes para reducir accidentes laborales que involucran motocicletas.",
+      text: "El protocolo busca proporcionar herramientas de fácil aplicación a empresas, entidades y trabajadores independientes para reducir siniestros viales laborales que involucran motocicletas.",
       options: [
         { id: "a", text: "Verdadero" },
         { id: "b", text: "Falso" },
