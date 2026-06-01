@@ -6,16 +6,16 @@ import Input from "../Input";
 import SearchableSelect from "../SearchableSelect";
 
 const ALLOWED_MUNICIPALITIES = [
-  { value: "bello", label: "Bello" },
-  { value: "rionegro", label: "Rionegro" },
-  { value: "itagui", label: "Itagüí" },
   { value: "barbosa", label: "Barbosa" },
+  { value: "bello", label: "Bello" },
   { value: "copacabana", label: "Copacabana" },
+  { value: "el_bagre", label: "El Bagre" },
   { value: "envigado", label: "Envigado" },
   { value: "guarne", label: "Guarne" },
+  { value: "itagui", label: "Itagüí" },
   { value: "remedios", label: "Remedios" },
+  { value: "rionegro", label: "Rionegro" },
   { value: "vegachi", label: "Vegachí" },
-  { value: "el_bagre", label: "El Bagre" },
 ];
 
 const variants = {

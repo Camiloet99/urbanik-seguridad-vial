@@ -114,7 +114,7 @@ export const MODULE_TESTS = {
           { id: "a", text: "No influyen; conducir es una actividad únicamente física" },
           { id: "b", text: "El estado emocional afecta la atención, el tiempo de reacción y la toma de decisiones" },
           { id: "c", text: "Solo afectan a conductores novatos" },
-          { id: "d", text: "influyen positivamente: el enojo aumenta la concentración" },
+          { id: "d", text: "Influyen positivamente: el enojo aumenta la concentración" },
         ],
         correct: "b",
       },
