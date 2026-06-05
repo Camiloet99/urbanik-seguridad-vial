@@ -52,8 +52,8 @@ export default function ProgressCard({ progressMap, weights: weightsProp = null,
 
   return (
     <div
-      className={`rounded-[20px] ring-1 ring-white/10 p-5
-                  bg-white/5 backdrop-blur-md
+      className={`rounded-[20px] border border-[#1D4789]/20 p-5
+                  bg-white shadow-[0_4px_16px_rgba(0,0,0,0.08)]
                   flex items-center justify-between gap-4 ${className}`}
     >
       <svg
@@ -67,15 +67,15 @@ export default function ProgressCard({ progressMap, weights: weightsProp = null,
       >
         <defs>
           <radialGradient id="pg-bg" cx="50%" cy="50%" r="60%">
-            <stop offset="0%" stopColor="rgba(91,124,255,0.25)" />
-            <stop offset="60%" stopColor="rgba(22,30,60,0.45)" />
-            <stop offset="100%" stopColor="rgba(11,18,56,0.8)" />
+            <stop offset="0%" stopColor="#6b9fd4" />
+            <stop offset="60%" stopColor="#3a72b8" />
+            <stop offset="100%" stopColor="#1D4789" />
           </radialGradient>
 
           <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#8BE7F0" />
-            <stop offset="45%" stopColor="#5dd3f0" />
-            <stop offset="100%" stopColor="#6B83FF" />
+            <stop offset="0%" stopColor="#7ee8fa" />
+            <stop offset="45%" stopColor="#29C6F8" />
+            <stop offset="100%" stopColor="#0099cc" />
           </linearGradient>
 
           <filter
@@ -95,9 +95,9 @@ export default function ProgressCard({ progressMap, weights: weightsProp = null,
           </filter>
 
           <radialGradient id="pg-inner" cx="50%" cy="50%" r="60%">
-            <stop offset="0%" stopColor="#89B5FF" stopOpacity="0.55" />
-            <stop offset="80%" stopColor="#89B5FF" stopOpacity="0.10" />
-            <stop offset="100%" stopColor="#89B5FF" stopOpacity="0.00" />
+            <stop offset="0%" stopColor="#89c4f0" stopOpacity="1" />
+            <stop offset="80%" stopColor="#5a9fd4" stopOpacity="1" />
+            <stop offset="100%" stopColor="#3a72b8" stopOpacity="1" />
           </radialGradient>
           <filter
             id="innerGlow"
@@ -126,7 +126,7 @@ export default function ProgressCard({ progressMap, weights: weightsProp = null,
           cy={size / 2}
           r={r}
           fill="none"
-          stroke="rgba(255,255,255,0.12)"
+          stroke="rgba(255,255,255,0.3)"
           strokeWidth={stroke}
         />
 
@@ -149,47 +149,23 @@ export default function ProgressCard({ progressMap, weights: weightsProp = null,
 
         <g
           transform={`translate(${size / 2 - 9}, ${size / 2 - 16})`}
-          opacity="0.9"
+          opacity="1"
         >
-          <rect
-            x="0"
-            y="8"
-            width="4"
-            height="16"
-            rx="2"
-            fill="white"
-            opacity="0.8"
-          />
-          <rect
-            x="8"
-            y="0"
-            width="4"
-            height="24"
-            rx="2"
-            fill="white"
-            opacity="0.9"
-          />
-          <rect
-            x="16"
-            y="12"
-            width="4"
-            height="12"
-            rx="2"
-            fill="white"
-            opacity="0.8"
-          />
+          <rect x="0" y="8" width="4" height="16" rx="2" fill="white" opacity="1" />
+          <rect x="8" y="0" width="4" height="24" rx="2" fill="white" opacity="1" />
+          <rect x="16" y="12" width="4" height="12" rx="2" fill="white" opacity="1" />
         </g>
       </svg>
 
       <div className="flex flex-col items-start pr-1">
         <div className="flex items-baseline gap-2 leading-none">
-          <span className="text-4xl font-semibold tracking-tight">
+          <span className="text-4xl font-semibold tracking-tight text-[#1D4789]">
             {targetPercent}%
           </span>
         </div>
-        <span className="text-sm text-white/80 mt-1">Completado</span>
+        <span className="text-sm text-[#1a1a1a] mt-1">Completado</span>
 
-        <div className="mt-3 flex items-center gap-2 text-white/90">
+        <div className="mt-3 flex items-center gap-2 text-[#1D4789]">
           <MdCheckBox className="text-2xl" aria-hidden="true" />
         </div>
       </div>

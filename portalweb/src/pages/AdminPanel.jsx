@@ -171,7 +171,7 @@ export default function AdminPanel() {
       </section>
 
       {/* Tabla paginada: muestra TODOS, incluyendo administrativos */}
-      <section className="hidden md:block">
+      <section>
         <SummaryTableCard
           users={usersPage}
           loading={loading}

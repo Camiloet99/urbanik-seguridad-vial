@@ -91,14 +91,14 @@ function OptionBtn({ label, selected, onClick }) {
       className={[
         "flex items-center gap-3 w-full text-left rounded-xl px-4 py-3 text-sm transition ring-1",
         selected
-          ? "bg-[#00b5e2]/15 ring-[#00b5e2] text-white shadow-[0_4px_14px_rgba(0,181,226,0.2)]"
-          : "bg-white/[0.03] ring-white/10 text-white/75 hover:bg-white/[0.07] hover:ring-white/25",
+          ? "bg-[#1D4789]/10 ring-[#1D4789] text-[#1D4789] shadow-[0_4px_14px_rgba(29,71,137,0.15)]"
+          : "bg-white ring-[#1D4789]/20 text-[#1a1a1a] hover:bg-[#F5F5F6] hover:ring-[#1D4789]/40",
       ].join(" ")}
     >
       <span
         className={[
           "flex-shrink-0 h-5 w-5 rounded-full border-2 grid place-items-center transition",
-          selected ? "border-[#00b5e2] bg-[#00b5e2]" : "border-white/30",
+          selected ? "border-[#1D4789] bg-[#1D4789]" : "border-[#1D4789]/30",
         ].join(" ")}
       >
         {selected && (
@@ -114,18 +114,18 @@ function OptionBtn({ label, selected, onClick }) {
 
 function QuestionBlock({ number, title, subtitle, options, value, onChange, required = false }) {
   return (
-    <div className="rounded-[18px] ring-1 ring-white/10 bg-white/[0.04] p-5 space-y-3">
+    <div className="rounded-[18px] ring-1 ring-[#1D4789]/20 bg-white shadow-[0_4px_16px_rgba(0,0,0,0.06)] p-5 space-y-3">
       <div>
         <div className="flex items-start gap-2">
-          <span className="mt-0.5 flex-shrink-0 h-6 w-6 rounded-full bg-[#00b5e2]/20 text-[#00b5e2] text-xs font-bold grid place-items-center">
+          <span className="mt-0.5 flex-shrink-0 h-6 w-6 rounded-full bg-[#1D4789]/10 text-[#1D4789] text-xs font-bold grid place-items-center">
             {number}
           </span>
-          <p className="text-[15px] font-semibold text-white leading-snug">
+          <p className="text-[15px] font-semibold text-[#1a1a1a] leading-snug">
             {title}
-            {required && <span className="text-red-400 ml-1">*</span>}
+            {required && <span className="text-red-500 ml-1">*</span>}
           </p>
         </div>
-        {subtitle && <p className="mt-1 ml-8 text-xs text-white/55">{subtitle}</p>}
+        {subtitle && <p className="mt-1 ml-8 text-xs text-[#1a1a1a]">{subtitle}</p>}
       </div>
       <div className="ml-0 grid gap-2 sm:grid-cols-2">
         {options.map((opt) => (
@@ -144,9 +144,9 @@ function QuestionBlock({ number, title, subtitle, options, value, onChange, requ
 /** Result modal after submission */
 function ResultModal({ score, profile, onContinue }) {
   const COLOR = {
-    BAJO:  { bg: "bg-emerald-500/15",  text: "text-emerald-300",  border: "ring-emerald-500/40",  emoji: "🟢" },
-    MEDIO: { bg: "bg-amber-500/15",    text: "text-amber-300",    border: "ring-amber-500/40",    emoji: "🟡" },
-    ALTO:  { bg: "bg-red-500/15",      text: "text-red-300",      border: "ring-red-500/40",      emoji: "🔴" },
+    BAJO:  { bg: "bg-emerald-500/10",  text: "text-emerald-700",  border: "ring-emerald-500/40",  emoji: "🟢" },
+    MEDIO: { bg: "bg-amber-500/10",    text: "text-amber-700",    border: "ring-amber-500/40",    emoji: "🟡" },
+    ALTO:  { bg: "bg-red-500/10",      text: "text-red-700",      border: "ring-red-500/40",      emoji: "🔴" },
   }[profile];
 
   const DESC = {
@@ -165,28 +165,28 @@ function ResultModal({ score, profile, onContinue }) {
         initial={{ scale: 0.85, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", bounce: 0.28 }}
-        className="bg-[#1a1d24] rounded-[28px] ring-1 ring-white/10 p-8 max-w-sm w-full text-center shadow-2xl"
+        className="bg-white rounded-[28px] border border-[#1D4789]/20 p-8 max-w-sm w-full text-center shadow-2xl"
       >
         <div className="text-5xl mb-4">{COLOR.emoji}</div>
-        <h2 className="text-xl font-bold text-white mb-1">Diagnóstico Completado</h2>
-        <p className="text-white/55 text-sm mb-5">Tu perfil de riesgo vial inicial</p>
+        <h2 className="text-xl font-bold text-[#1D4789] mb-1">Diagnóstico Completado</h2>
+        <p className="text-[#1a1a1a] text-sm mb-5">Tu perfil de riesgo vial inicial</p>
 
         <div className={`rounded-2xl ${COLOR.bg} ring-1 ${COLOR.border} px-6 py-4 mb-5`}>
           <div className={`text-2xl font-extrabold ${COLOR.text} tracking-wide`}>
             RIESGO {profile}
           </div>
-          <div className="text-white/60 text-sm mt-1">Score: {score} puntos · v1.0</div>
+          <div className="text-[#1a1a1a] text-sm mt-1">Score: {score} puntos · v1.0</div>
         </div>
 
-        <p className="text-white/70 text-sm leading-relaxed mb-6">{DESC}</p>
+        <p className="text-[#1a1a1a] text-sm leading-relaxed mb-6">{DESC}</p>
 
-        <div className="text-xs text-white/40 mb-6">
+        <div className="text-xs text-[#1a1a1a] mb-6">
           Umbrales: Bajo 0–3 · Medio 4–6 · Alto ≥7
         </div>
 
         <button
           onClick={onContinue}
-          className="w-full rounded-xl py-3 bg-[#00b5e2] hover:brightness-110 text-white font-semibold transition shadow-[0_8px_20px_rgba(0,181,226,0.30)]"
+          className="w-full rounded-xl py-3 bg-[#1D4789] hover:brightness-110 text-white font-semibold transition shadow-[0_8px_20px_rgba(29,71,137,0.30)]"
         >
           Continuar al Módulo 1 →
         </button>
@@ -262,13 +262,13 @@ export default function RiskProfileTest() {
     <div className="min-h-[calc(80vh-80px)] pb-24">
       {/* Page header */}
       <div className="mb-6">
-        <span className="inline-block text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full bg-[#00b5e2]/15 text-[#00b5e2] mb-2">
+        <span className="inline-block text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full bg-[#1D4789]/10 text-[#1D4789] mb-2">
           Diagnóstico Inicial · Una sola vez
         </span>
-        <h1 className="text-2xl font-bold text-white leading-tight">
+        <h1 className="text-2xl font-bold text-[#1D4789] leading-tight">
           Diagnóstico de Perfil de Riesgo Vial
         </h1>
-        <p className="text-white/55 text-sm mt-1 max-w-2xl">
+        <p className="text-[#1a1a1a] text-sm mt-1 max-w-2xl">
           Este breve cuestionario complementa los datos de tu cuenta con información sobre tu
           movilidad diaria y hábitos de circulación. Tus respuestas nos permiten estimar un perfil
           de riesgo inicial (Bajo, Medio o Alto) para adaptar mejor los contenidos y
@@ -332,30 +332,30 @@ export default function RiskProfileTest() {
           />
 
           {/* Protection examples note */}
-          <p className="text-xs text-white/40 px-1">
+          <p className="text-xs text-[#1a1a1a] px-1">
             Ejemplos de protección: casco, cinturón de seguridad, luces / reflectivos, respetar
             semáforos y límites de velocidad, etc.
           </p>
         </div>
 
         {/* Side panel */}
-        <aside className="xl:sticky xl:top-6 self-start rounded-[22px] ring-1 ring-white/10 bg-white/[0.04] p-6 space-y-5">
+        <aside className="xl:sticky xl:top-6 self-start rounded-[22px] ring-1 ring-[#1D4789]/20 bg-white shadow-[0_4px_16px_rgba(0,0,0,0.08)] p-6 space-y-5">
           {/* Progress bar */}
           <div>
             <div className="flex items-center justify-between text-sm mb-2">
-              <span className="text-white/70">Completado</span>
-              <span className="font-semibold text-white">{pct}%</span>
+              <span className="text-[#1a1a1a]">Completado</span>
+              <span className="font-semibold text-[#1a1a1a]">{pct}%</span>
             </div>
-            <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+            <div className="h-2 rounded-full bg-[#1D4789]/10 overflow-hidden">
               <div
-                className="h-full rounded-full bg-[#00b5e2] transition-all duration-300"
+                className="h-full rounded-full bg-[#1D4789] transition-all duration-300"
                 style={{ width: `${pct}%` }}
               />
             </div>
-            <p className="text-xs text-white/45 mt-2">
+            <p className="text-xs text-[#1a1a1a] mt-2">
               {filled}/{total} preguntas respondidas
               {!canSubmit && (
-                <span className="block text-red-300 mt-0.5">
+                <span className="block text-red-500 mt-0.5">
                   ¡La pregunta 1 es obligatoria!
                 </span>
               )}
@@ -363,15 +363,15 @@ export default function RiskProfileTest() {
           </div>
 
           {/* What happens next */}
-          <div className="rounded-xl bg-white/[0.03] ring-1 ring-white/10 p-4 space-y-2">
-            <p className="text-xs font-semibold text-white/70 uppercase tracking-wide">
+          <div className="rounded-xl bg-[#F5F5F6] ring-1 ring-[#1D4789]/10 p-4 space-y-2">
+            <p className="text-xs font-semibold text-[#1a1a1a] uppercase tracking-wide">
               ¿Qué pasa después?
             </p>
-            <ul className="text-xs text-white/55 space-y-1.5">
+            <ul className="text-xs text-[#1a1a1a] space-y-1.5">
               <li>✓ Se calcula tu perfil de riesgo inicial</li>
               <li>✓ Los contenidos se adaptan a tu perfil</li>
               <li>✓ Puedes acceder al Módulo 1</li>
-              <li className="text-white/30">✗ No se repite este diagnóstico</li>
+              <li className="text-[#1a1a1a]/50">✗ No se repite este diagnóstico</li>
             </ul>
           </div>
 
@@ -395,8 +395,8 @@ export default function RiskProfileTest() {
             className={[
               "w-full rounded-xl py-3 font-semibold text-white transition",
               canSubmit && !sending
-                ? "bg-[#00b5e2] hover:brightness-110 shadow-[0_8px_20px_rgba(0,181,226,0.30)]"
-                : "bg-white/10 text-white/40 cursor-not-allowed",
+                ? "bg-[#1D4789] hover:brightness-110 shadow-[0_8px_20px_rgba(29,71,137,0.30)]"
+                : "bg-[#1a1a1a]/10 text-[#1a1a1a]/30 cursor-not-allowed",
             ].join(" ")}
           >
             {sending ? "Calculando…" : "Ver mi perfil de riesgo"}
@@ -405,16 +405,16 @@ export default function RiskProfileTest() {
       </div>
 
       {/* Mobile bottom bar */}
-      <div className="xl:hidden fixed bottom-0 left-0 right-0 z-30 bg-[#202329]/95 backdrop-blur-sm border-t border-white/10 p-4">
+      <div className="xl:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-sm border-t border-[#1D4789]/20 p-4">
         <div className="flex items-center gap-3 max-w-lg mx-auto">
           <div className="flex-1">
-            <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+            <div className="h-2 rounded-full bg-[#1D4789]/10 overflow-hidden">
               <div
-                className="h-full rounded-full bg-[#00b5e2] transition-all duration-300"
+                className="h-full rounded-full bg-[#1D4789] transition-all duration-300"
                 style={{ width: `${pct}%` }}
               />
             </div>
-            <div className="text-xs text-white/50 mt-1">{filled}/{total} respondidas</div>
+            <div className="text-xs text-[#1a1a1a] mt-1">{filled}/{total} respondidas</div>
           </div>
           <button
             onClick={handleSubmit}
@@ -422,8 +422,8 @@ export default function RiskProfileTest() {
             className={[
               "rounded-xl px-5 py-2.5 font-semibold text-sm text-white transition",
               canSubmit && !sending
-                ? "bg-[#00b5e2] shadow-[0_4px_12px_rgba(0,181,226,0.30)]"
-                : "bg-white/10 text-white/40 cursor-not-allowed",
+                ? "bg-[#1D4789] shadow-[0_4px_12px_rgba(29,71,137,0.30)]"
+                : "bg-[#1a1a1a]/10 text-[#1a1a1a]/30 cursor-not-allowed",
             ].join(" ")}
           >
             {sending ? "…" : "Enviar"}

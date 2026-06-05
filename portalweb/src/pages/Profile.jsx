@@ -36,10 +36,10 @@ const DOC_LABELS = { cc: "C.C", ti: "T.I", pa: "P.A" };
 function InfoRow({ icon, value, className = "" }) {
   return (
     <div
-      className={`flex h-11 w-full items-center gap-3 rounded-full border border-white/12 bg-white/5 px-4 text-sm ${className}`}
+      className={`flex h-11 w-full items-center gap-3 rounded-full border border-[#1D4789]/20 bg-white px-4 text-sm ${className}`}
     >
-      <span className="text-white/30 shrink-0">{icon}</span>
-      <span className="text-white/75 truncate">{value || "–"}</span>
+      <span className="text-[#1D4789] shrink-0">{icon}</span>
+      <span className="text-[#1a1a1a] truncate">{value || "–"}</span>
     </div>
   );
 }
@@ -128,9 +128,9 @@ export default function Profile() {
   return (
     <div className={`mx-auto w-full max-w-[1200px] px-2 sm:px-4 lg:px-0${isSetupFlow ? " pb-28" : ""}`}>
       {isSetupFlow && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#202329]/95 backdrop-blur-md border-t border-white/10 p-4 pb-[calc(8rem+env(safe-area-inset-bottom))] lg:pb-4">
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#EEEEEE]/95 backdrop-blur-md border-t border-[#1D4789]/20 p-4 pb-[calc(8rem+env(safe-area-inset-bottom))] lg:pb-4">
           <div className="max-w-sm mx-auto">
-            <p className="text-xs text-white/50 text-center mb-2">Paso 1 de 2 &middot; Personaliza tu avatar</p>
+            <p className="text-xs text-[#1a1a1a] text-center mb-2">Paso 1 de 2 &middot; Personaliza tu avatar</p>
             <button
               type="button"
               onClick={async () => {
@@ -138,7 +138,7 @@ export default function Profile() {
                 try { await submitAvatarDone(); } catch { /* best-effort */ }
                 navigate("/courses");
               }}
-              className="w-full rounded-xl py-3 bg-[#00b5e2] hover:brightness-105 active:brightness-95 text-white font-semibold text-sm transition cursor-pointer"
+              className="w-full rounded-xl py-3 bg-[#1D4789] hover:brightness-105 active:brightness-95 text-white font-semibold text-sm transition cursor-pointer"
             >
               Listo, continuar al diagnóstico →
             </button>
@@ -147,7 +147,7 @@ export default function Profile() {
       )}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_420px]">
         <div className="space-y-6">
-          <section className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-4 md:p-5 shadow-[0_18px_40px_-18px_rgba(0,0,0,0.45)]">
+          <section className="rounded-2xl bg-[#EEEEEE] border border-[#1D4789] p-4 md:p-5 shadow-sm">
             <div className="relative">
               <img
                 src={banner}
@@ -157,8 +157,8 @@ export default function Profile() {
               />
               <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-t from-black/35 via-black/10 to-transparent" />
               <div className="absolute left-1/2 -translate-x-1/2 -bottom-8 z-10">
-                <div className="h-16 w-16 md:h-20 md:w-20 rounded-full p-[3px] bg-gradient-to-tr from-[#00b5e2] via-[#5dd3f0] to-transparent">
-                  <div className="h-full w-full rounded-full ring-4 ring-[#1F2336] overflow-hidden bg-white/10 backdrop-blur">
+                <div className="h-16 w-16 md:h-20 md:w-20 rounded-full p-[3px] bg-gradient-to-tr from-[#1D4789] via-[#1D4789] to-[#163672]">
+                  <div className="h-full w-full rounded-full ring-4 ring-white overflow-hidden bg-white">
                     <img
                       src={profileSrc}
                       alt="Foto de perfil"
@@ -169,13 +169,13 @@ export default function Profile() {
               </div>
             </div>
             <div className="pt-10">
-              <h2 className="text-center text-xl md:text-2xl font-semibold drop-shadow-sm">
+              <h2 className="text-center text-xl md:text-2xl font-semibold text-[#1D4789]">
                 {user?.fullName || "Usuario"}
               </h2>
             </div>
           </section>
 
-          <section className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-5 md:p-6 shadow-[0_18px_40px_-18px_rgba(0,0,0,0.45)]">
+          <section className="rounded-2xl bg-[#EEEEEE] border border-[#1D4789] p-5 md:p-6 shadow-sm">
             {!showPicker ? (
               <>
                 <div className="relative grid place-items-center min-h-[340px]">
@@ -188,14 +188,14 @@ export default function Profile() {
                 </div>
 
                 <div className="mt-5 text-center">
-                  <h3 className="text-base md:text-lg font-medium mb-3">
+                  <h3 className="text-base md:text-lg font-medium mb-3 text-[#1D4789]">
                     Personaliza tu avatar y vive una experiencia única
                   </h3>
                   <button
                     type="button"
                     className="inline-flex h-11 items-center justify-center rounded-full px-7
-                               bg-gradient-to-b from-[#6EB9FF] to-[#6EB9FF]
-                               shadow-[0_8px_24px_rgba(0,181,226,0.35)]
+                               bg-gradient-to-b from-[#1D4789] to-[#1D4789]
+                               shadow-[0_8px_24px_rgba(29,71,137,0.35)]
                                hover:brightness-105 active:brightness-95
                                focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70
                                cursor-pointer"
@@ -246,19 +246,19 @@ export default function Profile() {
         </div>
 
         {/* Columna derecha: Datos personales */}
-        <aside className="rounded-3xl bg-white/5 ring-1 ring-white/10 p-6 md:p-7 shadow-[0_18px_40px_-18px_rgba(0,0,0,0.45)]">
-          <h3 className="text-center text-base font-semibold mb-5">
+        <aside className="rounded-3xl bg-[#EEEEEE] border border-[#1D4789] p-6 md:p-7 shadow-sm">
+          <h3 className="text-center text-base font-semibold mb-5 text-[#1D4789]">
             Datos personales
           </h3>
 
           {/* Edad pill / select editable */}
           {edit ? (
             <div className="mb-5">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-white/38 text-center mb-1.5">Grupo de edad</p>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-[#]/100 text-center mb-1.5">Grupo de edad</p>
               <select
                 value={form.ageRange}
                 onChange={(e) => setForm((f) => ({ ...f, ageRange: e.target.value }))}
-                className="h-11 w-full rounded-full border border-white/12 bg-[#1c1f2a] px-4 text-sm text-white/80 focus:outline-none focus:border-[#6EB9FF]/50 cursor-pointer"
+                className="h-11 w-full rounded-full border border-[#1D4789]/25 bg-white px-4 text-sm text-[#191919] focus:outline-none focus:border-[#1D4789] cursor-pointer"
               >
                 <option value="">– Selecciona –</option>
                 {Object.entries(AGE_LABELS).map(([v, l]) => (
@@ -268,11 +268,11 @@ export default function Profile() {
             </div>
           ) : (
             <div className="flex justify-center mb-5">
-              <div className="flex flex-col items-center rounded-2xl border border-white/12 bg-white/5 px-8 py-2.5 text-center">
-                <span className="text-[10px] font-semibold uppercase tracking-widest text-white/38">
+              <div className="flex flex-col items-center rounded-2xl border border-[#1D4789]/100 bg-white px-8 py-2.5 text-center">
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-[#1a1a1a]">
                   Grupo de edad
                 </span>
-                <span className="text-sm font-medium text-white mt-0.5">
+                <span className="text-sm font-medium text-[#1a1a1a] mt-0.5">
                   {AGE_LABELS[user?.ageRange] || "–"}
                 </span>
               </div>
@@ -285,7 +285,7 @@ export default function Profile() {
 
             {/* Documento - siempre solo lectura */}
             <div className="flex gap-2">
-              <div className="flex h-11 shrink-0 items-center rounded-full border border-white/12 bg-white/5 px-4 text-sm font-medium text-white/70">
+              <div className="flex h-11 shrink-0 items-center rounded-full border border-[#1D4789]/20 bg-white px-4 text-sm font-medium text-[#1a1a1a]">
                 {DOC_LABELS[user?.documentType] || "–"}
               </div>
               <InfoRow icon={<MdBadge size={16} />} value={user?.dni} className="flex-1" />
@@ -299,7 +299,7 @@ export default function Profile() {
                   value={form.fullName}
                   onChange={(e) => setForm((f) => ({ ...f, fullName: e.target.value }))}
                   placeholder="Nombre completo"
-                  className="h-11 w-full rounded-full border border-white/12 bg-[#1c1f2a] px-4 text-sm text-white/85 focus:outline-none focus:border-[#6EB9FF]/50 placeholder:text-white/30"
+                  className="h-11 w-full rounded-full border border-[#1D4789]/25 bg-white px-4 text-sm text-[#1a1a1a] focus:outline-none focus:border-[#1D4789] placeholder:text-[#1a1a1a]/30"
                 />
                 {errors.fullName && (
                   <p className="text-xs text-red-400 mt-1 pl-4">{errors.fullName}</p>
@@ -314,12 +314,12 @@ export default function Profile() {
               <select
                 value={form.genero}
                 onChange={(e) => setForm((f) => ({ ...f, genero: e.target.value }))}
-                className="h-11 w-full rounded-full border border-white/12 bg-[#1c1f2a] px-4 text-sm text-white/80 focus:outline-none focus:border-[#6EB9FF]/50 cursor-pointer"
+                className="h-11 w-full rounded-full border border-[#1D4789]/25 bg-white px-4 text-sm text-[#1a1a1a] focus:outline-none focus:border-[#1D4789] cursor-pointer"
               >
                 <option value="">– Género –</option>
                 {Object.entries(GENDER_LABELS).map(([v, l]) => (
                   <option key={v} value={v}>{l}</option>
-                ))}
+                ))}     
               </select>
             ) : (
               <InfoRow icon={<MdPerson size={16} />} value={GENDER_LABELS[user?.genero]} />
@@ -330,7 +330,7 @@ export default function Profile() {
               <select
                 value={form.department}
                 onChange={(e) => setForm((f) => ({ ...f, department: e.target.value, municipality: "" }))}
-                className="h-11 w-full rounded-full border border-white/12 bg-[#1c1f2a] px-4 text-sm text-white/80 focus:outline-none focus:border-[#6EB9FF]/50 cursor-pointer"
+                className="h-11 w-full rounded-full border border-[#1D4789]/25 bg-white px-4 text-sm text-[#1a1a1a] focus:outline-none focus:border-[#1D4789] cursor-pointer"
               >
                 <option value="">– Departamento –</option>
                 {DEPARTMENTS.map((d) => (
@@ -349,7 +349,7 @@ export default function Profile() {
               <select
                 value={form.municipality}
                 onChange={(e) => setForm((f) => ({ ...f, municipality: e.target.value }))}
-                className="h-11 w-full rounded-full border border-white/12 bg-[#1c1f2a] px-4 text-sm text-white/80 focus:outline-none focus:border-[#6EB9FF]/50 cursor-pointer"
+                className="h-11 w-full rounded-full border border-[#1D4789]/25 bg-white px-4 text-sm text-[#1a1a1a] focus:outline-none focus:border-[#1D4789] cursor-pointer"
               >
                 <option value="">– Municipio –</option>
                 {MUNICIPALITIES_ANTIOQUIA.map((m) => (
@@ -365,7 +365,7 @@ export default function Profile() {
 
             {/* Teléfono - siempre solo lectura */}
             <div className="flex gap-2">
-              <div className="flex h-11 shrink-0 items-center rounded-full border border-white/12 bg-white/5 px-4 text-sm font-medium text-white/70">
+              <div className="flex h-11 shrink-0 items-center rounded-full border border-[#1D4789]/20 bg-white px-4 text-sm font-medium text-[#1a1a1a]">
                 +57
               </div>
               <InfoRow icon={<MdPhone size={16} />} value={user?.phone} className="flex-1" />
@@ -376,7 +376,7 @@ export default function Profile() {
               <select
                 value={form.differentialFocus}
                 onChange={(e) => setForm((f) => ({ ...f, differentialFocus: e.target.value }))}
-                className="h-11 w-full rounded-full border border-white/12 bg-[#1c1f2a] px-4 text-sm text-white/80 focus:outline-none focus:border-[#6EB9FF]/50 cursor-pointer"
+                className="h-11 w-full rounded-full border border-[#1D4789]/25 bg-white px-4 text-sm text-[#1a1a1a] focus:outline-none focus:border-[#1D4789] cursor-pointer"
               >
                 <option value="">– Enfoque diferencial –</option>
                 {Object.entries(FOCUS_LABELS).map(([v, l]) => (
@@ -409,7 +409,7 @@ export default function Profile() {
             <div className="mt-5 flex items-center justify-end gap-2">
               <button
                 type="button"
-                className="text-sm text-white/50 hover:text-white/80 underline underline-offset-4 cursor-pointer transition-colors"
+                className="text-sm text-[#1D4789] hover:text-[#1D4789] underline underline-offset-4 cursor-pointer transition-colors"
                 onClick={handleCancel}
                 disabled={saving}
               >
@@ -419,7 +419,7 @@ export default function Profile() {
                 type="button"
                 disabled={!canSave}
                 onClick={handleSave}
-                className="h-9 rounded-full px-5 bg-[#00b5e2] hover:brightness-105 active:brightness-95 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold transition cursor-pointer"
+                className="h-9 rounded-full px-5 bg-[#1D4789] hover:brightness-105 active:brightness-95 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold transition cursor-pointer"
               >
                 {saving ? "Guardando…" : "Guardar"}
               </button>
@@ -427,7 +427,7 @@ export default function Profile() {
           ) : (
             <div className="mt-5 flex items-center justify-end">
               <button
-                className="text-sm text-white/75 hover:text-white underline underline-offset-4 cursor-pointer transition-colors"
+                className="text-sm text-[#1D4789] hover:text-[#1D4789] underline underline-offset-4 cursor-pointer transition-colors"
                 onClick={() => setEdit(true)}
               >
                 Editar
@@ -436,8 +436,8 @@ export default function Profile() {
           )}
 
           {/* Perfil de riesgo vial */}
-          <div className="mt-4 pt-4 border-t border-white/10">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-white/40 mb-3">
+          <div className="mt-4 pt-4 border-t border-[#1D4789]/20">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-[#1D4789] mb-3">
               Diagnóstico de riesgo vial
             </p>
             {user?.riskProfile ? (() => {
@@ -452,7 +452,7 @@ export default function Profile() {
                     <span className="text-xl leading-none">{cfg.dot}</span>
                     <div>
                       <p className={`text-sm font-bold ${cfg.text}`}>RIESGO {user.riskProfile}</p>
-                      <p className="text-xs text-white/45 mt-0.5">Score: {user.riskScore} pts · v1.0</p>
+                      <p className="text-xs text-[#1D4789] mt-0.5">Score: {user.riskScore} pts · v1.0</p>
                     </div>
                   </div>
                   <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ${cfg.badge}`}>
@@ -461,7 +461,7 @@ export default function Profile() {
                 </div>
               );
             })() : (
-              <div className="rounded-2xl ring-1 ring-white/8 bg-white/[0.03] px-4 py-3 flex items-center gap-2.5 text-sm text-white/40">
+              <div className="rounded-2xl ring-1 ring-[#1D4789]/20 bg-[#1D4789]/5 px-4 py-3 flex items-center gap-2.5 text-sm text-[#1D4789]">
                 <span className="text-base">⏳</span>
                 <span>Diagnóstico no realizado aún</span>
               </div>
@@ -478,7 +478,7 @@ function AvatarPicker({ currentId = 0, onCancel, onConfirm, loading = false }) {
 
   return (
     <div>
-      <h4 className="text-center text-lg font-semibold mb-4">
+      <h4 className="text-center text-lg font-semibold mb-4 text-[#1D4789]">
         Elige tu cuerpo…
       </h4>
       <ul className="grid grid-cols-2 sm:grid-cols-3 gap-4 place-items-center">
@@ -492,7 +492,7 @@ function AvatarPicker({ currentId = 0, onCancel, onConfirm, loading = false }) {
                 className={[
                   "group relative w-full aspect-[3/4] rounded-2xl ring-1 transition cursor-pointer",
                   active
-                    ? "bg-white/10 ring-[#6EB9FF] shadow-[0_8px_24px_rgba(0,181,226,0.35)]"
+                    ? "bg-white/10 ring-[#1D4789] shadow-[0_8px_24px_rgba(29,71,137,0.35)]"
                     : "bg-white/5 ring-white/10 hover:bg-white/10",
                 ].join(" ")}
                 disabled={loading}
@@ -514,7 +514,7 @@ function AvatarPicker({ currentId = 0, onCancel, onConfirm, loading = false }) {
       <div className="mt-6 flex flex-col-reverse sm:flex-row items-center justify-center gap-3">
         <button
           type="button"
-          className="h-11 rounded-full px-6 bg-white/10 hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 cursor-pointer"
+          className="h-11 rounded-full px-6 bg-white border border-[#1D4789] text-[#1D4789] hover:bg-[#1D4789]/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1D4789]/50 cursor-pointer"
           onClick={onCancel}
           disabled={loading}
         >
@@ -523,8 +523,8 @@ function AvatarPicker({ currentId = 0, onCancel, onConfirm, loading = false }) {
         <button
           type="button"
           className="h-11 rounded-full px-7
-                     bg-gradient-to-b from-[#6EB9FF] to-[#6EB9FF]
-                     shadow-[0_8px_24px_rgba(0,181,226,0.35)]
+                     bg-gradient-to-b from-[#1D4789] to-[#1D4789]
+                     shadow-[0_8px_24px_rgba(29,71,137,0.35)]
                      hover:brightness-105 active:brightness-95 disabled:opacity-60
                      focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 cursor-pointer"
           onClick={() => onConfirm(selected)}

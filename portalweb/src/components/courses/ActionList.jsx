@@ -1,4 +1,4 @@
-﻿import React, { useMemo } from "react";
+import React, { useMemo } from "react";
 import LockedTooltip from "@/components/ui/LockedTooltip";
 
 export default function ActionList({
@@ -12,10 +12,10 @@ export default function ActionList({
 }) {
   const items = useMemo(
     () => [
-      { key: "test-inicial", label: "Test inicial" },
-      { key: "test-salida", label: "Test de salida" },
+      { key: "test-inicial", label: "Nivel de riesgo", sublabel: "Personaliza tu Experiencia" },
+      { key: "test-salida", label: "Test de salida", sublabel: "Evalúa tus conocimientos" },
       showContacto
-        ? { key: "contacto", label: "Contáctanos" }
+        ? { key: "contacto", label: "Contáctanos", sublabel: "Estamos aquí para ayudarte" }
         : {
             key: showRating ? "califica" : "calificacion",
             label: showRating ? "Califica este módulo" : "Calificación",
@@ -24,26 +24,18 @@ export default function ActionList({
     [showRating, showContacto]
   );
 
-  const resolveSrc = (key) => {
+  const resolveSrc = (key, completed) => {
     const iconKey =
       key === "calificacion" || key === "califica"
         ? "calificacion"
         : key === "contacto"
         ? "contacto"
         : key;
+    const folder = completed ? "complete" : "nocomplete";
     return new URL(
-      `../../assets/courses/nocomplete/${iconKey}.png`,
+      `../../assets/courses/${folder}/${iconKey}.png`,
       import.meta.url
     ).href;
-  };
-
-  const resolveBg = (key, completed) => {
-    if (key === "calificacion" || key === "califica") return "#6EB9FF";
-    if (key === "contacto") return "#6EB9FF";
-    if (!completed) return "transparent";
-    if (key === "test-inicial") return "#6EB9FF";
-    if (key === "test-salida") return "#6EB9FF";
-    return "transparent";
   };
 
   const handleKey = (e, key, isDisabled) => {
@@ -55,12 +47,11 @@ export default function ActionList({
 
   return (
     <div
-      className="rounded-[20px] bg-white/5 backdrop-blur-md p-4 ring-1 ring-white/10 h-full min-h-[260px]"
+      className="rounded-[20px] bg-white p-4 border border-[#1D4789]/20 shadow-[0_4px_16px_rgba(0,0,0,0.08)] h-full min-h-[260px]"
       aria-label="Acciones"
     >
-      <div className="grid grid-rows-3 gap-3 h-full">
-        {items.map(({ key, label }) => {
-          const src = resolveSrc(key);
+      <div className="flex flex-col justify-center gap-8 h-full">
+        {items.map(({ key, label, sublabel }) => {
           const lockedMsg = lockedItems[key];
 
           const isCompleted =
@@ -70,12 +61,12 @@ export default function ActionList({
               ? !!testExitDone
               : progressMap.get(key) ?? false;
 
+          const src = resolveSrc(key, isCompleted);
+
           const isDisabled =
             !!lockedMsg ||
             (key === "test-inicial" && testInitialDone) ||
             (key === "test-salida" && testExitDone);
-
-          const bg = resolveBg(key, isCompleted);
 
           const row = (
             <div
@@ -87,7 +78,7 @@ export default function ActionList({
                 "group grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-xl px-1",
                 "transition-transform duration-150 ease-out focus-visible:outline-none",
                 isDisabled
-                  ? "opacity-60 cursor-not-allowed"
+                  ? "cursor-not-allowed"
                   : "cursor-pointer hover:translate-x-[1px]",
               ].join(" ")}
               aria-label={label}
@@ -98,30 +89,38 @@ export default function ActionList({
                 tabIndex={-1}
                 onClick={(e) => { e.stopPropagation(); if (!isDisabled) onClick(key); }}
                 className={[
-                  "h-12 w-12 grid place-items-center rounded-xl ring-1 ring-white/40",
-                  "transition-all duration-200 ease-out hover:ring-white/70",
-                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80",
-                  "hover:drop-shadow-[0_0_10px_rgba(255,255,255,0.25)]",
+                  "h-12 w-12 grid place-items-center rounded-xl transition-all duration-200 ease-out",
+                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1D4789]/50",
                   !isDisabled ? "hover:scale-105 active:scale-95 cursor-pointer" : "",
+                  isCompleted
+                    ? "bg-[#1D4789] shadow-[0_2px_8px_rgba(29,71,137,0.25)]"
+                    : "bg-white border border-[#1D4789]",
                 ].join(" ")}
-                style={{ backgroundColor: bg }}
                 disabled={!!lockedMsg}
                 aria-label={label}
               >
                 <img
                   src={src}
                   alt=""
-                  className="h-7 w-auto object-contain select-none pointer-events-none transition-all duration-200 ease-out group-hover:translate-y-[-1px] group-hover:brightness-110"
+                  className="h-7 w-auto object-contain select-none pointer-events-none transition-all duration-200 ease-out group-hover:translate-y-[-1px]"
+                  style={{}}
                   draggable={false}
                 />
               </button>
 
-              <span className="text-[14px] text-white/90 group-hover:text-white transition-colors duration-150 truncate">
-                {label}
-              </span>
+              <div className="flex flex-col min-w-0">
+                <span className="text-[14px] text-[#1D4789] font-medium leading-tight truncate">
+                  {label}
+                </span>
+                {sublabel && (
+                  <span className="text-[12px] text-[#1D4789]/70 leading-tight">
+                    {sublabel}
+                  </span>
+                )}
+              </div>
 
               {isCompleted && !lockedMsg && (
-                <span className="inline-flex items-center gap-1 rounded-md px-2 h-6 text-[11px] leading-none text-white/90 ring-1 ring-white/15 bg-white/10">
+                <span className="inline-flex items-center gap-1 rounded-md px-2 h-6 text-[11px] leading-none text-[#1D4789] ring-1 ring-[#1D4789]/20 bg-[#1D4789]/8">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>

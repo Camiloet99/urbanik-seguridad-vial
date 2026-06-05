@@ -3,10 +3,14 @@ import { useAuth } from "@/context/AuthContext";
 
 import brain from "@/assets/cerebro.png";
 import homeIcon from "@/assets/layout/home.png";
+import homeBlueIcon from "@/assets/layout/home-blue.png";
 import chatIcon from "@/assets/layout/chat.png";
+import chatBlueIcon from "@/assets/layout/chat-blue.png";
 import profileIcon from "@/assets/layout/profile.png";
+import profileBlueIcon from "@/assets/layout/profile-blue.png";
 import logoutIcon from "@/assets/layout/logout.png";
 import dataIcon from "@/assets/layout/data.png";
+import dataBlueIcon from "@/assets/layout/data-blue.png";
 import partner2 from "@/assets/partner-2-white.png";
 
 function Item({ to, imgSrc, label }) {
@@ -19,10 +23,10 @@ function Item({ to, imgSrc, label }) {
         const iconBase =
           "grid place-items-center h-11 w-11 rounded-[40%] transition-all duration-200";
         const iconState = isActive
-          ? "bg-[#6EB9FF] shadow-[0_10px_24px_rgba(89,68,249,0.45)]"
+          ? "bg-white/25 shadow-[0_4px_14px_rgba(0,0,0,0.2)]"
           : "bg-transparent";
         const iconHover =
-          "group-hover:bg-[#6EB9FF] group-hover:shadow-[0_10px_24px_rgba(89,68,249,0.45)] active:scale-95";
+          "group-hover:bg-white/20 active:scale-95";
 
         return (
           <>
@@ -48,13 +52,13 @@ function MobileNav() {
   const { session } = useAuth();
 
   const items = [
-    { to: "/courses", icon: homeIcon, label: "Inicio" },
-    { to: "/chat", icon: chatIcon, label: "Chat Nio" },
-    { to: "/profile", icon: profileIcon, label: "Mi perfil" },
+    { to: "/courses", icon: homeIcon, iconBlue: homeBlueIcon, label: "Inicio" },
+    { to: "/chat", icon: chatIcon, iconBlue: chatBlueIcon, label: "Chat Nia" },
+    { to: "/profile", icon: profileIcon, iconBlue: profileBlueIcon, label: "Mi perfil" },
   ];
 
   if (session?.user?.role === "ADMIN") {
-    items.push({ to: "/admin", icon: profileIcon, label: "Datos" });
+    items.push({ to: "/admin", icon: dataIcon, iconBlue: dataBlueIcon, label: "Datos" });
   }
 
   return (
@@ -64,14 +68,14 @@ function MobileNav() {
         fixed left-1/2 -translate-x-1/2 bottom-3
         z-[70]
         w-[92%] max-w-[520px]
-        rounded-[22px] bg-white/10 backdrop-blur-xl
-        ring-1 ring-white/15 shadow-[0_15px_40px_rgba(0,0,0,.35)]
+        rounded-[22px] bg-white
+        ring-1 ring-[#1D4789]/15 shadow-[0_8px_30px_rgba(0,0,0,0.12)]
         px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))]
       "
       aria-label="Navegación principal"
     >
       <ul className="flex flex-nowrap justify-between gap-2">
-        {items.map(({ to, icon, label }) => (
+        {items.map(({ to, icon, iconBlue, label }) => (
           <li key={to} className="flex-1 flex justify-center">
             <NavLink
               to={to}
@@ -81,32 +85,24 @@ function MobileNav() {
                 <>
                   <span
                     className={[
-                      "grid place-items-center h-11 w-11 rounded-[40%] transition-all duration-200",
+                      "grid place-items-center h-11 w-11 rounded-[40%] transition-all duration-200 active:scale-95",
                       isActive
-                        ? "bg-[#6EB9FF] shadow-[0_10px_24px_rgba(89,68,249,0.45)]"
-                        : "bg-white/8 ring-1 ring-white/10",
-                      "active:scale-95",
+                        ? "bg-[#1D4789] shadow-[0_4px_14px_rgba(29,71,137,0.4)]"
+                        : "bg-white",
                     ].join(" ")}
                   >
                     <img
-                      src={icon}
+                      src={isActive ? icon : iconBlue}
                       alt=""
-                      className={[
-                        "h-5 w-5 object-contain transition-all duration-200",
-                        "[filter:brightness(0)_invert(1)]",
-                        isActive
-                          ? "opacity-100"
-                          : "opacity-85 group-hover:opacity-100",
-                      ].join(" ")}
+                      className="h-5 w-5 object-contain transition-all duration-200"
+                      style={isActive ? { filter: "brightness(0) invert(1)" } : {}}
                       draggable={false}
                     />
                   </span>
                   <span
                     className={[
-                      "transition-colors",
-                      isActive
-                        ? "text-white"
-                        : "text-white/85 group-hover:text-white",
+                      "transition-colors font-medium",
+                      isActive ? "text-[#1D4789]" : "text-[#555]",
                     ].join(" ")}
                   >
                     {label}
@@ -126,8 +122,8 @@ export default function DashboardLayout() {
   const location = useLocation();
 
   return (
-    <div className="min-h-screen bg-[#202329] text-white">
-      <aside className="fixed left-0 top-0 z-40 hidden h-screen w-24 flex-col items-center bg-white/5 p-3 lg:flex">
+    <div className="min-h-screen text-white">
+      <aside className="fixed left-0 top-0 z-40 hidden h-screen w-24 flex-col items-center bg-[#1D4789] p-3 lg:flex">
         <Link
           to="/courses"
           aria-label="Ir a cursos"
@@ -159,7 +155,7 @@ export default function DashboardLayout() {
           className="mb-2 flex w-full flex-col items-center justify-center gap-1.5 text-[11px] text-white/85 transition group cursor-pointer"
           title="Salir"
         >
-          <span className="grid place-items-center h-11 w-11 rounded-[40%] bg-transparent transition-all duration-200 group-hover:bg-[#6EB9FF] group-hover:shadow-[0_10px_24px_rgba(89,68,249,0.45)] active:scale-95">
+          <span className="grid place-items-center h-11 w-11 rounded-[40%] bg-transparent transition-all duration-200 group-hover:bg-white/20 active:scale-95">
             <img
               src={logoutIcon}
               alt=""
@@ -176,7 +172,7 @@ export default function DashboardLayout() {
       <main className="min-h-screen px-5 py-6 lg:pl-24 lg:px-10 lg:py-8 pb-28 lg:pb-8">
         <div className="mx-auto w-full max-w-[1600px] px-2 sm:px-4 lg:px-0">
           <div className="mb-6 flex items-center justify-between gap-4">
-            <h1 className="text-2xl font-medium">
+            <h1 className="text-2xl font-medium text-[#1D4789]">
               Hola,{" "}
               {session?.user?.fullName ||
                 "Usuario"}

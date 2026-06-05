@@ -282,10 +282,10 @@ export default function CourseRating({
             disabled={!rating || sending || sent}
             className={[
               "rounded-full px-12 py-3 text-base font-semibold",
-              "bg-[#5FA9FF] hover:bg-[#4E9BFF] active:scale-[0.98] transition",
+              "bg-[#1D4789] hover:bg-[#163672] active:scale-[0.98] transition",
               "text-white shadow-sm",
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60",
-              "disabled:opacity-50 disabled:hover:bg-[#5FA9FF] disabled:active:scale-100",
+              "disabled:opacity-50 disabled:hover:bg-[#1D4789] disabled:active:scale-100",
             ].join(" ")}
           >
             {sent ? "¡Gracias!" : sending ? "Enviando..." : "Enviar"}

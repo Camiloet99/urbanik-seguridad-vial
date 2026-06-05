@@ -301,13 +301,13 @@ export default function GeoMapCard({ users = [] }) {
           className="
             inline-flex items-center gap-2
             rounded-full
-            bg-[#2a2e40]
+            bg-[#1D4789]
             px-4 py-2
             text-xs sm:text-sm
-            text-white/85
-            shadow-[0_8px_20px_rgba(0,0,0,0.35)]
-            border border-white/10
-            hover:bg-[#32364a]
+            text-white
+            shadow-[0_4px_16px_rgba(29,71,137,0.3)]
+            border border-[#1D4789]
+            hover:brightness-110
             disabled:opacity-60
             disabled:cursor-not-allowed
             transition

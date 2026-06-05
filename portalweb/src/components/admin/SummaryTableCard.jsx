@@ -38,12 +38,12 @@ const toLabel = (slug) =>
     : null;
 
 function RiskPill({ profile }) {
-  if (!profile) return <span className="text-white/30 text-[11px]">–</span>;
+  if (!profile) return <span className="text-[#1a1a1a]/40 text-[11px]">–</span>;
   const cfg = {
-    BAJO:  { text: "text-emerald-300", iconCls: "text-emerald-400" },
-    MEDIO: { text: "text-amber-300",   iconCls: "text-amber-400"   },
-    ALTO:  { text: "text-red-300",     iconCls: "text-red-400"     },
-  }[profile] ?? { text: "text-white/50", iconCls: "text-white/40" };
+    BAJO:  { text: "text-emerald-700", iconCls: "text-emerald-600" },
+    MEDIO: { text: "text-amber-700",   iconCls: "text-amber-600"   },
+    ALTO:  { text: "text-red-700",     iconCls: "text-red-600"     },
+  }[profile] ?? { text: "text-[#1a1a1a]", iconCls: "text-[#1a1a1a]/60" };
   return (
     <span className={`inline-flex items-center gap-1.5 text-[11px] font-medium ${cfg.text}`}>
       <svg viewBox="0 0 20 20" className={`h-3.5 w-3.5 flex-shrink-0 ${cfg.iconCls}`} aria-hidden="true" fill="currentColor">
@@ -68,8 +68,8 @@ function ModuleDots({ modulosDone }) {
           className={[
             "h-[10px] w-[10px] rounded-full flex-shrink-0 transition-colors",
             done
-              ? "bg-[#29C6F8] shadow-[0_0_6px_rgba(41,198,248,0.65)]"
-              : "bg-white/15",
+              ? "bg-[#1D4789] shadow-[0_0_6px_rgba(29,71,137,0.4)]"
+              : "bg-[#1a1a1a]/15",
           ].join(" ")}
         />
       ))}
@@ -109,7 +109,7 @@ function SortableHeader({ label, field, sortConfig, onSort }) {
       <button
         type="button"
         onClick={() => onSort(field)}
-        className="inline-flex items-center gap-1 text-[11px] md:text-xs text-white/60 hover:text-white/90 transition-colors"
+        className="inline-flex items-center gap-1 text-[11px] md:text-xs text-[#1D4789] hover:text-[#1D4789] transition-colors"
       >
         <span>{label}</span>
         <span className="inline-flex flex-col leading-none">
@@ -211,10 +211,10 @@ export default function SummaryTableCard({
   };
 
   return (
-    <section className="rounded-[32px] bg-[#2a2e40] border border-black/20 px-5 py-4 md:px-6 md:py-5 shadow-[0_16px_36px_rgba(0,0,0,0.45)]">
+    <section className="rounded-[32px] bg-white border border-[#1D4789]/20 px-5 py-4 md:px-6 md:py-5 shadow-[0_4px_16px_rgba(0,0,0,0.08)]">
       <div className="mb-4 flex items-center justify-between">
         <h3 className="text-base md:text-lg font-semibold">Tabla resumen</h3>
-        <span className="text-[11px] md:text-xs text-white/60">
+        <span className="text-[11px] md:text-xs text-[#1a1a1a]">
           <span className="inline-flex items-center gap-1">
             <span className="h-2 w-2 rounded-full bg-[#29C6F8]" />
             Módulo completo
@@ -234,7 +234,7 @@ export default function SummaryTableCard({
       ) : error ? (
         <p className="text-sm text-red-300">{error}</p>
       ) : users.length === 0 ? (
-        <p className="text-sm text-white/70">
+        <p className="text-sm text-[#1a1a1a]">
           No hay usuarios registrados aún.
         </p>
       ) : (
@@ -242,7 +242,7 @@ export default function SummaryTableCard({
           <div className="overflow-x-auto">
             <table className="min-w-full text-xs md:text-sm">
               <thead>
-                <tr className="border-b border-white/10">
+                <tr className="border-b border-[#1D4789]/15">
                   <SortableHeader label="Estudiante"          field="name"       sortConfig={sortConfig} onSort={handleSort} />
                   <SortableHeader label="Documento"           field="document"   sortConfig={sortConfig} onSort={handleSort} />
                   <SortableHeader label="Departamento"        field="department" sortConfig={sortConfig} onSort={handleSort} />
@@ -259,21 +259,21 @@ export default function SummaryTableCard({
                 {sortedUsers.map((u) => (
                     <tr
                       key={u.id ?? u.email}
-                      className="border-b border-white/5 last:border-b-0 hover:bg-white/5"
+                      className="border-b border-[#1D4789]/10 last:border-b-0 hover:bg-[#F5F5F6]"
                     >
                       {/* Estudiante */}
                       <td className="py-2 pr-4 align-middle">
                         <div className="flex flex-col">
-                          <span className="text-xs md:text-sm text-white/75">
+                          <span className="text-xs md:text-sm text-[#1a1a1a]">
                             {u.fullName || u.name || "-"}
                           </span>
-                          <span className="text-[11px] text-white/50">{u.email}</span>
+                          <span className="text-[11px] text-[#1a1a1a]/60">{u.email}</span>
                         </div>
                       </td>
 
                       {/* Documento */}
                       <td className="py-2 px-4 align-middle text-[11px] md:text-xs whitespace-nowrap">
-                        <span className="text-white/40 mr-1 uppercase">{u.documentType || "CC"}</span>
+                        <span className="text-[#1a1a1a]/50 mr-1 uppercase">{u.documentType || "CC"}</span>
                         {u.dni || "-"}
                       </td>
 
@@ -326,7 +326,7 @@ export default function SummaryTableCard({
           </div>
 
           {/* Paginador */}
-          <div className="mt-4 flex items-center justify-between text-[11px] md:text-xs text-white/70">
+          <div className="mt-4 flex items-center justify-between text-[11px] md:text-xs text-[#1a1a1a]">
             <span>
               Página {page + 1} de {totalPages} · {users.length} registros en
               esta página · {total} total
@@ -337,9 +337,9 @@ export default function SummaryTableCard({
                 onClick={handlePrev}
                 disabled={!canGoPrev}
                 className={[
-                  "px-3 py-1 rounded-full border border-white/20",
+                  "px-3 py-1 rounded-full border border-[#1D4789]/20",
                   "disabled:opacity-40 disabled:cursor-not-allowed",
-                  "hover:bg-white/10 transition-colors",
+                  "hover:bg-[#F5F5F6] transition-colors",
                 ].join(" ")}
               >
                 Anterior
@@ -349,9 +349,9 @@ export default function SummaryTableCard({
                 onClick={handleNext}
                 disabled={!canGoNext}
                 className={[
-                  "px-3 py-1 rounded-full border border-white/20",
+                  "px-3 py-1 rounded-full border border-[#1D4789]/20",
                   "disabled:opacity-40 disabled:cursor-not-allowed",
-                  "hover:bg-white/10 transition-colors",
+                  "hover:bg-[#F5F5F6] transition-colors",
                 ].join(" ")}
               >
                 Siguiente

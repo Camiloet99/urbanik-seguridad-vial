@@ -107,12 +107,12 @@ export default function ChatWidget({ locked = false }) {
   };
 
   return (
-    <div className="rounded-[28px] bg-white/[0.06] ring-1 ring-white/20 p-5 flex flex-col h-full min-h-[320px]">
+    <div className="rounded-[28px] bg-[#EEEEEE] border border-[#1D4789] p-5 flex flex-col h-full min-h-[320px]">
       {/* Header con video de NIA */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           {/* Avatar con video */}
-          <div className="relative h-10 w-10 rounded-full overflow-hidden ring-2 ring-sky-400/40 shrink-0">
+          <div className="relative h-10 w-10 rounded-full overflow-hidden ring-2 ring-[#1D4789]/40 shrink-0">
             <video
               src={HERO_VIDEO_SRC}
               poster={HERO_POSTER_IMG}
@@ -125,15 +125,15 @@ export default function ChatWidget({ locked = false }) {
 
           </div>
           <div>
-            <p className="text-white font-medium text-sm leading-tight">Pregúntale a NIA</p>
-            <p className="text-white/50 text-xs">Asistente del módulo</p>
+            <p className="text-[#1a1a1a] font-medium text-sm leading-tight">Pregúntale a NIA</p>
+            <p className="text-[#1a1a1a] text-xs">Asistente del módulo</p>
           </div>
         </div>
 
         {hasMessages && (
           <button
             onClick={clearChat}
-            className="text-white/30 hover:text-white/60 transition text-xs px-2 py-1 rounded-lg hover:bg-white/5"
+            className="text-[#1a1a1a] hover:text-[#1D4789] transition text-xs px-2 py-1 rounded-lg hover:bg-[#1D4789]/5"
           >
             Limpiar
           </button>
@@ -148,7 +148,7 @@ export default function ChatWidget({ locked = false }) {
       >
         {!hasMessages ? (
           <div className="flex items-center justify-center h-full">
-            <p className="text-white/30 text-sm text-center leading-relaxed">
+            <p className="text-[#1a1a1a] text-sm text-center leading-relaxed">
               {locked
                 ? "El chat estará disponible cuando se habilite el módulo."
                 : "Haz una pregunta sobre el módulo…"}
@@ -165,7 +165,7 @@ export default function ChatWidget({ locked = false }) {
       </div>
 
       {/* Input */}
-      <div className="flex items-center gap-2 rounded-[18px] bg-white/[0.04] ring-1 ring-white/15 px-3 py-2">
+      <div className="flex items-center gap-2 rounded-[18px] bg-white ring-1 ring-[#1D4789]/25 px-3 py-2">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -175,18 +175,18 @@ export default function ChatWidget({ locked = false }) {
               canSend && handleSend();
             }
           }}
-          className="flex-1 min-w-0 bg-transparent text-sm text-white/90 placeholder:text-white/35 focus:outline-none"
+          className="flex-1 min-w-0 bg-transparent text-sm text-[#1a1a1a] placeholder:text-[#1a1a1a] focus:outline-none"
           placeholder={locked ? "Módulo bloqueado" : "Escribe tu pregunta…"}
-          disabled={locked || loading}
+          disabled={loading}
         />
         <button
           onClick={handleSend}
           disabled={!canSend}
           className="shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold
-                     bg-sky-500 hover:bg-sky-400 active:scale-[0.97] transition
+                     bg-[#1D4789] hover:bg-[#163672] active:scale-[0.97] transition
                      text-white shadow-sm
                      focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60
-                     disabled:opacity-40 disabled:cursor-not-allowed"
+                     disabled:cursor-not-allowed"
         >
           {loading ? <SpinnerDot /> : "Enviar"}
         </button>
@@ -203,8 +203,8 @@ function MiniMessage({ role, content }) {
         className={[
           "max-w-[85%] rounded-2xl px-3 py-2 text-[13px] leading-relaxed",
           isUser
-            ? "bg-sky-500/20 border border-sky-400/25 text-sky-50 rounded-tr-sm"
-            : "bg-white/[0.06] border border-white/10 text-white/85 rounded-tl-sm",
+            ? "bg-[#1D4789]/20 border border-[#1D4789]/25 text-[#1a1a1a] rounded-tr-sm"
+            : "bg-white border border-[#1D4789]/15 text-[#1a1a1a] rounded-tl-sm",
         ].join(" ")}
       >
         <p className="whitespace-pre-wrap">{content}</p>
@@ -216,12 +216,12 @@ function MiniMessage({ role, content }) {
 function TypingDots() {
   return (
     <div className="flex justify-start">
-      <div className="bg-white/[0.06] border border-white/10 rounded-2xl rounded-tl-sm px-3 py-2">
+      <div className="bg-white border border-[#1a1a1a]/10 rounded-2xl rounded-tl-sm px-3 py-2">
         <span className="inline-flex items-center gap-1">
           {[0, 120, 240].map((delay) => (
             <span
               key={delay}
-              className="h-1.5 w-1.5 rounded-full bg-sky-400/70 animate-bounce"
+              className="h-1.5 w-1.5 rounded-full bg-[#1D4789]/70 animate-bounce"
               style={{ animationDelay: `${delay}ms` }}
             />
           ))}

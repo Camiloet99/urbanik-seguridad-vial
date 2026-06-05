@@ -5,7 +5,7 @@ function StatusRow({ value, label, color }) {
   return (
     <div className="flex items-center justify-center sm:justify-start gap-2">
       {/* Número */}
-      <span className="w-9 sm:w-8 text-center sm:text-right text-sm sm:text-base font-semibold text-white/90">
+      <span className="w-9 sm:w-8 text-center sm:text-right text-sm sm:text-base font-semibold text-[#1a1a1a]">
         {value}
       </span>
       <span
@@ -13,7 +13,7 @@ function StatusRow({ value, label, color }) {
         style={{ backgroundColor: color }}
       />
       {/* Texto */}
-      <span className="text-xs sm:text-sm text-white/85 text-center sm:text-left">
+      <span className="text-xs sm:text-sm text-[#1a1a1a] text-center sm:text-left">
         {label}
       </span>
     </div>
@@ -24,12 +24,12 @@ export default function ImpactSummaryCard({ total, modulo1Done, modulo2Plus }) {
   return (
     <div
       className="
-        rounded-[999px] bg-[#2a2e40]
+        rounded-[28px] sm:rounded-[999px] bg-white
         px-5 py-4
         sm:px-8 sm:py-6
         lg:px-10 lg:py-7
-        shadow-[0_18px_40px_rgba(0,0,0,0.45)]
-        border border-black/20
+        shadow-[0_4px_16px_rgba(0,0,0,0.08)]
+        border border-[#1D4789]/20
         flex flex-col sm:flex-row
         items-center sm:items-center
         gap-4 sm:gap-6 lg:gap-8
@@ -47,12 +47,12 @@ export default function ImpactSummaryCard({ total, modulo1Done, modulo2Plus }) {
 
       {/* Número grande + texto */}
       <div className="flex items-center gap-3 sm:gap-5 mt-2 sm:mt-0">
-        <span className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-white leading-none text-center sm:text-left">
+        <span className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#1D4789] leading-none text-center sm:text-left">
           {total}
         </span>
         <div className="flex flex-col justify-center leading-tight text-xs sm:text-sm text-center sm:text-left">
-          <p className="text-white/85">Usuarios</p>
-          <p className="text-white/85">registrados</p>
+          <p className="text-[#1a1a1a]">Usuarios</p>
+          <p className="text-[#1a1a1a]">registrados</p>
         </div>
       </div>
 

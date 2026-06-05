@@ -21,7 +21,7 @@ export default function CourseCard({
       <img
         src={img}
         alt={title}
-        className="h-48 w-full object-cover md:h-56"
+        className="h-80 w-full object-cover md:h-72"
       />
 
       {/* Overlay principal */}
@@ -36,8 +36,7 @@ export default function CourseCard({
           {/* Ribbon con el nombre del modulo — min-h para alinear cards */}
           <div className="inline-block rounded-xl px-3 py-1.5 bg-gradient-to-r from-white/12 via-white/8 to-transparent backdrop-blur-[2px] ring-1 ring-white/10">
             <h3
-              className="text-[13px] md:text-[14px] font-semibold leading-snug text-white drop-shadow-sm tracking-[-0.01em]"
-              style={{ minHeight: "2.6rem" }}
+              className="text-[24px] md:text-[20px] font-semibold leading-snug text-white drop-shadow-sm tracking-[-0.01em]"
             >
               {title}
             </h3>

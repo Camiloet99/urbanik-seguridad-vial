@@ -13,11 +13,11 @@ function ProgressRing({ percent, size = 84, stroke = 10 }) {
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
       <defs>
         <linearGradient id="prg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#00b5e2" />
-          <stop offset="100%" stopColor="#0098bf" />
+          <stop offset="0%" stopColor="#1D4789" />
+          <stop offset="100%" stopColor="#163672" />
         </linearGradient>
       </defs>
-      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,.12)" strokeWidth={stroke} />
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(29,71,137,.15)" strokeWidth={stroke} />
       <circle
         cx={size / 2} cy={size / 2} r={r} fill="none"
         stroke="url(#prg)" strokeWidth={stroke}
@@ -33,9 +33,9 @@ function ProgressRing({ percent, size = 84, stroke = 10 }) {
 /* ─── Rating Card — responsive: vertical en móvil, horizontal en desktop ─── */
 function RatingCard({ index, question, selected, onChange }) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-[18px] ring-1 ring-white/10 bg-white/[0.04] px-6 py-5">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-[18px] ring-1 ring-[#1D4789]/20 bg-white px-6 py-5">
       {/* Texto de la pregunta */}
-      <p className="text-[15px] text-white/90 leading-relaxed flex-1">
+      <p className="text-[15px] text-[#1a1a1a] leading-relaxed flex-1">
         <span className="font-semibold mr-1">{index + 1}.</span>
         {question.category && (
           <span className="font-semibold">({question.category}) </span>
@@ -55,8 +55,8 @@ function RatingCard({ index, question, selected, onChange }) {
               className={[
                 "flex-1 sm:flex-none w-full sm:w-9 h-9 rounded-full text-sm font-bold transition-all ring-1",
                 isSel
-                  ? "bg-[#00b5e2] ring-[#00b5e2] text-white shadow-[0_4px_16px_rgba(0,181,226,0.35)] scale-110"
-                  : "bg-white/[0.04] ring-white/20 text-white/60 hover:bg-white/[0.10] hover:ring-white/40",
+                  ? "bg-[#1D4789] ring-[#1D4789] text-white shadow-[0_4px_16px_rgba(29,71,137,0.35)] scale-110"
+                  : "bg-[#F5F5F6] ring-[#1a1a1a]/20 text-[#1a1a1a]/60 hover:bg-[#EEEEEE] hover:ring-[#1D4789]/40",
               ].join(" ")}
             >
               {n}
@@ -71,9 +71,9 @@ function RatingCard({ index, question, selected, onChange }) {
 /* ─── MCQ Question Card — original ──────────────────────────────────────── */
 function QuestionCard({ index, question, selected, onChange }) {
   return (
-    <div className="rounded-[18px] ring-1 ring-white/10 bg-white/[0.04] p-5">
-      <p className="text-[15px] font-medium text-white/90 mb-4 leading-relaxed">
-        <span className="text-[#00b5e2] font-semibold mr-2">{index + 1}.</span>
+    <div className="rounded-[18px] ring-1 ring-[#1D4789]/20 bg-white p-5">
+      <p className="text-[15px] font-medium text-[#1a1a1a] mb-4 leading-relaxed">
+        <span className="text-[#1D4789] font-semibold mr-2">{index + 1}.</span>
         {question.text}
       </p>
       <div className="grid gap-2 sm:grid-cols-2">
@@ -87,8 +87,8 @@ function QuestionCard({ index, question, selected, onChange }) {
               className={[
                 "flex items-start gap-3 text-left rounded-xl px-4 py-3 text-sm transition ring-1",
                 isSelected
-                  ? "bg-[#00b5e2]/15 ring-[#00b5e2] text-white shadow-[0_4px_16px_rgba(0,181,226,0.22)]"
-                  : "bg-white/[0.03] ring-white/10 text-white/75 hover:bg-white/[0.08] hover:ring-white/25",
+                  ? "bg-[#1D4789]/15 ring-[#1D4789] text-[#1D4789] shadow-[0_4px_16px_rgba(29,71,137,0.22)]"
+                  : "bg-[#F5F5F6] ring-[#1a1a1a]/15 text-[#1a1a1a]/75 hover:bg-[#EEEEEE] hover:ring-[#1D4789]/25",
               ].join(" ")}
             >
               <span
@@ -127,30 +127,30 @@ function ResultModal({ result, onContinue }) {
           initial={{ scale: 0.85, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "spring", bounce: 0.3 }}
-          className="bg-[#1a1d24] rounded-[28px] ring-1 ring-white/10 p-8 max-w-sm w-full text-center shadow-2xl"
+          className="bg-[#EEEEEE] rounded-[28px] border border-[#1D4789] p-8 max-w-sm w-full text-center shadow-2xl"
         >
           <div className="mx-auto w-20 h-20 rounded-full grid place-items-center text-4xl mb-5 bg-[#00b5e2]/15 text-[#00b5e2]">
             ✅
           </div>
-          <h2 className="text-xl font-bold text-white mb-1">¡Autoevaluación completada!</h2>
-          <p className="text-white/60 text-sm mb-6">
+          <h2 className="text-xl font-bold text-[#1a1a1a] mb-1">¡Autoevaluación completada!</h2>
+          <p className="text-[#1a1a1a]/60 text-sm mb-6">
             Tu respuesta ha sido registrada. Al finalizar el módulo podrás comparar tu progreso.
           </p>
           <div className="flex items-center justify-center gap-6 mb-6">
             <div className="relative">
               <ProgressRing percent={avgPct} size={96} stroke={10} />
-              <span className="absolute inset-0 flex items-center justify-center text-xl font-bold text-white">
+              <span className="absolute inset-0 flex items-center justify-center text-xl font-bold text-[#1a1a1a]">
                 {avg}
               </span>
             </div>
             <div className="text-left">
-              <div className="text-2xl font-bold text-white">{avg} / 5</div>
-              <div className="text-white/60 text-sm">promedio</div>
+              <div className="text-2xl font-bold text-[#1a1a1a]">{avg} / 5</div>
+              <div className="text-[#1a1a1a]/60 text-sm">promedio</div>
             </div>
           </div>
           <button
             onClick={onContinue}
-            className="w-full rounded-xl py-3 bg-[#00b5e2] hover:brightness-110 text-white font-semibold transition shadow-[0_8px_20px_rgba(0,181,226,0.30)]"
+            className="w-full rounded-xl py-3 bg-[#1D4789] hover:brightness-110 text-white font-semibold transition shadow-[0_8px_20px_rgba(29,71,137,0.30)]"
           >
             Continuar
           </button>
@@ -300,7 +300,7 @@ export default function ModuleTestForm({ type }) {
 
   if (!moduleData || questions.length === 0) {
     return (
-      <div className="min-h-[50vh] grid place-items-center text-white/60">
+      <div className="min-h-[50vh] grid place-items-center text-[#1a1a1a]/60">
         No hay preguntas disponibles para este módulo.
       </div>
     );
@@ -314,17 +314,17 @@ export default function ModuleTestForm({ type }) {
       <div className="mb-6">
         <span
           className="inline-block text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full mb-2"
-          style={{ background: `${typeColor}22`, color: typeColor }}
+          style={{ background: `#1D478922`, color: "#1D4789" }}
         >
           Módulo {moduloNum} · {typeLabel}
         </span>
-        <h1 className="text-2xl font-bold text-white leading-tight">
+        <h1 className="text-2xl font-bold text-[#1a1a1a] leading-tight">
           {moduleData.title}
         </h1>
         {introText ? (
-          <p className="text-white/65 text-sm mt-2 leading-relaxed max-w-2xl">{introText}</p>
+          <p className="text-[#1a1a1a]/65 text-sm mt-2 leading-relaxed max-w-2xl">{introText}</p>
         ) : (
-          <p className="text-white/55 text-sm mt-1">
+          <p className="text-[#1a1a1a]/55 text-sm mt-1">
             {isInitial
               ? "Responde las siguientes preguntas para evaluar tus conocimientos previos."
               : "Demuestra lo que aprendiste en este módulo respondiendo las siguientes preguntas."}
@@ -356,20 +356,20 @@ export default function ModuleTestForm({ type }) {
         </div>
 
         {/* ── Aside panel — original sin cambios ── */}
-        <aside className="xl:sticky xl:top-6 self-start rounded-[22px] ring-1 ring-white/10 bg-white/[0.04] backdrop-blur-md p-6 space-y-5">
+        <aside className="xl:sticky xl:top-6 self-start rounded-[22px] border border-[#1D4789] bg-[#EEEEEE] p-6 space-y-5">
           <div className="flex items-center gap-4">
             <div className="relative">
               <ProgressRing percent={progress} />
-              <span className="absolute inset-0 flex items-center justify-center text-lg font-bold text-white">
+              <span className="absolute inset-0 flex items-center justify-center text-lg font-bold text-[#1a1a1a]">
                 {progress}%
               </span>
             </div>
             <div>
-              <div className="text-white font-semibold text-lg leading-none">{answered}/{total}</div>
-              <div className="text-white/55 text-sm mt-0.5">respondidas</div>
+              <div className="text-[#1a1a1a] font-semibold text-lg leading-none">{answered}/{total}</div>
+              <div className="text-[#1a1a1a]/55 text-sm mt-0.5">respondidas</div>
             </div>
           </div>
-          <p className="text-white/65 text-sm leading-relaxed">
+          <p className="text-[#1a1a1a]/65 text-sm leading-relaxed">
             {isComplete
               ? "¡Todo respondido! Puedes enviar el test."
               : `Responde las ${total - answered} pregunta(s) restante(s) para habilitar el envío.`}
@@ -394,8 +394,8 @@ export default function ModuleTestForm({ type }) {
             className={[
               "w-full rounded-xl py-3 font-semibold text-white transition",
               isComplete && !sending
-                ? "bg-[#00b5e2] hover:brightness-110 shadow-[0_8px_20px_rgba(0,181,226,0.30)]"
-                : "bg-white/10 text-white/40 cursor-not-allowed",
+                ? "bg-[#1D4789] hover:brightness-110 shadow-[0_8px_20px_rgba(29,71,137,0.30)]"
+                : "bg-[#1a1a1a]/10 text-[#1a1a1a]/30 cursor-not-allowed",
             ].join(" ")}
           >
             {sending ? "Enviando…" : "Enviar respuestas"}
@@ -421,8 +421,8 @@ export default function ModuleTestForm({ type }) {
             className={[
               "rounded-xl px-5 py-2.5 font-semibold text-sm text-white transition",
               isComplete && !sending
-                ? "bg-[#00b5e2] shadow-[0_4px_12px_rgba(0,181,226,0.30)]"
-                : "bg-white/10 text-white/40 cursor-not-allowed",
+                ? "bg-[#1D4789] shadow-[0_4px_12px_rgba(29,71,137,0.30)]"
+                : "bg-[#1a1a1a]/10 text-[#1a1a1a]/30 cursor-not-allowed",
             ].join(" ")}
           >
             {sending ? "…" : "Enviar"}

@@ -183,10 +183,10 @@ export default function CourseDetail() {
     return (
       <div className="min-h-[calc(80vh-80px)] grid place-items-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">Curso no encontrado</h1>
+          <h1 className="text-2xl font-bold text-[#1a1a1a] mb-4">Curso no encontrado</h1>
           <button
             onClick={() => navigate("/courses")}
-            className="rounded-xl bg-[#00b5e2] hover:brightness-110 text-white font-medium px-6 py-3 transition"
+            className="rounded-xl bg-[#1D4789] hover:brightness-110 text-white font-medium px-6 py-3 transition"
           >
             Volver a Cursos
           </button>
@@ -200,10 +200,6 @@ export default function CourseDetail() {
   return (
     <>
       <div className="mt-4 sm:mt-6 lg:mt-12 relative min-h-[calc(80vh-80px)] flex flex-col space-y-8 pb-[calc(84px+env(safe-area-inset-bottom))] sm:pb-0">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-950"
-        />
 
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_280px_320px]">
           <Hero
@@ -281,7 +277,7 @@ export default function CourseDetail() {
                         "shadow-[0_0_24px_-6px_rgba(52,211,153,0.45)]",
                         "focus-visible:ring-emerald-400 cursor-pointer",
                       ].join(" ")
-                    : "ring-1 ring-white/10 bg-white/4 text-white/35 cursor-not-allowed",
+                    : "ring-1 ring-[#1D4789]/20 bg-white text-[#1a1a1a] cursor-not-allowed shadow-[0_4px_16px_rgba(0,0,0,0.08)]",
                 ].join(" ")}
               >
                 <div className="flex items-center gap-3 min-w-0">
@@ -290,7 +286,7 @@ export default function CourseDetail() {
                       "shrink-0 h-9 w-9 rounded-xl flex items-center justify-center ring-1",
                       moduleCertUnlocked
                         ? "ring-emerald-400/50 bg-emerald-400/15 text-emerald-400"
-                        : "ring-white/10 bg-white/6 text-white/25",
+                        : "ring-[#1D4789]/20 bg-white text-[#1D4789] border border-[#1D4789]/30",
                     ].join(" ")}
                     aria-hidden="true"
                   >
@@ -310,7 +306,7 @@ export default function CourseDetail() {
                     <p className="text-[13px] font-semibold truncate">
                       Certificado Módulo {modulo}
                     </p>
-                    <p className="text-[11px] mt-0.5 opacity-60 truncate">
+                    <p className="text-[11px] mt-0.5 truncate">
                       {moduleCertUnlocked
                           ? "Listo para descargar"
                           : certMissingItems.length
@@ -324,7 +320,7 @@ export default function CourseDetail() {
                     "shrink-0 h-7 w-7 rounded-full flex items-center justify-center ring-1 transition",
                     moduleCertUnlocked
                       ? "ring-emerald-400/60 bg-emerald-400/15 text-emerald-400"
-                      : "ring-white/10 bg-white/6 text-white/25",
+                      : "ring-[#1D4789]/20 bg-white text-[#1D4789] border border-[#1D4789]/30",
                   ].join(" ")}
                   aria-hidden="true"
                 >
@@ -338,11 +334,11 @@ export default function CourseDetail() {
         </div>
 
         {/* Bloque inferior: Experiencia + Chat + Recursos */}
-        <div className="rounded-[28px] bg-white/5 backdrop-blur-md ring-1 ring-white/10 p-6">
+        <div className="rounded-[28px] bg-white border border-[#1D4789]/20 shadow-[0_4px_16px_rgba(0,0,0,0.06)] p-6">
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.25fr_1fr_320px]">
 
             {/* Experiencia gamificada */}
-            <div className="rounded-[22px] ring-1 ring-white/10 bg-white/5 overflow-hidden">
+            <div className="rounded-[22px] border border-[#1D4789]/30 bg-white overflow-hidden">
               <div
                 className="relative h-[260px] bg-cover bg-center"
                 style={{
@@ -360,9 +356,9 @@ export default function CourseDetail() {
                   >
                     <button
                       className={[
-                        "h-16 w-16 rounded-full bg-[#00b5e2] grid place-items-center",
-                        "shadow-[0_10px_30px_-12px_rgba(0,181,226,0.8)]",
-                        "hover:bg-[#0098bf] active:scale-[0.98]",
+                        "h-16 w-16 rounded-full bg-[#1D4789] grid place-items-center",
+                        "shadow-[0_10px_30px_-12px_rgba(29,71,137,0.8)]",
+                        "hover:bg-[#163672] active:scale-[0.98]",
                         "transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60",
                         !experienceCanPlay ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
                       ].join(" ")}
@@ -383,7 +379,7 @@ export default function CourseDetail() {
                 </div>
               </div>
               <div className="p-4">
-                <p className="text-white/85 text-sm">
+                <p className="text-[#1a1a1a] text-sm">
                   {courseData.locked
                     ? "Este modulo esta en preparacion."
                     : !mp?.testInitialDone
@@ -397,12 +393,12 @@ export default function CourseDetail() {
             <ChatWidget locked={courseData.locked} />
 
             {/* Recursos */}
-            <div className="rounded-[22px] ring-1 ring-white/10 bg-white/5 p-5">
-              <p className="text-white font-medium mb-4">Recursos:</p>
+            <div className="rounded-[22px] border border-[#1D4789] bg-[#EEEEEE] p-5">
+              <p className="text-[#1a1a1a] font-medium mb-4">Recursos:</p>
 
               {/* Lock banner — shown when test inicial is not yet done */}
               {!courseData.locked && !mp?.testInitialDone && (
-                <div className="mb-3 flex items-center gap-2 rounded-2xl px-3 py-2 ring-1 ring-white/15 bg-white/5 text-white/50 text-xs">
+                <div className="mb-3 flex items-center gap-2 rounded-2xl px-3 py-2 ring-1 ring-[#1D4789]/20 bg-[#1D4789]/5 text-[#1a1a1a]/50 text-xs">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" className="shrink-0 opacity-60">
                     <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" strokeWidth="2" />
                     <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -430,7 +426,7 @@ export default function CourseDetail() {
                           "w-full flex items-center gap-2 rounded-full px-4 py-[10px] ring-1 transition-all duration-300",
                           quizDone
                             ? "ring-2 ring-emerald-400 bg-emerald-400/8 text-emerald-300"
-                            : "ring-1 ring-white/20 bg-white/4 text-white/85",
+                            : "ring-1 ring-[#1D4789]/25 bg-white text-[#1a1a1a]",
                           resourceLocked ? "opacity-40" : "",
                         ].join(" ")}
                       >
@@ -439,7 +435,7 @@ export default function CourseDetail() {
                           disabled={resourceLocked}
                           onClick={() => openResource(idx)}
                           title={resourceLocked ? "Haz el test inicial primero" : undefined}
-                          className="flex-1 text-left text-sm font-medium truncate transition-colors hover:text-white focus:outline-none cursor-pointer disabled:cursor-not-allowed"
+                          className="flex-1 text-left text-sm font-medium truncate transition-colors hover:text-[#1D4789] focus:outline-none cursor-pointer disabled:cursor-not-allowed"
                         >
                           {r.label}
                         </button>
@@ -458,19 +454,19 @@ export default function CourseDetail() {
                           className={[
                             "shrink-0 h-7 w-7 rounded-full flex items-center justify-center ring-1 transition-all duration-300 focus:outline-none",
                             pdfDone
-                              ? "ring-emerald-400 bg-emerald-400/20 cursor-pointer hover:bg-emerald-400/30"
-                              : "ring-white/20 bg-white/6 cursor-pointer hover:ring-white/40 hover:bg-white/12",
-                            resourceLocked ? "cursor-not-allowed" : "",
+                              ? "ring-[#1D4789] bg-[#1D4789] cursor-pointer hover:bg-[#163672]"
+                              : "ring-[#1D4789] bg-white cursor-pointer hover:bg-[#F5F5F6]",
+                            resourceLocked ? "cursor-not-allowed opacity-50" : "",
                           ].join(" ")}
                         >
                           <img
                             src={recursoIconSrc}
                             alt=""
                             draggable={false}
-                            className={[
-                              "h-4 w-4 object-contain select-none transition-all duration-300",
-                              pdfDone ? "" : "grayscale opacity-50",
-                            ].join(" ")}
+                            className="h-4 w-4 object-contain select-none transition-all duration-300"
+                            style={!pdfDone ? {
+                              filter: "brightness(0) saturate(100%) invert(23%) sepia(72%) saturate(1000%) hue-rotate(200deg) brightness(90%)"
+                            } : {}}
                           />
                         </button>
 
@@ -497,12 +493,12 @@ export default function CourseDetail() {
                           className={[
                             "shrink-0 h-7 w-7 rounded-full flex items-center justify-center ring-1 transition-all duration-200",
                             quizDone
-                              ? "ring-emerald-400 bg-emerald-400/15 cursor-default"
+                              ? "ring-[#1D4789] bg-[#1D4789] cursor-default"
                               : quizFailed
-                              ? "ring-red-400 bg-red-400/10 cursor-pointer hover:bg-red-400/20"
+                              ? "ring-red-500 bg-white cursor-pointer hover:bg-red-50"
                               : pdfDone && !resourceLocked
-                              ? "ring-white/35 bg-white/8 cursor-pointer hover:ring-[#00b5e2] hover:bg-[#00b5e2]/15"
-                              : "ring-white/10 bg-white/3 cursor-not-allowed opacity-40",
+                              ? "ring-[#1D4789] bg-white cursor-pointer hover:bg-[#F5F5F6]"
+                              : "ring-[#1D4789]/20 bg-white cursor-not-allowed",
                           ].join(" ")}
                         >
                           <img
@@ -510,13 +506,16 @@ export default function CourseDetail() {
                             alt="Quiz"
                             className="h-4 w-4 object-contain"
                             draggable={false}
+                            style={!quizDone ? {
+                              filter: "brightness(0) saturate(100%) invert(23%) sepia(72%) saturate(1000%) hue-rotate(200deg) brightness(90%)"
+                            } : {}}
                           />
                         </button>
                       </div>
                     );
                   })
                 ) : (
-                  <div className="text-white/60 text-sm">
+                  <div className="text-[#1a1a1a] text-sm">
                     {courseData.locked ? "Recursos disponibles proximamente." : "No hay recursos aun."}
                   </div>
                 )}

@@ -153,13 +153,13 @@ export default function ParticipationSliderCard({ users }) {
   const donut = buildDonut(current.series, current.colors);
 
   return (
-    <div className="rounded-[32px] bg-[#2a2e40] border border-black/20 px-6 py-4 md:px-7 shadow-[0_16px_36px_rgba(0,0,0,0.45)] overflow-hidden">
+    <div className="rounded-[32px] bg-white border border-[#1D4789]/20 px-6 py-4 md:px-7 shadow-[0_4px_16px_rgba(0,0,0,0.08)] overflow-hidden">
 
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div className="mb-3 flex items-center justify-between">
         <button
           type="button" onClick={prev}
-          className="grid h-8 w-8 place-items-center rounded-full bg-white/5 text-white/70 hover:bg-white/10 transition"
+          className="grid h-8 w-8 place-items-center rounded-full bg-[#F5F5F6] text-[#1D4789] hover:bg-[#EEEEEE] border border-[#1D4789]/20 transition"
         >
           <span className="sr-only">Anterior</span>
           <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -167,13 +167,13 @@ export default function ParticipationSliderCard({ users }) {
           </svg>
         </button>
 
-        <h3 className="text-sm md:text-base font-semibold text-white text-center">
+        <h3 className="text-sm md:text-base font-semibold text-[#1a1a1a] text-center">
           {current.title}
         </h3>
 
         <button
           type="button" onClick={next}
-          className="grid h-8 w-8 place-items-center rounded-full bg-white/5 text-white/70 hover:bg-white/10 transition"
+          className="grid h-8 w-8 place-items-center rounded-full bg-[#F5F5F6] text-[#1D4789] hover:bg-[#EEEEEE] border border-[#1D4789]/20 transition"
         >
           <span className="sr-only">Siguiente</span>
           <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -192,7 +192,7 @@ export default function ParticipationSliderCard({ users }) {
           animate="center"
           exit="exit"
           transition={{ duration: 0.25, ease: "easeOut" }}
-          className="flex flex-row gap-6 items-center justify-center"
+          className="flex flex-col sm:flex-row gap-4 items-center justify-center"
         >
           {/* Donut */}
           <div className="flex-shrink-0 flex items-center justify-center">
@@ -200,17 +200,17 @@ export default function ParticipationSliderCard({ users }) {
               initial={{ scale: 0.92, opacity: 0 }}
               animate={{ scale: 1,    opacity: 1  }}
               transition={{ duration: 0.25, ease: "easeOut" }}
-              className="relative h-44 w-44 md:h-52 md:w-52"
+              className="relative h-36 w-36 md:h-52 md:w-52"
             >
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-indigo-500/30 to-sky-400/20 blur-xl" />
               <div className="relative flex h-full w-full items-center justify-center">
-                <div className="relative h-[84%] w-[84%] rounded-full bg-[#24293F] border border-white/10 overflow-hidden">
+                <div className="relative h-[84%] w-[84%] rounded-full bg-white border border-[#1D4789]/10 overflow-hidden">
                   <div
                     className="absolute inset-0 opacity-90"
                     style={{ background: donut }}
                   />
                   {/* hueco interior */}
-                  <div className="absolute inset-[26%] rounded-full bg-[#1F2336]" />
+                  <div className="absolute inset-[26%] rounded-full bg-white" />
                 </div>
               </div>
             </motion.div>
@@ -219,7 +219,7 @@ export default function ParticipationSliderCard({ users }) {
           {/* Leyenda — grid 2 cols */}
           <div className="shrink-0">
             {current.series.length === 0 ? (
-              <p className="text-xs text-white/50">Sin datos suficientes.</p>
+              <p className="text-xs text-[#1a1a1a]/50">Sin datos suficientes.</p>
             ) : (
               <div className={`grid gap-x-4 gap-y-2 ${current.series.length > 4 ? "grid-cols-2" : "grid-cols-1"}`}>
                 {current.series.map((item, idx) => {
@@ -233,10 +233,10 @@ export default function ParticipationSliderCard({ users }) {
                         className="h-2 w-2 flex-shrink-0 rounded-full"
                         style={{ backgroundColor: color }}
                       />
-                      <span className="text-[11px] md:text-xs text-white/85 truncate">
+                      <span className="text-[11px] md:text-xs text-[#1a1a1a] truncate">
                         {item.label}
                       </span>
-                      <span className="ml-auto flex-shrink-0 text-[10px] md:text-[11px] text-white/55 whitespace-nowrap">
+                      <span className="ml-auto flex-shrink-0 text-[10px] md:text-[11px] text-[#1a1a1a]/60 whitespace-nowrap">
                         {item.count}&nbsp;–&nbsp;{item.percent}%
                       </span>
                     </div>
@@ -250,7 +250,7 @@ export default function ParticipationSliderCard({ users }) {
 
       {/* ── Contador ───────────────────────────────────────────────────────── */}
       <div className="mt-2 flex justify-end">
-        <span className="text-xs text-white/50">{index + 1}/{total}</span>
+        <span className="text-xs text-[#1a1a1a]/50">{index + 1}/{total}</span>
       </div>
     </div>
   );

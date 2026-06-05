@@ -277,10 +277,6 @@ export default function Courses() {
   return (
     <div className="mt-4 sm:mt-6 lg:mt-12 relative min-h-[calc(80vh-80px)] flex flex-col space-y-8 pb-[calc(84px+env(safe-area-inset-bottom))] sm:pb-0">
       {/* Fondo */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-950"
-      />
 
       <AnimatePresence mode="wait">
         {loading ? (
@@ -301,11 +297,11 @@ export default function Courses() {
             exit={{ opacity: 0, y: -8 }}
             className="min-h-[60vh] grid place-items-center"
           >
-            <div className="max-w-md w-full text-center bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur">
-              <p className="text-base text-white/90">{error}</p>
+            <div className="max-w-md w-full text-center bg-white border border-[#1D4789]/20 rounded-2xl p-6 shadow-[0_4px_16px_rgba(0,0,0,0.08)]">
+              <p className="text-base text-[#1a1a1a]">{error}</p>
               <button
                 onClick={fetchProgress}
-                className="mt-4 inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium bg-white/10 hover:bg-white/15 active:bg-white/20 border border-white/15 transition"
+                className="mt-4 inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium bg-[#1D4789] hover:brightness-110 text-white transition"
               >
                 Reintentar
               </button>
@@ -447,7 +443,7 @@ export default function Courses() {
                               "shadow-[0_0_24px_-6px_rgba(52,211,153,0.45)]",
                               "focus-visible:ring-emerald-400 cursor-pointer",
                             ].join(" ")
-                          : "ring-1 ring-white/10 bg-white/4 text-white/35 cursor-not-allowed",
+                          : "ring-1 ring-[#1D4789]/20 bg-white text-[#1a1a1a] cursor-not-allowed shadow-[0_4px_16px_rgba(0,0,0,0.08)]",
                       ].join(" ")}
                     >
                       <div className="flex items-center gap-3 min-w-0">
@@ -456,7 +452,7 @@ export default function Courses() {
                             "shrink-0 h-9 w-9 rounded-xl flex items-center justify-center ring-1",
                             certificateStatus.unlocked
                               ? "ring-emerald-400/50 bg-emerald-400/15 text-emerald-400"
-                              : "ring-white/10 bg-white/6 text-white/25",
+                              : "ring-[#1D4789]/20 bg-white text-[#1D4789] border border-[#1D4789]/30",
                           ].join(" ")}
                           aria-hidden="true"
                         >
@@ -492,7 +488,7 @@ export default function Courses() {
                           "shrink-0 h-7 w-7 rounded-full flex items-center justify-center ring-1 transition",
                           certificateStatus.unlocked
                             ? "ring-emerald-400/60 bg-emerald-400/15 text-emerald-400"
-                            : "ring-white/10 bg-white/6 text-white/25",
+                            : "ring-[#1D4789]/20 bg-white text-[#1D4789] border border-[#1D4789]/30",
                         ].join(" ")}
                         aria-hidden="true"
                       >

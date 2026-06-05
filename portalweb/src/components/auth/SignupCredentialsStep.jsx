@@ -25,7 +25,7 @@ function Rule({ ok, label }) {
   return (
     <li
       className={`flex items-center gap-2 ${
-        ok ? "text-white/85" : "text-white/55"
+        ok ? "text-[#1a1a1a]" : "text-[#1a1a1a]"
       }`}
     >
       {ok ? (
@@ -117,7 +117,7 @@ export default function SignupCredentialsStep({
             className={[
               "mt-0.5 shrink-0 h-5 w-5 rounded-md border-2 flex items-center justify-center transition-all duration-200",
               values.accept
-                ? "border-[#00b5e2] bg-[#00b5e2]"
+                ? "border-[#1D4789] bg-[#1D4789]"
                 : errors.accept
                 ? "border-red-400 bg-white/5"
                 : "border-white/30 bg-white/5 group-hover:border-white/60",
@@ -136,14 +136,14 @@ export default function SignupCredentialsStep({
             )}
           </span>
           {/* Label text */}
-          <span className={`text-sm leading-snug ${errors.accept ? "text-red-300" : "text-white/75"}`}>
+          <span className={`text-sm leading-snug ${errors.accept ? "text-red-300" : "text-[#1a1a1a]"}`}>
             Acepto el{" "}
             <a
               href="/documents/politica.pdf"
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="font-medium text-[#00b5e2] underline underline-offset-2 hover:text-white transition-colors"
+              className="font-medium text-[#1D4789] underline underline-offset-2 hover:text-white transition-colors"
             >
               Aviso de Privacidad y Condiciones de Uso
             </a>
@@ -164,18 +164,18 @@ export default function SignupCredentialsStep({
         </button>
         <button
           type="submit"
-          className="h-12 flex-1 rounded-full bg-[#00b5e2] font-medium shadow-[0_6px_18px_rgba(0,181,226,0.35)] transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+          className="h-12 flex-1 rounded-full bg-[#1D4789] text-white font-medium shadow-[0_6px_18px_rgba(29,71,137,0.35)] transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1D4789]/60"
         >
           Crear Cuenta
         </button>
       </div>
 
-      <div className="text-center text-sm text-white/80">
+      <div className="text-center text-sm text-[#1a1a1a]">
         <div>¿Ya tienes cuenta?</div>
         <button
           type="button"
           onClick={onToLogin}
-          className="underline underline-offset-4"
+          className="underline underline-offset-4 text-[#1D4789] hover:text-[#163672]"
         >
           Inicia sesión.
         </button>

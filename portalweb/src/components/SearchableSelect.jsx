@@ -99,11 +99,11 @@ export default function SearchableSelect({
           error
             ? "border-red-400/70 bg-red-500/5"
             : isOpen
-              ? "border-[#00b5e2]/50 bg-white/10"
-              : "border-white/15 bg-white/5"
-        } ${isOpen ? "ring-2 ring-[#00b5e2]/20" : "hover:border-white/25 hover:bg-white/7.5"}`}
+              ? "border-[#1D4789] bg-white"
+              : "border-[#1D4789]/30 bg-white"
+        } ${isOpen ? "ring-2 ring-[#1D4789]/20" : "hover:border-[#1D4789]/50"}`}
       >
-        <MdOutlineSearch size={18} className="text-white/60 flex-shrink-0" />
+        <MdOutlineSearch size={18} className="text-[#1D4789]/60 flex-shrink-0" />
         <input
           ref={inputRef}
           type="text"
@@ -117,12 +117,12 @@ export default function SearchableSelect({
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           aria-invalid={error}
-          className="min-w-0 flex-1 bg-transparent text-white outline-none placeholder:text-white/40 text-sm"
+          className="min-w-0 flex-1 bg-transparent text-[#1a1a1a] outline-none placeholder:text-[#1a1a1a] text-sm"
         />
         {value && (
           <button
             onClick={handleClear}
-            className="flex-shrink-0 p-1 rounded-full hover:bg-white/10 transition text-white/60 hover:text-white"
+            className="flex-shrink-0 p-1 rounded-full hover:bg-[#1D4789]/10 transition text-[#1a1a1a]/50 hover:text-[#1D4789]"
           >
             <MdClose size={18} />
           </button>
@@ -137,7 +137,7 @@ export default function SearchableSelect({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className="absolute top-full mt-2 w-full bg-[#1a1a2e] border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50"
+            className="absolute top-full mt-2 w-full bg-white border border-[#1D4789]/20 rounded-2xl shadow-2xl overflow-hidden z-50"
           >
             <div className="max-h-64 overflow-y-auto">
               {filteredOptions.map((option, index) => (
@@ -151,10 +151,10 @@ export default function SearchableSelect({
                   whileHover={{ backgroundColor: "rgba(255, 255, 255, 0.08)" }}
                   className={`w-full text-left px-5 py-3 transition-colors text-sm font-medium cursor-pointer ${
                     highlightedIndex === index
-                      ? "bg-[#00b5e2]/20 text-white"
+                      ? "bg-[#1D4789]/10 text-[#1D4789]"
                       : value === option.value
-                        ? "bg-white/10 text-white"
-                        : "text-white/70 hover:text-white"
+                        ? "bg-[#1D4789]/10 text-[#1D4789]"
+                        : "text-[#1a1a1a]/70 hover:text-[#1a1a1a]"
                   }`}
                 >
                   <div className="flex items-center justify-between">
@@ -163,7 +163,7 @@ export default function SearchableSelect({
                       <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        className="w-2 h-2 rounded-full bg-[#00b5e2]"
+                        className="w-2 h-2 rounded-full bg-[#1D4789]"
                       />
                     )}
                   </div>
@@ -181,7 +181,7 @@ export default function SearchableSelect({
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="absolute top-full mt-2 w-full bg-[#1a1a2e] border border-white/10 rounded-2xl shadow-2xl p-4 text-center text-white/50 text-sm pointer-events-none"
+            className="absolute top-full mt-2 w-full bg-white border border-[#1D4789]/20 rounded-2xl shadow-2xl p-4 text-center text-[#1a1a1a]/50 text-sm pointer-events-none"
           >
             No se encontraron opciones para "{search}"
           </motion.div>

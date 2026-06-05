@@ -62,7 +62,7 @@ export default function PdfVisor() {
       <div className="flex items-center justify-between gap-4 pt-4 sm:pt-6">
         <button
           onClick={() => navigate(`/courses/${courseKey}`)}
-          className="inline-flex items-center gap-2 rounded-xl bg-white/8 hover:bg-white/12 ring-1 ring-white/15 text-white/90 text-sm font-medium px-4 py-2 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+          className="inline-flex items-center gap-2 rounded-xl bg-[#1D4789] hover:bg-[#163672] text-white text-sm font-medium px-4 py-2 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1D4789]/40"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

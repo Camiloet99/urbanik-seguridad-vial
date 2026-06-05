@@ -39,7 +39,7 @@ export default function Hero({
         src={bgImage}
         alt=""
         aria-hidden
-        className="h-[220px] w-full object-cover md:h-[280px] lg:h-[320px] select-none"
+        className="h-[340px] w-full object-cover md:h-[280px] lg:h-[320px] select-none"
         draggable={false}
       />
 
@@ -48,8 +48,8 @@ export default function Hero({
 
       {/* text + actions anchored to bottom-left */}
       <div className="absolute inset-0 flex items-end">
-        <div className="w-full px- py-6 sm:px-8 sm:py-6 space-y-4">
-          <h2 className="text-2xl font-bold leading-tight sm:text-3xl drop-shadow">
+        <div className="w-full px-5 py-5 sm:px-8 sm:py-6 space-y-3">
+          <h2 className="text-xl font-bold leading-tight sm:text-3xl drop-shadow">
             {title}
           </h2>
           <p className="text-white/80 text-sm drop-shadow-sm">{subtitle}</p>
@@ -64,11 +64,10 @@ export default function Hero({
                     key={lnk.label}
                     onClick={lnk.onClick}
                     className="inline-flex items-center rounded-2xl
-                               bg-white/10 hover:bg-white/18 active:bg-white/25
-                               ring-1 ring-white/20 backdrop-blur
-                               px-4 py-1.5 text-xs font-medium text-white/90
-                               transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50
-                               shadow-[0_4px_14px_-6px_rgba(0,0,0,0.5)]"
+                               bg-white hover:bg-[#F5F5F6] active:brightness-95
+                               px-4 py-1.5 text-xs sm:text-sm font-bold text-[#1D4789]
+                               transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1D4789]/50
+                               shadow-[0_4px_14px_-6px_rgba(0,0,0,0.3)]"
                   >
                     {lnk.label}
                   </button>
@@ -94,12 +93,12 @@ export default function Hero({
               ))}
               <button
                 onClick={onCtaClick}
-                className="inline-flex items-center gap-1.5 rounded-full bg-[#00b5e2]
+                className="inline-flex items-center gap-1.5 rounded-full bg-[#1D4789]
                            px-5 py-2 text-sm font-semibold text-white
                            transition-transform duration-150
                            hover:brightness-110 active:scale-[0.97]
                            focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60
-                           shadow-[0_6px_18px_-6px_rgba(0,181,226,0.7)]"
+                           shadow-[0_6px_18px_-6px_rgba(29,71,137,0.7)]"
                 aria-label={ctaLabel}
               >
                 {ctaLabel} <MdArrowForward className="text-sm" />

@@ -18,7 +18,7 @@ function ProgressRing({ percent, size = 84, stroke = 10, color = "#00b5e2" }) {
       </defs>
       <circle
         cx={size / 2} cy={size / 2} r={r}
-        fill="none" stroke="rgba(255,255,255,.10)" strokeWidth={stroke}
+        fill="none" stroke="rgba(29,71,137,.15)" strokeWidth={stroke}
       />
       <circle
         cx={size / 2} cy={size / 2} r={r} fill="none"
@@ -34,9 +34,9 @@ function ProgressRing({ percent, size = 84, stroke = 10, color = "#00b5e2" }) {
 
 function QuestionCard({ index, question, selected, onChange }) {
   return (
-    <div className="rounded-[18px] ring-1 ring-white/10 bg-white/[0.04] p-5">
-      <p className="text-[15px] font-medium text-white/90 mb-4 leading-relaxed">
-        <span className="text-[#00b5e2] font-semibold mr-2">{index + 1}.</span>
+    <div className="rounded-[18px] border border-[#1D4789]/20 bg-white p-5">
+      <p className="text-[15px] font-medium text-[#1a1a1a] mb-4 leading-relaxed">
+        <span className="text-[#1D4789] font-semibold mr-2">{index + 1}.</span>
         {question.text}
       </p>
       <div className="grid gap-2 sm:grid-cols-2">
@@ -51,14 +51,14 @@ function QuestionCard({ index, question, selected, onChange }) {
               className={[
                 "flex items-start gap-3 text-left rounded-xl px-4 py-3 text-sm transition ring-1",
                 isSelected
-                  ? "bg-[#00b5e2]/15 ring-[#00b5e2] text-white shadow-[0_4px_16px_rgba(0,181,226,0.22)]"
-                  : "bg-white/[0.03] ring-white/10 text-white/75 hover:bg-white/[0.08] hover:ring-white/25",
+                  ? "bg-[#1D4789]/15 ring-[#1D4789] text-[#1D4789] shadow-[0_4px_16px_rgba(29,71,137,0.22)]"
+                  : "bg-[#F5F5F6] ring-[#1a1a1a]/15 text-[#1a1a1a]/75 hover:bg-[#EEEEEE] hover:ring-[#1D4789]/30",
               ].join(" ")}
             >
               <span
                 className={[
                   "mt-0.5 flex-shrink-0 h-5 w-5 rounded-full border-2 grid place-items-center transition text-[11px] font-bold",
-                  isSelected ? "border-[#00b5e2] bg-[#00b5e2] text-white" : "border-white/30 text-white/50",
+                  isSelected ? "border-[#1D4789] bg-[#1D4789] text-white" : "border-[#1a1a1a]/25 text-[#1a1a1a]/50",
                 ].join(" ")}
               >
                 {letter}
@@ -85,14 +85,14 @@ function ResultOverlay({ correct, total, onRetry, onClose, onFailed, onPassed, i
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute inset-0 z-10 flex items-center justify-center bg-[#0b1120]/80 backdrop-blur-sm p-4"
+      className="absolute inset-0 z-10 flex items-center justify-center bg-[#F5F5F6]/85 backdrop-blur-sm p-4"
     >
       <motion.div
         initial={{ scale: 0.85, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.85, opacity: 0 }}
         transition={{ type: "spring", bounce: 0.28 }}
-        className="bg-[#12171f] rounded-[28px] ring-1 ring-white/10 p-8 max-w-sm w-full text-center shadow-2xl"
+        className="bg-[#EEEEEE] rounded-[28px] border border-[#1D4789] p-8 max-w-sm w-full text-center shadow-2xl"
       >
         {/* Icon */}
         <div
@@ -106,10 +106,10 @@ function ResultOverlay({ correct, total, onRetry, onClose, onFailed, onPassed, i
           {isPassing ? "🎉" : "😅"}
         </div>
 
-        <h2 className="text-xl font-bold text-white mb-1">
+        <h2 className="text-xl font-bold text-[#1a1a1a] mb-1">
           {isPassing ? "¡Quiz superado!" : "No pasaste esta vez"}
         </h2>
-        <p className="text-white/55 text-sm mb-6">
+        <p className="text-[#1a1a1a]/55 text-sm mb-6">
           {isPassing
             ? "Has demostrado que dominás el contenido del recurso."
             : `Necesitas al menos ${Math.round(QUIZ_PASS_THRESHOLD * 100)}% para pasar. ¡Repasa el documento e inténtalo de nuevo!`}
@@ -119,15 +119,15 @@ function ResultOverlay({ correct, total, onRetry, onClose, onFailed, onPassed, i
         <div className="flex items-center justify-center gap-6 mb-7">
           <div className="relative">
             <ProgressRing percent={pct} size={96} stroke={10} color={ringColor} />
-            <span className="absolute inset-0 flex items-center justify-center text-xl font-bold text-white">
+            <span className="absolute inset-0 flex items-center justify-center text-xl font-bold text-[#1a1a1a]">
               {pct}%
             </span>
           </div>
           <div className="text-left">
-            <div className="text-2xl font-bold text-white">
+            <div className="text-2xl font-bold text-[#1a1a1a]">
               {correct}/{total}
             </div>
-            <div className="text-white/50 text-sm">respuestas correctas</div>
+            <div className="text-[#1a1a1a]/50 text-sm">respuestas correctas</div>
             <div
               className={[
                 "mt-1 text-xs font-semibold",
@@ -150,13 +150,13 @@ function ResultOverlay({ correct, total, onRetry, onClose, onFailed, onPassed, i
           <div className="flex flex-col gap-3">
             <button
               onClick={onRetry}
-              className="w-full rounded-xl py-3 bg-[#00b5e2] hover:brightness-110 text-white font-semibold transition shadow-[0_8px_20px_rgba(0,181,226,0.30)]"
+              className="w-full rounded-xl py-3 bg-[#1D4789] hover:brightness-110 text-white font-semibold transition shadow-[0_8px_20px_rgba(29,71,137,0.30)]"
             >
               Reintentar quiz
             </button>
             <button
               onClick={onFailed}
-              className="w-full rounded-xl py-3 bg-white/6 hover:bg-white/10 ring-1 ring-white/12 text-white/70 font-medium transition text-sm"
+              className="w-full rounded-xl py-3 bg-white hover:bg-[#F5F5F6] ring-1 ring-[#1D4789]/20 text-[#1a1a1a]/70 font-medium transition text-sm"
             >
               Volver al módulo
             </button>
@@ -229,11 +229,11 @@ export default function ResourceQuizModal({
   if (!quizData) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-        <div className="bg-[#12171f] rounded-2xl p-8 text-white text-center max-w-sm w-full ring-1 ring-white/10">
-          <p className="mb-4 text-white/70">Quiz no disponible para este recurso.</p>
+        <div className="bg-[#EEEEEE] rounded-2xl p-8 text-[#1a1a1a] text-center max-w-sm w-full border border-[#1D4789]">
+          <p className="mb-4 text-[#1a1a1a]/70">Quiz no disponible para este recurso.</p>
           <button
             onClick={onClose}
-            className="rounded-xl bg-[#00b5e2] hover:brightness-110 text-white font-semibold px-6 py-2 transition"
+            className="rounded-xl bg-[#1D4789] hover:brightness-110 text-white font-semibold px-6 py-2 transition"
           >
             Cerrar
           </button>
@@ -243,37 +243,37 @@ export default function ResourceQuizModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-[#0b1120]/95 backdrop-blur-sm overflow-hidden">
+    <div className="fixed inset-0 z-50 flex flex-col bg-[#F5F5F6] overflow-hidden">
       {/* ── Header ── */}
-      <div className="shrink-0 flex items-center justify-between gap-4 px-4 sm:px-8 py-4 border-b border-white/8 bg-white/[0.02]">
+      <div className="shrink-0 flex items-center justify-between gap-4 px-4 sm:px-8 py-4 border-b border-[#1D4789]/20 bg-[#EEEEEE]">
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-widest text-[#00b5e2]/80 mb-0.5">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#1D4789]/80 mb-0.5">
             Quiz de Recurso
           </p>
-          <h1 className="text-base sm:text-lg font-bold text-white truncate">
+          <h1 className="text-base sm:text-lg font-bold text-[#1a1a1a] truncate">
             {title}
           </h1>
-          <p className="text-xs text-white/45 truncate mt-0.5">{resourceLabel}</p>
+          <p className="text-xs text-[#1a1a1a]/45 truncate mt-0.5">{resourceLabel}</p>
         </div>
 
         {/* Progress indicator */}
         <div className="shrink-0 flex items-center gap-3">
           <div className="hidden sm:flex flex-col items-end text-right">
-            <span className="text-xs text-white/45">Respondidas</span>
-            <span className="text-sm font-bold text-white">
+            <span className="text-xs text-[#1a1a1a]/45">Respondidas</span>
+            <span className="text-sm font-bold text-[#1a1a1a]">
               {answered}/{total}
             </span>
           </div>
           <div className="relative">
-            <ProgressRing percent={progressPct} size={48} stroke={5} />
-            <span className="absolute inset-0 flex items-center justify-center text-[11px] font-bold text-white">
+            <ProgressRing percent={progressPct} size={48} stroke={5} color="#1D4789" />
+            <span className="absolute inset-0 flex items-center justify-center text-[11px] font-bold text-[#1a1a1a]">
               {progressPct}%
             </span>
           </div>
 
           <button
             onClick={onClose}
-            className="h-9 w-9 grid place-items-center rounded-full bg-white/6 hover:bg-white/12 ring-1 ring-white/10 text-white/60 hover:text-white transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+            className="h-9 w-9 grid place-items-center rounded-full bg-[#1a1a1a]/5 hover:bg-[#1a1a1a]/10 ring-1 ring-[#1a1a1a]/15 text-[#1a1a1a]/60 hover:text-[#1a1a1a] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1D4789]/40"
             aria-label="Cerrar quiz"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -315,9 +315,9 @@ export default function ResourceQuizModal({
       </div>
 
       {/* ── Footer: submit button ── */}
-      <div className="shrink-0 px-4 sm:px-8 py-4 border-t border-white/8 bg-white/[0.02]">
+      <div className="shrink-0 px-4 sm:px-8 py-4 border-t border-[#1D4789]/20 bg-[#EEEEEE]">
         <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
-          <p className="text-sm text-white/45">
+          <p className="text-sm text-[#1a1a1a]/55">
             {isComplete
               ? "¡Todas las preguntas respondidas! Puedes enviar."
               : `Faltan ${total - answered} pregunta${total - answered !== 1 ? "s" : ""} por responder.`}
@@ -326,10 +326,10 @@ export default function ResourceQuizModal({
             disabled={!isComplete || submitting}
             onClick={handleSubmit}
             className={[
-              "shrink-0 rounded-xl px-6 py-2.5 font-semibold text-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00b5e2]",
+              "shrink-0 rounded-xl px-6 py-2.5 font-semibold text-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1D4789]",
               isComplete && !submitting
-                ? "bg-[#00b5e2] hover:brightness-110 text-white shadow-[0_6px_18px_rgba(0,181,226,0.30)] cursor-pointer"
-                : "bg-white/8 text-white/30 cursor-not-allowed ring-1 ring-white/10",
+                ? "bg-[#1D4789] hover:brightness-110 text-white shadow-[0_6px_18px_rgba(29,71,137,0.30)] cursor-pointer"
+                : "bg-[#1a1a1a]/8 text-[#1a1a1a]/30 cursor-not-allowed ring-1 ring-[#1a1a1a]/10",
             ].join(" ")}
           >
             {submitting ? "Enviando…" : "Enviar respuestas"}

@@ -24,7 +24,7 @@ function Rule({ ok, label }) {
   return (
     <li
       className={`flex items-center gap-2 ${
-        ok ? "text-white/85" : "text-white/55"
+        ok ? "text-[#1a1a1a]" : "text-[#1a1a1a]"
       }`}
     >
       {ok ? (
@@ -103,24 +103,24 @@ export default function ForgotResetStep({
         <button
           type="button"
           onClick={onBack}
-          className="h-12 w-1/3 rounded-full bg-white/10 hover:bg-white/15 transition"
+          className="h-12 w-1/3 rounded-full bg-[#1D4789]/10 border border-[#1D4789] text-[#1D4789] font-medium hover:bg-[#1D4789]/20 transition"
         >
           Volver
         </button>
         <button
           type="submit"
-          className="h-12 flex-1 rounded-full bg-[#00b5e2] font-medium shadow-[0_6px_18px_rgba(0,181,226,0.35)] transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+          className="h-12 flex-1 rounded-full bg-[#1D4789] text-white font-medium shadow-[0_6px_18px_rgba(29,71,137,0.35)] transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1D4789]/60"
         >
           Actualizar
         </button>
       </div>
 
-      <div className="text-center text-sm text-white/80">
+      <div className="text-center text-sm text-[#1a1a1a]">
         <div>¿Recuerdas tu contraseña?</div>
         <button
           type="button"
           onClick={onToLogin}
-          className="underline underline-offset-4"
+          className="underline underline-offset-4 text-[#1D4789] hover:text-[#163672]"
         >
           Inicia sesión.
         </button>

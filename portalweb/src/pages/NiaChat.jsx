@@ -198,30 +198,6 @@ export default function NiaChat() {
 
   return (
     <div className="relative min-h-[calc(100vh-80px)]">
-      {/* BG — mismo lenguaje visual del sitio */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 bg-[#0b1220]"
-      />
-      {/* halos azules/lilas */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 mix-blend-screen opacity-70"
-        style={{
-          background:
-            "radial-gradient(1000px 600px at 85% -10%, rgba(56,189,248,.18), transparent 60%), radial-gradient(1100px 700px at 0% 0%, rgba(129,140,248,.15), transparent 60%)",
-        }}
-      />
-      {/* sutil grid */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 opacity-[0.04]"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(255,255,255,.15) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.15) 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
-        }}
-      />
 
       {/* HEADER fino */}
       <header className="sticky top-0 z-20 ">
@@ -237,7 +213,7 @@ export default function NiaChat() {
             ) : null}
             <button
               onClick={clearChat}
-              className="rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs text-white/90 hover:bg-white/10"
+              className="rounded-lg border border-[#1D4789]/30 bg-white px-3 py-1.5 text-xs text-[#1a1a1a]/70 hover:bg-[#EEEEEE]"
             >
               Limpiar
             </button>
@@ -250,9 +226,9 @@ export default function NiaChat() {
         <div className="relative mx-auto -mt-2 mb-6 flex w-full items-center justify-center">
           <div className="relative">
             {/* halo grande */}
-            <div className="absolute -inset-8 rounded-full bg-sky-400/10 blur-3xl" />
+            <div className="absolute -inset-8 rounded-full bg-[#1D4789]/8 blur-3xl" />
             {/* anillo grande */}
-            <div className="relative h-42 w-42 overflow-hidden rounded-full ring-1 ring-white/20 shadow-[0_0_0_8px_rgba(2,6,23,0.7)]">
+            <div className="relative h-42 w-42 overflow-hidden rounded-full ring-2 ring-[#1D4789]/30 shadow-[0_0_0_8px_rgba(241,241,246,0.9)]">
               {HERO_VIDEO_SRC ? (
                 <video
                   src={HERO_VIDEO_SRC}
@@ -278,13 +254,13 @@ export default function NiaChat() {
       {/* WRAPPER contenido */}
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
         {/* Tarjeta marco del chat (match con tu “frame”) */}
-        <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-0.5">
-          <div className="rounded-3xl bg-gradient-to-b from-white/[0.03] to-transparent p-4 sm:p-6">
+        <div className="rounded-3xl border border-[#1D4789] bg-[#EEEEEE] p-0.5">
+          <div className="rounded-3xl p-4 sm:p-6">
             {/* Sugerencias vacías */}
             {messages.filter((m) => m.role !== "system").length === 0 ? (
               <div className="mx-auto mt-2 w-full max-w-3xl">
-                <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-                  <p className="mb-3 text-sm font-medium text-white/80">
+                <div className="rounded-2xl border border-[#1D4789]/20 bg-white p-4">
+                  <p className="mb-3 text-sm font-medium text-[#1a1a1a]">
                     Prueba con:
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -292,7 +268,7 @@ export default function NiaChat() {
                       <button
                         key={i}
                         onClick={() => handleSuggestion(s)}
-                        className="rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs text-white/80 hover:bg-white/10"
+                        className="rounded-full border border-[#1D4789] bg-white px-3 py-1.5 text-xs text-[#1a1a1a] hover:bg-[#1D4789]/5"
                       >
                         {s}
                       </button>
@@ -321,7 +297,7 @@ export default function NiaChat() {
               {thinking ? <TypingIndicator /> : null}
 
               {errorMsg ? (
-                <div className="mx-auto w-fit rounded-xl border border-rose-400/30 bg-rose-400/10 px-3 py-2 text-sm text-rose-100">
+                <div className="mx-auto w-fit rounded-xl border border-red-400/30 bg-red-50 px-3 py-2 text-sm text-red-600">
                   {errorMsg}
                 </div>
               ) : null}
@@ -330,7 +306,7 @@ export default function NiaChat() {
             {/* Composer */}
             <div className="mt-4">
               <div className="mx-auto w-full max-w-3xl">
-                <div className="flex items-end gap-2 rounded-2xl border border-white/15 bg-white/[0.06] p-2">
+                <div className="flex flex-col gap-2 rounded-2xl border border-[#1D4789]/30 bg-white p-3 sm:flex-row sm:items-end sm:gap-2 sm:p-2">
                   <textarea
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
@@ -340,16 +316,16 @@ export default function NiaChat() {
                         canSend && handleSend();
                       }
                     }}
-                    rows={1}
+                    rows={2}
                     placeholder="Escribe tu mensaje…"
-                    className="min-h-[44px] max-h-40 flex-1 resize-none bg-transparent px-2 py-2 text-white placeholder-white/40 outline-none"
+                    className="w-full min-h-[52px] max-h-40 resize-none bg-transparent px-2 py-2 text-[#1a1a1a] placeholder:text-[#1a1a1a] outline-none text-sm"
                   />
 
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex justify-end">
                     <button
                       disabled={!canSend}
                       onClick={handleSend}
-                      className="inline-flex items-center gap-2 rounded-xl bg-sky-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-sky-400 disabled:opacity-60"
+                      className="inline-flex items-center gap-2 rounded-xl bg-[#1D4789] px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-[#163672] w-full sm:w-auto justify-center"
                     >
                       {loading ? (
                         <>
@@ -394,8 +370,8 @@ function MessageBubble({ role, content }) {
           className={[
             "rounded-2xl border px-4 py-3 text-[15px] leading-relaxed shadow-sm",
             isUser
-              ? "bg-[linear-gradient(180deg,rgba(14,165,233,0.28),rgba(14,165,233,0.20))] border-sky-400/30 text-sky-50"
-              : "bg-white/[0.06] border-white/10 text-white/90",
+              ? "bg-[#1D4789]/15 border-[#1D4789]/25 text-[#1a1a1a]"
+              : "bg-white border-[#1D4789]/15 text-[#1a1a1a]",
           ].join(" ")}
         >
           <RichText text={content} />
@@ -407,11 +383,11 @@ function MessageBubble({ role, content }) {
 
 function Avatar({ isUser }) {
   return isUser ? (
-    <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-sky-500 text-white text-sm font-semibold">
+    <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#1D4789] text-white text-sm font-semibold">
       Tú
     </div>
   ) : (
-    <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-indigo-500/80 text-white text-sm font-semibold">
+    <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#1D4789] text-white text-sm font-semibold">
       N
     </div>
   );
@@ -421,7 +397,7 @@ function Avatar({ isUser }) {
 function TypingIndicator() {
   return (
     <div className="flex justify-start">
-      <div className="ml-11 rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-white/80">
+      <div className="ml-11 rounded-2xl border border-[#1D4789]/15 bg-white px-4 py-3 text-[#1a1a1a]/70">
         <span className="inline-flex items-center gap-2">
           NIA está escribiendo
           <Dots />
@@ -434,9 +410,9 @@ function TypingIndicator() {
 function Dots() {
   return (
     <span className="inline-flex">
-      <span className="mx-0.5 h-1.5 w-1.5 animate-bounce rounded-full bg-white/70 [animation-delay:0ms]" />
-      <span className="mx-0.5 h-1.5 w-1.5 animate-bounce rounded-full bg-white/70 [animation-delay:120ms]" />
-      <span className="mx-0.5 h-1.5 w-1.5 animate-bounce rounded-full bg-white/70 [animation-delay:240ms]" />
+      <span className="mx-0.5 h-1.5 w-1.5 animate-bounce rounded-full bg-[#1D4789]/70 [animation-delay:0ms]" />
+      <span className="mx-0.5 h-1.5 w-1.5 animate-bounce rounded-full bg-[#1D4789]/70 [animation-delay:120ms]" />
+      <span className="mx-0.5 h-1.5 w-1.5 animate-bounce rounded-full bg-[#1D4789]/70 [animation-delay:240ms]" />
     </span>
   );
 }
@@ -446,7 +422,7 @@ function RichText({ text }) {
   if (!text) return null;
 
   return (
-    <div className="prose prose-invert prose-sm max-w-none">
+    <div className="prose prose-sm max-w-none text-[#1a1a1a]">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
@@ -476,12 +452,12 @@ function RichText({ text }) {
           code: ({ node, inline, ...props }) =>
             inline ? (
               <code
-                className="rounded bg-black/40 px-1.5 py-0.5 text-[0.9em]"
+                className="rounded bg-[#1D4789]/10 px-1.5 py-0.5 text-[0.9em]"
                 {...props}
               />
             ) : (
               <code
-                className="block rounded bg-black/40 px-3 py-2 text-[0.9em] overflow-x-auto"
+                className="block rounded bg-[#1D4789]/10 px-3 py-2 text-[0.9em] overflow-x-auto"
                 {...props}
               />
             ),
@@ -490,7 +466,7 @@ function RichText({ text }) {
               {...props}
               target="_blank"
               rel="noreferrer"
-              className="text-sky-300 underline decoration-sky-300/50 underline-offset-2 hover:text-sky-200"
+              className="text-[#1D4789] underline decoration-[#1D4789]/50 underline-offset-2 hover:text-[#163672]"
             />
           ),
         }}

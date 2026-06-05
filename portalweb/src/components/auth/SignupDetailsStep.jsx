@@ -43,7 +43,7 @@ const DIFFERENTIAL_FOCUS = [
 ];
 
 // Custom chevron arrow encoded for the select background
-const CHEVRON = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2300b5e2' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`;
+const CHEVRON = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231D4789' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`;
 
 function SelectField({ placeholder, value, onChange, options, error }) {
   const hasValue = value !== "";
@@ -54,8 +54,8 @@ function SelectField({ placeholder, value, onChange, options, error }) {
           error
             ? "border-red-400/60 bg-red-500/5 shadow-[0_0_0_3px_rgba(248,113,113,0.1)]"
             : hasValue
-            ? "border-[#00b5e2]/50 bg-white/5 shadow-[0_0_0_3px_rgba(0,181,226,0.08)]"
-            : "border-white/12 bg-white/5 focus-within:border-[#00b5e2]/50 focus-within:bg-white/8 focus-within:shadow-[0_0_0_3px_rgba(0,181,226,0.08)]"
+            ? "border-[#1D4789] bg-white shadow-[0_0_0_3px_rgba(29,71,137,0.08)]"
+            : "border-[#1D4789]/30 bg-white focus-within:border-[#1D4789] focus-within:shadow-[0_0_0_3px_rgba(29,71,137,0.08)]"
         }`}
       >
         <select
@@ -68,17 +68,17 @@ function SelectField({ placeholder, value, onChange, options, error }) {
             backgroundRepeat: "no-repeat",
             backgroundPosition: "right 0.25rem center",
             paddingRight: "1.5rem",
-            color: hasValue ? "white" : "rgba(255,255,255,0.38)",
+            color: hasValue ? "#1a1a1a" : "rgba(26,26,26,0.4)",
           }}
         >
-          <option value="" disabled style={{ color: "#888", background: "#202329" }}>
+          <option value="" disabled style={{ color: "#888", background: "#fff" }}>
             {placeholder}
           </option>
           {options.map((opt) => (
             <option
               key={opt.value}
               value={opt.value}
-              style={{ color: "white", background: "#202329" }}
+              style={{ color: "#1a1a1a", background: "#fff" }}
             >
               {opt.label}
             </option>
@@ -96,7 +96,7 @@ function Rule({ ok, label }) {
   return (
     <li
       className={`flex items-center gap-2 ${
-        ok ? "text-white/85" : "text-white/55"
+        ok ? "text-[#1a1a1a]" : "text-[#1a1a1a]"
       }`}
     >
       {ok ? (
@@ -197,10 +197,10 @@ export default function SignupDetailsStep({
             className={[
               "mt-0.5 shrink-0 h-5 w-5 rounded-md border-2 flex items-center justify-center transition-all duration-200",
               values.accept
-                ? "border-[#00b5e2] bg-[#00b5e2]"
+                ? "border-[#1D4789] bg-[#1D4789]"
                 : errors.accept
                 ? "border-red-400 bg-white/5"
-                : "border-white/30 bg-white/5 group-hover:border-white/60",
+                : "border-[#1a1a1a]/30 bg-white group-hover:border-[#1D4789]",
             ].join(" ")}
           >
             {values.accept && (
@@ -209,14 +209,14 @@ export default function SignupDetailsStep({
               </svg>
             )}
           </span>
-          <span className={`text-sm leading-snug ${errors.accept ? "text-red-300" : "text-white/75"}`}>
+          <span className={`text-sm leading-snug ${errors.accept ? "text-red-500" : "text-[#1a1a1a]"}`}>
             Acepto el{" "}
             <a
               href="/documents/politica.pdf"
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="font-medium text-[#00b5e2] underline underline-offset-2 hover:text-white transition-colors"
+              className="font-medium text-[#1D4789] underline underline-offset-2 hover:text-[#163672] transition-colors"
             >
               Aviso de Privacidad y Condiciones de Uso
             </a>
@@ -231,14 +231,14 @@ export default function SignupDetailsStep({
         <button
           type="button"
           onClick={onBack}
-          className="flex-1 h-12 rounded-full border border-white/20 font-medium text-white transition hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+          className="flex-1 h-12 rounded-full border border-[#1D4789]/30 font-medium text-[#1D4789] transition hover:bg-[#1D4789]/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1D4789]/30"
         >
           Atrás
         </button>
         <button
           type="submit"
           disabled={isSubmitting}
-          className="flex-1 h-12 rounded-full bg-[#00b5e2] text-white font-medium shadow-[0_6px_18px_rgba(0,181,226,0.35)] transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00b5e2]/60 disabled:opacity-60"
+          className="flex-1 h-12 rounded-full bg-[#1D4789] text-white font-medium shadow-[0_6px_18px_rgba(29,71,137,0.35)] transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1D4789]/60 disabled:opacity-60"
         >
           {isSubmitting ? "Creando..." : "Crear Cuenta"}
         </button>

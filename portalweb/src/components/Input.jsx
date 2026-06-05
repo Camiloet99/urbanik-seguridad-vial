@@ -11,8 +11,8 @@ export default function Input({
   const sizeClasses =
     size === "lg" ? "h-12 px-5 text-[15px]" : "h-11 px-4 text-sm";
   const borderClasses = error
-    ? "border-red-400/70 focus-within:border-red-300 bg-red-500/5"
-    : "border-white/15 focus-within:border-white/25 bg-white/5 focus-within:bg-white/10";
+    ? "border-red-400/70 focus-within:border-red-400 bg-red-500/5"
+    : "border-[#1D4789]/30 focus-within:border-[#1D4789] bg-white focus-within:bg-white";
 
   const describedBy =
     helperText || error ? `${id || props.name}-desc` : undefined;
@@ -28,7 +28,7 @@ export default function Input({
       >
         {iconLeft && (
           <span
-            className={`shrink-0 ${error ? "text-red-300" : "text-white/75"}`}
+            className={`shrink-0 ${error ? "text-red-400" : "text-[#1D4789]"}`}
           >
             {iconLeft}
           </span>
@@ -37,12 +37,12 @@ export default function Input({
           id={id}
           aria-invalid={!!error}
           aria-describedby={describedBy}
-          className="peer min-w-0 flex-1 bg-transparent text-white placeholder:text-white/55 outline-none"
+          className="peer min-w-0 flex-1 bg-transparent text-[#1a1a1a] placeholder:text-[#1a1a1a] outline-none"
           {...props}
         />
         {rightAdornment && (
           <span
-            className={`shrink-0 ${error ? "text-red-300" : "text-white/75"}`}
+            className={`shrink-0 ${error ? "text-red-400" : "text-[#1a1a1a]"}`}
           >
             {rightAdornment}
           </span>
@@ -52,7 +52,7 @@ export default function Input({
       {(error || helperText) && (
         <p
           id={describedBy}
-          className={`mt-2 text-xs ${error ? "text-red-300" : "text-white/70"}`}
+          className={`mt-2 text-xs ${error ? "text-red-500" : "text-[#1a1a1a]"}`}
         >
           {error || helperText}
         </p>

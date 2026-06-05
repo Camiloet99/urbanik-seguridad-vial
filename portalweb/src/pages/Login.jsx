@@ -54,8 +54,8 @@ function ProgressDots({ total = 2, index = 0 }) {
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
           style={{
             background:
-              i === index ? "rgba(0,181,226,1)" : "rgba(255,255,255,0.28)",
-            boxShadow: i === index ? "0 0 14px rgba(0,181,226,0.55)" : "none",
+              i === index ? "#1D4789" : "rgba(29,71,137,0.25)",
+            boxShadow: i === index ? "0 0 10px rgba(29,71,137,0.4)" : "none",
           }}
         />
       ))}
@@ -454,8 +454,8 @@ export default function AuthGateway() {
     mode === "signup" ? signupStep - 1 : mode === "forgot" ? forgotStep - 1 : 0;
 
   return (
-    <div className="min-h-screen bg-[#0f1422] text-white flex items-center justify-center">
-      <div className="w-full max-w-[1400px] px-4 py-6">
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="w-full max-w-[1400px] px-4 sm:px-6 py-6">
         <div className="grid items-center gap-10 md:gap-12 lg:gap-16 lg:grid-cols-[440px_minmax(0,1fr)]">
           {/* Columna izquierda */}
           <div className="w-full">
@@ -469,7 +469,7 @@ export default function AuthGateway() {
 
             {/* Tabs */}
             <div className={`${FORM_WIDTH} mx-auto mb-4`}>
-              <div className="relative flex items-center justify-between bg-white/5 rounded-full p-1">
+              <div className="relative flex items-center justify-between bg-[#EEEEEE] border border-[#1D4789] rounded-full p-1">
                 {tabs.map((t) => {
                   const active = mode === t.key;
                   return (
@@ -480,11 +480,11 @@ export default function AuthGateway() {
                         if (t.key === "signup") setSignupStep(1);
                         if (t.key === "forgot") setForgotStep(1);
                       }}
-                      className="relative z-10 flex-1 py-2 text-sm rounded-full"
+                      className="relative z-10 flex-1 py-2 text-sm sm:text-base font-medium rounded-full"
                     >
                       <motion.span
-                        className={`block text-center ${
-                          active ? "text-white" : "text-white/65"
+                        className={`relative z-10 block text-center ${
+                          active ? "text-white" : "text-[#1D4789]"
                         }`}
                         whileTap={{ scale: 0.98 }}
                       >
@@ -493,7 +493,7 @@ export default function AuthGateway() {
                       {active && (
                         <motion.span
                           layoutId="tab-underline"
-                          className="absolute inset-0 rounded-full bg-white/10"
+                          className="absolute inset-0 rounded-full bg-[#1D4789]"
                           transition={{
                             type: "spring",
                             stiffness: 420,
@@ -508,7 +508,7 @@ export default function AuthGateway() {
             </div>
 
             <div
-              className={`${FORM_WIDTH} mx-auto relative rounded-3xl bg-white/[0.02] backdrop-blur-xl border border-white/10 p-5 md:p-6 shadow-[0_20px_60px_rgba(0,0,0,0.35)]`}
+              className={`${FORM_WIDTH} mx-auto relative rounded-3xl bg-[#EEEEEE] border border-[#1D4789] p-5 md:p-6 shadow-[0_20px_60px_rgba(0,0,0,0.15)]`}
             >
               {showStepper && (
                 <ProgressDots
