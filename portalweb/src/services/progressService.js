@@ -47,13 +47,6 @@ export async function submitTest(modulo, type) {
   return http.post("/progress/me/tests", { modulo, type }, { token });
 }
 
-/**
- * Marks the intro video/section as viewed for a module.
- * @param {number} modulo  1–6
- */
-export async function submitIntroduccion(modulo) {
-  return submitTest(modulo, "introduccion");
-}
 
 /**
  * Marks a specific PDF as read for a module.
@@ -98,7 +91,6 @@ export function emptyProgress() {
       testInitialDone: false,
       testExitDone: false,
       calificationDone: false,
-      introduccionDone: false,
       pdf1Done: false,
       pdf2Done: false,
       pdf3Done: false,
@@ -139,7 +131,6 @@ export function getModuleProgress(progress, modulo) {
     testInitialDone: false,
     testExitDone: false,
     calificationDone: false,
-    introduccionDone: false,
     pdf1Done: false,
     pdf2Done: false,
     pdf3Done: false,

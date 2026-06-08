@@ -1,11 +1,10 @@
-﻿import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import CertificateModal from "@/components/courses/CertificateModal";
 import {
   getMyProgress,
   getModuleProgress,
   COURSE_KEY_TO_MODULO,
-  submitIntroduccion,
   isExperienciaDone,
   markExperienciaDone,
   isMonedaEarned,
@@ -65,7 +64,6 @@ export default function CourseDetail() {
     m.set("test-inicial",  !!mp.testInitialDone);
     m.set("test-salida",   !!mp.testExitDone);
     m.set("califica",      !!mp.calificationDone);
-    m.set("introduccion",  !!mp.introduccionDone);
     m.set("experiencia",   !!isMonedaEarned(progress, modulo));
     m.set("pdf1",          !!mp.pdf1Done);
     m.set("pdf2",          !!mp.pdf2Done);
@@ -96,7 +94,6 @@ export default function CourseDetail() {
   const moduleCertUnlocked = useMemo(() => {
     if (!mp || !progress || !modulo) return false;
     return (
-      mp.introduccionDone &&
       mp.testInitialDone &&
       mp.quiz1Done && mp.quiz2Done && mp.quiz3Done && mp.quiz4Done &&
       isMonedaEarned(progress, modulo) &&
@@ -109,7 +106,6 @@ export default function CourseDetail() {
   const certMissingItems = useMemo(() => {
     if (!mp) return [];
     const missing = [];
-    if (!mp.introduccionDone)  missing.push("la introducción");
     if (!mp.testInitialDone)   missing.push("el test inicial");
     const quizPending = [mp.quiz1Done, mp.quiz2Done, mp.quiz3Done, mp.quiz4Done].filter(Boolean).length;
     if (quizPending < 4) {
@@ -126,11 +122,6 @@ export default function CourseDetail() {
   const lockedItems = useMemo(() => {
     if (!mp) return {};
     const items = {};
-
-    // test-inicial requires introduccion
-    if (!mp.introduccionDone) {
-      items["test-inicial"] = "Ve la introducción del módulo primero";
-    }
 
     // test-salida: build list of only the missing prereqs
     if (!canDoTestSalida) {
@@ -155,16 +146,24 @@ export default function CourseDetail() {
     return items;
   }, [mp, canDoTestSalida, experienciaDone]);
 
-  // Hero CTA -- navigates immediately; marks introduccion done in the background
-  const handleIntroduccion = () => {
-    if (courseData?.locked || !modulo) return;
-    navigate(`/courses/${courseKey}/intro`);
-    // Fire-and-forget: update backend + refresh progress without blocking navigation
-    submitIntroduccion(modulo)
-      .then(() => getMyProgress())
-      .then((p) => setProgress(p))
-      .catch((e) => console.warn("[handleIntroduccion]", e));
-  };
+  const smartCta = useMemo(() => {
+    if (courseData?.locked) {
+      return { label: "Próximamente", onClick: () => {} };
+    }
+    if (!mp) {
+      return { label: "", onClick: () => {} };
+    }
+    if (!mp.testInitialDone) {
+      return { label: "Test de inicio", onClick: () => navigate(`/test-inicial/${modulo}`) };
+    }
+    if (!mp.testExitDone && canDoTestSalida) {
+      return { label: "Test de salida", onClick: () => navigate(`/test-salida/${modulo}`) };
+    }
+    if (mp.testExitDone && !mp.calificationDone) {
+      return { label: "Calificar módulo", onClick: () => setIsRatingModalOpen(true) };
+    }
+    return { label: "", onClick: () => {} };
+  }, [courseData, mp, modulo, canDoTestSalida, navigate]);
 
   // Play button -- marks experiencia done in localStorage then navigates
   const handleExperience = () => {
@@ -206,8 +205,8 @@ export default function CourseDetail() {
             title={courseData.title}
             subtitle={courseData.subtitle}
             bgImage={courseData.bgImage}
-            ctaLabel={courseData.locked ? "Proximamente" : "Introduccion"}
-            onCtaClick={handleIntroduccion}
+            ctaLabel={smartCta.label}
+            onCtaClick={smartCta.onClick}
           />
 
           <ActionList
@@ -237,8 +236,7 @@ export default function CourseDetail() {
               className="flex-1"
               progressMap={progressMap}
               weights={{
-                introduccion:    5,
-                "test-inicial":  5,
+                "test-inicial": 10,
                 "test-salida":   5,
                 califica:        5,
                 quiz1:           5,

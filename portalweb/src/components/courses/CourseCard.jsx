@@ -1,4 +1,4 @@
-﻿// src/components/courses/CourseCard.jsx
+// src/components/courses/CourseCard.jsx
 import {
   MdShare,
   MdEmojiEmotions,
@@ -10,13 +10,21 @@ export default function CourseCard({
   title,
   subtitle,
   img,
-  onClick = () => {},
+  onClick,
   statusLogoSrc,
   className = "",
+  ...props
 }) {
+  const isClickable = !!onClick;
   return (
     <article
-      className={`relative overflow-hidden rounded-[24px] ring-1 ring-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,.45)] hover:shadow-[0_16px_48px_-12px_rgba(0,0,0,.55)] transition-shadow ${className}`}
+      onClick={onClick}
+      className={`group relative overflow-hidden rounded-[24px] ring-1 ring-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,.45)] transition-all duration-300 ${
+        isClickable
+          ? "cursor-pointer hover:shadow-[0_16px_48px_-12px_rgba(0,0,0,.55)]"
+          : "cursor-not-allowed opacity-75"
+      } ${className}`}
+      {...props}
     >
       <img
         src={img}
@@ -52,16 +60,9 @@ export default function CourseCard({
         </div>
 
         {/* Logo de estado: flotante abajo-derecha */}
-        <button
-          type="button"
-          onClick={onClick}
-          className="group absolute bottom-4 right-4 -mb-0.5 p-0 bg-transparent border-0
-                     focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70
-                     transition-transform duration-200 ease-out
-                     hover:scale-105 active:scale-95 cursor-pointer
-                     hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.25)]"
-          aria-label={`Abrir ${title}`}
-          title={title}
+        <div
+          className="absolute bottom-4 right-4 -mb-0.5 transition-all duration-200 ease-out
+                     group-hover:scale-105 group-hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.25)]"
         >
           {statusLogoSrc ? (
             <img
@@ -69,14 +70,11 @@ export default function CourseCard({
               alt=""
               className="h-12 w-auto object-contain select-none pointer-events-none
                          transition-all duration-200 ease-out
-                         group-hover:-translate-y-[1px] group-hover:brightness-110
-                         group-active:brightness-95"
+                         group-hover:-translate-y-[1px] group-hover:brightness-110"
               draggable={false}
             />
-          ) : (
-            <span className="sr-only">Abrir</span>
-          )}
-        </button>
+          ) : null}
+        </div>
       </div>
     </article>
   );

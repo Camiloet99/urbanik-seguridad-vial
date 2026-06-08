@@ -91,18 +91,20 @@ export default function Hero({
                   {lnk.label}
                 </button>
               ))}
-              <button
-                onClick={onCtaClick}
-                className="inline-flex items-center gap-1.5 rounded-full bg-[#1D4789]
-                           px-5 py-2 text-sm font-semibold text-white
-                           transition-transform duration-150
-                           hover:brightness-110 active:scale-[0.97]
-                           focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60
-                           shadow-[0_6px_18px_-6px_rgba(29,71,137,0.7)]"
-                aria-label={ctaLabel}
-              >
-                {ctaLabel} <MdArrowForward className="text-sm" />
-              </button>
+              {ctaLabel && (
+                <button
+                  onClick={onCtaClick}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-[#1D4789]
+                             px-5 py-2 text-sm font-semibold text-white
+                             transition-transform duration-150
+                             hover:brightness-110 active:scale-[0.97]
+                             focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60
+                             shadow-[0_6px_18px_-6px_rgba(29,71,137,0.7)]"
+                  aria-label={ctaLabel}
+                >
+                  {ctaLabel} <MdArrowForward className="text-sm" />
+                </button>
+              )}
             </div>
           </div>
         </div>

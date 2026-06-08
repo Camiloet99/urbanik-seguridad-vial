@@ -168,7 +168,6 @@ export default function Courses() {
       const m = getModuleProgress(rawProgress, n);
       const hasMedal = isMonedaEarned(rawProgress, n);
       const done =
-        m.introduccionDone &&
         m.testInitialDone &&
         m.quiz1Done && m.quiz2Done && m.quiz3Done && m.quiz4Done &&
         hasMedal &&
@@ -197,8 +196,7 @@ export default function Courses() {
       const m = getModuleProgress(rawProgress, n);
       const hasMedal = isMonedaEarned(rawProgress, n);
       const done = rawProgress
-        ? m.introduccionDone &&
-          m.testInitialDone &&
+        ? m.testInitialDone &&
           m.quiz1Done && m.quiz2Done && m.quiz3Done && m.quiz4Done &&
           hasMedal &&
           m.testExitDone &&
@@ -518,7 +516,13 @@ export default function Courses() {
                     message="Personaliza tu avatar 3D primero"
                     placement="top"
                   >
-                    <CourseCard {...c} onClick={avatarDone ? c.onClick : undefined} />
+                    <CourseCard
+                      {...c}
+                      onClick={avatarDone ? c.onClick : undefined}
+                      onKeyDown={avatarDone ? c.onKeyDown : undefined}
+                      tabIndex={avatarDone ? 0 : -1}
+                      aria-disabled={!avatarDone ? "true" : "false"}
+                    />
                   </LockedTooltip>
                 </motion.div>
               ))}

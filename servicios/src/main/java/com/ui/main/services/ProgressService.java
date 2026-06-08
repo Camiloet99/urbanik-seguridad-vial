@@ -317,7 +317,6 @@ public class ProgressService {
             ModuleProgressEntity e = byModulo.get(n);
             if (e == null) continue;
             int flags = 0;
-            if (e.isIntroduccionDone())  flags++;
             if (e.isTestInitialDone())   flags++;
             if (e.isQuiz1Done())         flags++;
             if (e.isQuiz2Done())         flags++;
@@ -325,7 +324,7 @@ public class ProgressService {
             if (e.isQuiz4Done())         flags++;
             if (e.isTestExitDone())      flags++;
             if (e.isCalificationDone())  flags++;
-            score += (int) Math.round((double) flags / 8.0 * 15.0);
+            score += (int) Math.round((double) flags / 7.0 * 15.0);
         }
 
         return Math.min(score, 100);
@@ -333,7 +332,7 @@ public class ProgressService {
 
     /**
      * Returns a 6-element list (index 0 = módulo 1) where true means
-     * the module is 100% complete: all 8 activity flags + medal earned.
+     * the module is 100% complete: all 7 activity flags + medal earned.
      */
     private List<Boolean> computeModulosDone(
             UserProgressEntity medals,
@@ -345,7 +344,6 @@ public class ProgressService {
         for (int n = 1; n <= TOTAL_MODULOS; n++) {
             ModuleProgressEntity e = byModulo.get(n);
             boolean allFlags = e != null
-                    && e.isIntroduccionDone()
                     && e.isTestInitialDone()
                     && e.isQuiz1Done() && e.isQuiz2Done() && e.isQuiz3Done() && e.isQuiz4Done()
                     && e.isTestExitDone()
