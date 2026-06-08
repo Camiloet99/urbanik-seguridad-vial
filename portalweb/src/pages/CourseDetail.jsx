@@ -61,18 +61,18 @@ export default function CourseDetail() {
   const progressMap = useMemo(() => {
     const m = new Map();
     if (!mp) return m;
-    m.set("test-inicial",  !!mp.testInitialDone);
-    m.set("test-salida",   !!mp.testExitDone);
-    m.set("califica",      !!mp.calificationDone);
-    m.set("experiencia",   !!isMonedaEarned(progress, modulo));
-    m.set("pdf1",          !!mp.pdf1Done);
-    m.set("pdf2",          !!mp.pdf2Done);
-    m.set("pdf3",          !!mp.pdf3Done);
-    m.set("pdf4",          !!mp.pdf4Done);
-    m.set("quiz1",         !!mp.quiz1Done);
-    m.set("quiz2",         !!mp.quiz2Done);
-    m.set("quiz3",         !!mp.quiz3Done);
-    m.set("quiz4",         !!mp.quiz4Done);
+    m.set("test-inicial", !!mp.testInitialDone);
+    m.set("test-salida", !!mp.testExitDone);
+    m.set("califica", !!mp.calificationDone);
+    m.set("experiencia", !!isMonedaEarned(progress, modulo));
+    m.set("pdf1", !!mp.pdf1Done);
+    m.set("pdf2", !!mp.pdf2Done);
+    m.set("pdf3", !!mp.pdf3Done);
+    m.set("pdf4", !!mp.pdf4Done);
+    m.set("quiz1", !!mp.quiz1Done);
+    m.set("quiz2", !!mp.quiz2Done);
+    m.set("quiz3", !!mp.quiz3Done);
+    m.set("quiz4", !!mp.quiz4Done);
     return m;
   }, [mp, progress, modulo]);
 
@@ -106,15 +106,15 @@ export default function CourseDetail() {
   const certMissingItems = useMemo(() => {
     if (!mp) return [];
     const missing = [];
-    if (!mp.testInitialDone)   missing.push("el test inicial");
+    if (!mp.testInitialDone) missing.push("el test inicial");
     const quizPending = [mp.quiz1Done, mp.quiz2Done, mp.quiz3Done, mp.quiz4Done].filter(Boolean).length;
     if (quizPending < 4) {
       const n = 4 - quizPending;
       missing.push(`${n} quiz${n > 1 ? "es" : ""} de recursos`);
     }
     if (!isMonedaEarned(progress, modulo)) missing.push("la experiencia 3D");
-    if (!mp.testExitDone)      missing.push("el test de salida");
-    if (!mp.calificationDone)  missing.push("el Calificanos");
+    if (!mp.testExitDone) missing.push("el test de salida");
+    if (!mp.calificationDone) missing.push("el Calificanos");
     return missing;
   }, [mp, progress, modulo]);
 
@@ -148,10 +148,10 @@ export default function CourseDetail() {
 
   const smartCta = useMemo(() => {
     if (courseData?.locked) {
-      return { label: "Próximamente", onClick: () => {} };
+      return { label: "Próximamente", onClick: () => { } };
     }
     if (!mp) {
-      return { label: "", onClick: () => {} };
+      return { label: "", onClick: () => { } };
     }
     if (!mp.testInitialDone) {
       return { label: "Test de inicio", onClick: () => navigate(`/test-inicial/${modulo}`) };
@@ -162,7 +162,7 @@ export default function CourseDetail() {
     if (mp.testExitDone && !mp.calificationDone) {
       return { label: "Calificar módulo", onClick: () => setIsRatingModalOpen(true) };
     }
-    return { label: "", onClick: () => {} };
+    return { label: "", onClick: () => { } };
   }, [courseData, mp, modulo, canDoTestSalida, navigate]);
 
   // Play button -- marks experiencia done in localStorage then navigates
@@ -237,13 +237,13 @@ export default function CourseDetail() {
               progressMap={progressMap}
               weights={{
                 "test-inicial": 10,
-                "test-salida":   5,
-                califica:        5,
-                quiz1:           5,
-                quiz2:           5,
-                quiz3:           5,
-                quiz4:           5,
-                experiencia:    60,
+                "test-salida": 5,
+                califica: 5,
+                quiz1: 5,
+                quiz2: 5,
+                quiz3: 5,
+                quiz4: 5,
+                experiencia: 60,
               }}
             />
 
@@ -269,12 +269,12 @@ export default function CourseDetail() {
                   "focus:outline-none focus-visible:ring-2",
                   moduleCertUnlocked
                     ? [
-                        "bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-cyan-500/15",
-                        "ring-2 ring-emerald-400/70 text-emerald-300",
-                        "hover:ring-emerald-400 hover:from-emerald-500/25 hover:to-cyan-500/25",
-                        "shadow-[0_0_24px_-6px_rgba(52,211,153,0.45)]",
-                        "focus-visible:ring-emerald-400 cursor-pointer",
-                      ].join(" ")
+                      "bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-cyan-500/15",
+                      "ring-2 ring-emerald-400/70 text-emerald-300",
+                      "hover:ring-emerald-400 hover:from-emerald-500/25 hover:to-cyan-500/25",
+                      "shadow-[0_0_24px_-6px_rgba(52,211,153,0.45)]",
+                      "focus-visible:ring-emerald-400 cursor-pointer",
+                    ].join(" ")
                     : "ring-1 ring-[#1D4789]/20 bg-white text-[#1a1a1a] cursor-not-allowed shadow-[0_4px_16px_rgba(0,0,0,0.08)]",
                 ].join(" ")}
               >
@@ -306,8 +306,8 @@ export default function CourseDetail() {
                     </p>
                     <p className="text-[11px] mt-0.5 truncate">
                       {moduleCertUnlocked
-                          ? "Listo para descargar"
-                          : certMissingItems.length
+                        ? "Listo para descargar"
+                        : certMissingItems.length
                           ? `Falta: ${certMissingItems.join(", ")}`
                           : "Módulo incompleto"}
                     </p>
@@ -381,8 +381,8 @@ export default function CourseDetail() {
                   {courseData.locked
                     ? "Este modulo esta en preparacion."
                     : !mp?.testInitialDone
-                    ? "Haz el test inicial del modulo para desbloquear la experiencia."
-                    : "Al hacer clic, entras a la experiencia gamificada del modulo."}
+                      ? "Haz el test inicial del modulo para desbloquear la experiencia."
+                      : "Al hacer clic, entras a la experiencia gamificada del modulo."}
                 </p>
               </div>
             </div>
@@ -408,10 +408,10 @@ export default function CourseDetail() {
               <div className="space-y-2">
                 {courseData.resources?.length ? (
                   courseData.resources.map((r, idx) => {
-                    const quizNum  = idx + 1;
-                    const pdfKey   = `pdf${quizNum}Done`;
-                    const quizKey  = `quiz${quizNum}Done`;
-                    const pdfDone  = mp?.[pdfKey]  ?? false;
+                    const quizNum = idx + 1;
+                    const pdfKey = `pdf${quizNum}Done`;
+                    const quizKey = `quiz${quizNum}Done`;
+                    const pdfDone = mp?.[pdfKey] ?? false;
                     const quizDone = mp?.[quizKey] ?? false;
                     const quizFailed = localQuizFailed.has(quizNum);
                     // Resources are locked until test inicial is done
@@ -423,7 +423,7 @@ export default function CourseDetail() {
                         className={[
                           "w-full flex items-center gap-2 rounded-full px-4 py-[10px] ring-1 transition-all duration-300",
                           quizDone
-                            ? "ring-2 ring-emerald-400 bg-emerald-400/8 text-emerald-300"
+                            ? "ring-2 ring-[#1D4789] bg-[#1D4789]/8 text-[#1D4789]"
                             : "ring-1 ring-[#1D4789]/25 bg-white text-[#1a1a1a]",
                           resourceLocked ? "opacity-40" : "",
                         ].join(" ")}
@@ -433,7 +433,10 @@ export default function CourseDetail() {
                           disabled={resourceLocked}
                           onClick={() => openResource(idx)}
                           title={resourceLocked ? "Haz el test inicial primero" : undefined}
-                          className="flex-1 text-left text-sm font-medium truncate transition-colors hover:text-[#1D4789] focus:outline-none cursor-pointer disabled:cursor-not-allowed"
+                          className={[
+                            "flex-1 text-left text-sm truncate transition-colors hover:text-[#1D4789] focus:outline-none cursor-pointer disabled:cursor-not-allowed",
+                            quizDone ? "font-bold text-[#1D4789]" : "font-medium",
+                          ].join(" ")}
                         >
                           {r.label}
                         </button>
@@ -446,8 +449,8 @@ export default function CourseDetail() {
                             resourceLocked
                               ? "Haz el test inicial primero"
                               : pdfDone
-                              ? "Recurso visto — abrir de nuevo"
-                              : "Abrir recurso"
+                                ? "Recurso visto — abrir de nuevo"
+                                : "Abrir recurso"
                           }
                           className={[
                             "shrink-0 h-7 w-7 rounded-full flex items-center justify-center ring-1 transition-all duration-300 focus:outline-none",
@@ -481,22 +484,22 @@ export default function CourseDetail() {
                             resourceLocked
                               ? "Haz el test inicial primero"
                               : quizDone
-                              ? "Quiz superado ✅"
-                              : quizFailed
-                              ? "Quiz fallado — reintenta"
-                              : pdfDone
-                              ? "Hacer quiz"
-                              : "Abre el recurso primero"
+                                ? "Quiz superado ✅"
+                                : quizFailed
+                                  ? "Quiz fallado — reintenta"
+                                  : pdfDone
+                                    ? "Hacer quiz"
+                                    : "Abre el recurso primero"
                           }
                           className={[
                             "shrink-0 h-7 w-7 rounded-full flex items-center justify-center ring-1 transition-all duration-200",
                             quizDone
                               ? "ring-[#1D4789] bg-[#1D4789] cursor-default"
                               : quizFailed
-                              ? "ring-red-500 bg-white cursor-pointer hover:bg-red-50"
-                              : pdfDone && !resourceLocked
-                              ? "ring-[#1D4789] bg-white cursor-pointer hover:bg-[#F5F5F6]"
-                              : "ring-[#1D4789]/20 bg-white cursor-not-allowed",
+                                ? "ring-red-500 bg-white cursor-pointer hover:bg-red-50"
+                                : pdfDone && !resourceLocked
+                                  ? "ring-[#1D4789] bg-white cursor-pointer hover:bg-[#F5F5F6]"
+                                  : "ring-[#1D4789]/20 bg-white cursor-not-allowed",
                           ].join(" ")}
                         >
                           <img

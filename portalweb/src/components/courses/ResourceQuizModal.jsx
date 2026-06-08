@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MODULE_QUIZZES, QUIZ_PASS_THRESHOLD } from "@/data/moduleQuizzes";
 import { submitQuizResult } from "@/services/progressService";
@@ -168,6 +168,229 @@ function ResultOverlay({ correct, total, onRetry, onClose, onFailed, onPassed, i
 }
 
 // ---------------------------------------------------------------------------
+// Helpers for randomization and padding
+// ---------------------------------------------------------------------------
+
+const GENERIC_QUESTIONS = [
+  {
+    id: "gq_1",
+    text: "La seguridad vial es un compromiso colectivo de todos los actores de la vía. (Verdadero / Falso)",
+    options: [
+      { id: "a", text: "Verdadero" },
+      { id: "b", text: "Falso" }
+    ],
+    correct: "a"
+  },
+  {
+    id: "gq_2",
+    text: "¿Cuál es el límite máximo de velocidad permitido en zonas residenciales y escolares en Colombia?",
+    options: [
+      { id: "a", text: "30 km/h" },
+      { id: "b", text: "50 km/h" },
+      { id: "c", text: "60 km/h" },
+      { id: "d", text: "80 km/h" }
+    ],
+    correct: "a"
+  },
+  {
+    id: "gq_3",
+    text: "El peatón siempre tiene la prelación en la vía en zonas urbanas y pasos peatonales. (Verdadero / Falso)",
+    options: [
+      { id: "a", text: "Verdadero" },
+      { id: "b", text: "Falso" }
+    ],
+    correct: "a"
+  },
+  {
+    id: "gq_4",
+    text: "¿Qué elemento de protección es obligatorio y vital para los motociclistas?",
+    options: [
+      { id: "a", text: "Casco reglamentario debidamente abrochado" },
+      { id: "b", text: "Guantes de cuero únicamente" },
+      { id: "c", text: "Chaqueta impermeable" },
+      { id: "d", text: "Ninguno de los anteriores" }
+    ],
+    correct: "a"
+  },
+  {
+    id: "gq_5",
+    text: "Conducir bajo el efecto del alcohol aumenta significativamente la probabilidad de un siniestro vial. (Verdadero / Falso)",
+    options: [
+      { id: "a", text: "Verdadero" },
+      { id: "b", text: "Falso" }
+    ],
+    correct: "a"
+  },
+  {
+    id: "gq_6",
+    text: "¿Qué luz del semáforo nos indica que debemos detenernos por completo?",
+    options: [
+      { id: "a", text: "Luz roja" },
+      { id: "b", text: "Luz amarilla" },
+      { id: "c", text: "Luz verde" },
+      { id: "d", text: "Luz intermitente" }
+    ],
+    correct: "a"
+  },
+  {
+    id: "gq_7",
+    text: "Las señales de tránsito de color rojo con bordes blancos son de tipo:",
+    options: [
+      { id: "a", text: "Reglamentarias o prohibitivas" },
+      { id: "b", text: "Informativas" },
+      { id: "c", text: "Preventivas" },
+      { id: "d", text: "Transitorias" }
+    ],
+    correct: "a"
+  },
+  {
+    id: "gq_8",
+    text: "El uso del cinturón de seguridad es obligatorio para todos los ocupantes del vehículo. (Verdadero / Falso)",
+    options: [
+      { id: "a", text: "Verdadero" },
+      { id: "b", text: "Falso" }
+    ],
+    correct: "a"
+  },
+  {
+    id: "gq_9",
+    text: "¿Cuál es la distancia mínima recomendada de seguridad que se debe mantener con el vehículo de adelante?",
+    options: [
+      { id: "a", text: "La regla de los 3 segundos" },
+      { id: "b", text: "1 metro" },
+      { id: "c", text: "El largo de un carro" },
+      { id: "d", text: "No hay distancia mínima obligatoria" }
+    ],
+    correct: "a"
+  },
+  {
+    id: "gq_10",
+    text: "En caso de lluvia o niebla, se debe reducir la velocidad y encender las luces para mejorar la visibilidad. (Verdadero / Falso)",
+    options: [
+      { id: "a", text: "Verdadero" },
+      { id: "b", text: "Falso" }
+    ],
+    correct: "a"
+  },
+  {
+    id: "gq_11",
+    text: "¿Qué significan las señales de tránsito preventivas (de color amarillo)?",
+    options: [
+      { id: "a", text: "Advierten sobre un peligro o condición especial en la vía" },
+      { id: "b", text: "Indican una prohibición obligatoria" },
+      { id: "c", text: "Brindan información turística o de servicios" },
+      { id: "d", text: "Ninguna de las anteriores" }
+    ],
+    correct: "a"
+  },
+  {
+    id: "gq_12",
+    text: "Utilizar el teléfono celular mientras se conduce distrae la atención y multiplica el riesgo de siniestro. (Verdadero / Falso)",
+    options: [
+      { id: "a", text: "Verdadero" },
+      { id: "b", text: "Falso" }
+    ],
+    correct: "a"
+  },
+  {
+    id: "gq_13",
+    text: "¿Qué se debe hacer al aproximarse a un paso de cebra o cruce peatonal?",
+    options: [
+      { id: "a", text: "Disminuir la velocidad y ceder el paso si hay peatones cruzando" },
+      { id: "b", text: "Aumentar la velocidad para pasar rápido" },
+      { id: "c", text: "Tocar la bocina para advertir que pasará primero" },
+      { id: "d", text: "Continuar a la misma velocidad sin detenerse" }
+    ],
+    correct: "a"
+  },
+  {
+    id: "gq_14",
+    text: "Los ciclistas deben transitar por la derecha de las vías o por las ciclorrutas destinadas para ellos. (Verdadero / Falso)",
+    options: [
+      { id: "a", text: "Verdadero" },
+      { id: "b", text: "Falso" }
+    ],
+    correct: "a"
+  },
+  {
+    id: "gq_15",
+    text: "¿Cuál de los siguientes es considerado un elemento de seguridad activa de un vehículo?",
+    options: [
+      { id: "a", text: "Los frenos y llantas" },
+      { id: "b", text: "El airbag o bolsa de aire" },
+      { id: "c", text: "El cinturón de seguridad" },
+      { id: "d", text: "El chasis deformable" }
+    ],
+    correct: "a"
+  },
+  {
+    id: "gq_16",
+    text: "En una glorieta o rotonda, tiene la prelación el vehículo que ya se encuentra circulando dentro de ella. (Verdadero / Falso)",
+    options: [
+      { id: "a", text: "Verdadero" },
+      { id: "b", text: "Falso" }
+    ],
+    correct: "a"
+  },
+  {
+    id: "gq_17",
+    text: "¿Qué significan las líneas amarillas dobles y continuas pintadas en la mitad de la calzada?",
+    options: [
+      { id: "a", text: "Prohíben el adelantamiento en ambos sentidos" },
+      { id: "b", text: "Permiten el adelantamiento en ambos sentidos" },
+      { id: "c", text: "Indican zona de estacionamiento permitido" },
+      { id: "d", text: "Indican reducción de carril" }
+    ],
+    correct: "a"
+  },
+  {
+    id: "gq_18",
+    text: "El mantenimiento preventivo de frenos, llantas y dirección ayuda a prevenir siniestros viales por fallas mecánicas. (Verdadero / Falso)",
+    options: [
+      { id: "a", text: "Verdadero" },
+      { id: "b", text: "Falso" }
+    ],
+    correct: "a"
+  },
+  {
+    id: "gq_19",
+    text: "¿Qué actor vial tiene la mayor vulnerabilidad física ante un siniestro de tránsito?",
+    options: [
+      { id: "a", text: "El peatón" },
+      { id: "b", text: "El conductor del automóvil" },
+      { id: "c", text: "El pasajero del bus" },
+      { id: "d", text: "El conductor del camión" }
+    ],
+    correct: "a"
+  },
+  {
+    id: "gq_20",
+    text: "Es obligatorio el uso de luces direccionales antes de realizar cualquier giro o cambio de carril. (Verdadero / Falso)",
+    options: [
+      { id: "a", text: "Verdadero" },
+      { id: "b", text: "Falso" }
+    ],
+    correct: "a"
+  }
+];
+
+function shuffleArray(array) {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function getRandomGenericQuestions(count, existingTexts = []) {
+  const normalizedExisting = existingTexts.map(t => t.trim().toLowerCase());
+  const filtered = GENERIC_QUESTIONS.filter(g => !normalizedExisting.includes(g.text.trim().toLowerCase()));
+  const shuffled = shuffleArray(filtered.length > 0 ? filtered : GENERIC_QUESTIONS);
+  return shuffled.slice(0, count);
+}
+
+// ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
 
@@ -180,16 +403,46 @@ export default function ResourceQuizModal({
   onFailed,
 }) {
   const quizData = MODULE_QUIZZES[modulo]?.[quizNum];
-  const questions = quizData?.questions ?? [];
   const title = quizData?.title ?? `Quiz — Recurso ${quizNum}`;
 
+  const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState(null); // { correct, total, isPassing }
 
+  const initializeQuiz = useCallback(() => {
+    if (!quizData) {
+      setQuestions([]);
+      setAnswers({});
+      setResult(null);
+      return;
+    }
+
+    let rawQuestions = quizData.questions ?? [];
+    
+    // If we have fewer than 20 questions, pad it to 20 with generic random questions
+    if (rawQuestions.length < 20) {
+      const needed = 20 - rawQuestions.length;
+      const extra = getRandomGenericQuestions(needed, rawQuestions.map(q => q.text));
+      rawQuestions = [...rawQuestions, ...extra];
+    }
+
+    // Now shuffle the 20 questions and pick the first 10
+    const shuffled = shuffleArray(rawQuestions);
+    const selected = shuffled.slice(0, 10);
+
+    setQuestions(selected);
+    setAnswers({});
+    setResult(null);
+  }, [quizData]);
+
+  useEffect(() => {
+    initializeQuiz();
+  }, [initializeQuiz]);
+
   const answered = Object.keys(answers).length;
   const total = questions.length;
-  const isComplete = answered === total;
+  const isComplete = answered === total && total > 0;
   const progressPct = total > 0 ? Math.round((answered / total) * 100) : 0;
 
   const handleAnswer = useCallback((qIndex, optId) => {
@@ -197,9 +450,8 @@ export default function ResourceQuizModal({
   }, []);
 
   const handleRetry = useCallback(() => {
-    setAnswers({});
-    setResult(null);
-  }, []);
+    initializeQuiz();
+  }, [initializeQuiz]);
 
   const handleSubmit = async () => {
     if (!isComplete || submitting) return;

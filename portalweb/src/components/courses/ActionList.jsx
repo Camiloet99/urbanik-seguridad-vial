@@ -3,7 +3,7 @@ import LockedTooltip from "@/components/ui/LockedTooltip";
 
 export default function ActionList({
   progressMap,
-  onClick = () => {},
+  onClick = () => { },
   testInitialDone = false,
   testExitDone = false,
   showRating = false,
@@ -17,9 +17,9 @@ export default function ActionList({
       showContacto
         ? { key: "contacto", label: "Contáctanos", sublabel: "Estamos aquí para ayudarte" }
         : {
-            key: showRating ? "califica" : "calificacion",
-            label: showRating ? "Califica este módulo" : "Calificación",
-          },
+          key: showRating ? "califica" : "calificacion",
+          label: showRating ? "Califica este módulo" : "Calificación",
+        },
     ],
     [showRating, showContacto]
   );
@@ -29,8 +29,8 @@ export default function ActionList({
       key === "calificacion" || key === "califica"
         ? "calificacion"
         : key === "contacto"
-        ? "contacto"
-        : key;
+          ? "contacto"
+          : key;
     const folder = completed ? "complete" : "nocomplete";
     return new URL(
       `../../assets/courses/${folder}/${iconKey}.png`,
@@ -58,8 +58,8 @@ export default function ActionList({
             key === "test-inicial"
               ? !!testInitialDone
               : key === "test-salida"
-              ? !!testExitDone
-              : progressMap.get(key) ?? false;
+                ? !!testExitDone
+                : progressMap.get(key) ?? false;
 
           const src = resolveSrc(key, isCompleted);
 
