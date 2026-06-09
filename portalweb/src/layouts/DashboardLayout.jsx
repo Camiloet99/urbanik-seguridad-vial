@@ -120,10 +120,16 @@ function MobileNav() {
 export default function DashboardLayout() {
   const { logout, session } = useAuth();
   const location = useLocation();
+  const isExperience = location.pathname === "/experience";
 
   return (
     <div className="min-h-screen text-white">
-      <aside className="fixed left-0 top-0 z-40 hidden h-screen w-24 flex-col items-center bg-[#1D4789] p-3 lg:flex">
+      <aside
+        className={[
+          "fixed left-0 top-0 z-40 hidden h-screen w-24 flex-col items-center bg-[#1D4789] p-3",
+          isExperience ? "xl:flex" : "lg:flex",
+        ].join(" ")}
+      >
         <Link
           to="/courses"
           aria-label="Ir a cursos"
@@ -167,11 +173,30 @@ export default function DashboardLayout() {
         </button>
       </aside>
 
-      <MobileNav />
+      {!isExperience && <MobileNav />}
 
-      <main className="min-h-screen px-5 py-6 lg:pl-24 lg:px-10 lg:py-8 pb-28 lg:pb-8">
-        <div className="mx-auto w-full max-w-[1600px] px-2 sm:px-4 lg:px-0">
-          <div className="mb-6 flex items-center justify-between gap-4">
+      <main
+        className={[
+          "min-h-screen",
+          isExperience
+            ? "p-0 xl:pl-24 xl:px-10 xl:py-8"
+            : "px-5 py-6 lg:pl-24 lg:px-10 lg:py-8 pb-28 lg:pb-8",
+        ].join(" ")}
+      >
+        <div
+          className={[
+            "w-full",
+            isExperience
+              ? "max-w-none px-0 xl:mx-auto xl:max-w-[1600px]"
+              : "mx-auto max-w-[1600px] px-2 sm:px-4 lg:px-0",
+          ].join(" ")}
+        >
+          <div
+            className={[
+              "mb-6 items-center justify-between gap-4",
+              isExperience ? "hidden xl:flex" : "flex",
+            ].join(" ")}
+          >
             <h1 className="text-2xl font-medium text-[#1D4789]">
               Hola,{" "}
               {session?.user?.fullName ||

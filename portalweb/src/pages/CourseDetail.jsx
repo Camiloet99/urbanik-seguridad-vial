@@ -505,7 +505,7 @@ export default function CourseDetail() {
                           <img
                             src={quizIconSrc}
                             alt="Quiz"
-                            className="h-4 w-4 object-contain"
+                            className="h-[23px] w-[23px] object-contain"
                             draggable={false}
                             style={!quizDone ? {
                               filter: "brightness(0) saturate(100%) invert(23%) sepia(72%) saturate(1000%) hue-rotate(200deg) brightness(90%)"

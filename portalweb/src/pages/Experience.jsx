@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArcwareInit } from "@arcware-cloud/pixelstreaming-websdk";
 import { useAuth } from "@/context/AuthContext";
 import { useLocation, useNavigate } from "react-router-dom";
-import { MdHome } from "react-icons/md";
+import { MdHome, MdScreenRotation } from "react-icons/md";
 import { submitMedal } from "@/services/progressService";
 import { MODULO_TO_COURSE_KEY } from "@/data/moduleTests";
 
@@ -25,6 +25,7 @@ export default function Experience() {
   const shareId = location.state?.shareId ?? "";
   const moduloFromState = location.state?.modulo ?? null;
   const containerRef = useRef(null);
+  const [shouldBlockPortrait, setShouldBlockPortrait] = useState(false);
 
   const appRef = useRef(null);
   const streamRef = useRef(null);
@@ -248,6 +249,32 @@ export default function Experience() {
   }, []);
 
   useEffect(() => {
+    const updateOrientationGate = () => {
+      const isTouchDevice =
+        window.matchMedia?.("(pointer: coarse)")?.matches ||
+        navigator.maxTouchPoints > 0;
+      const isTabletOrPhone = window.innerWidth <= 1180 || window.innerHeight <= 820;
+      const isPortrait = window.matchMedia?.("(orientation: portrait)")?.matches ||
+        window.innerHeight > window.innerWidth;
+
+      setShouldBlockPortrait(Boolean(isTouchDevice && isTabletOrPhone && isPortrait));
+    };
+
+    updateOrientationGate();
+    window.addEventListener("resize", updateOrientationGate);
+    window.addEventListener("orientationchange", updateOrientationGate);
+
+    const portraitQuery = window.matchMedia?.("(orientation: portrait)");
+    portraitQuery?.addEventListener?.("change", updateOrientationGate);
+
+    return () => {
+      window.removeEventListener("resize", updateOrientationGate);
+      window.removeEventListener("orientationchange", updateOrientationGate);
+      portraitQuery?.removeEventListener?.("change", updateOrientationGate);
+    };
+  }, []);
+
+  useEffect(() => {
     return () => {
       if (after1sTimerRef.current) clearTimeout(after1sTimerRef.current);
       if (videoObserverRef.current) {
@@ -265,10 +292,42 @@ export default function Experience() {
   }, []);
 
   return (
-    <section className="w-full overflow-x-hidden">
-      <div className="mx-auto max-w-[1600px]">
-        <div className="relative w-full h-[90vh] bg-black rounded-2xl shadow-2xl overflow-hidden">
+    <section className="h-[100svh] w-screen overflow-hidden xl:h-auto xl:w-full xl:overflow-x-hidden">
+      <div className="h-full w-full xl:mx-auto xl:max-w-[1600px]">
+        <div className="relative h-full w-full bg-black overflow-hidden xl:h-[90vh] xl:rounded-2xl xl:shadow-2xl">
           <div ref={containerRef} className="absolute inset-0 w-full h-full" />
+
+          {shouldBlockPortrait && (
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-label="Gira tu pantalla"
+              className="absolute inset-0 z-[70] grid place-items-center bg-black px-6 text-white"
+            >
+              <div className="flex max-w-sm flex-col items-center text-center">
+                <div className="relative mb-8 grid h-40 w-40 place-items-center">
+                  <MdScreenRotation className="absolute inset-0 h-full w-full text-white animate-pulse" />
+                  <div className="absolute h-20 w-12 rounded-[10px] border-[5px] border-white bg-black" />
+                </div>
+
+                <h2 className="text-3xl font-extrabold leading-tight sm:text-4xl">
+                  Gira tu pantalla
+                </h2>
+                <p className="mt-3 text-sm font-medium text-white/70 sm:text-base">
+                  Esta experiencia funciona en horizontal.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={hardRedirectHome}
+                  className="mt-8 inline-flex items-center gap-2 rounded-full border border-white/20 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10"
+                >
+                  <MdHome className="text-lg" />
+                  Volver al inicio
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="pointer-events-none absolute inset-x-0 top-0 z-50 p-3 sm:p-4">
             <div className="flex">

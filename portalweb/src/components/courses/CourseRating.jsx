@@ -11,50 +11,21 @@ const OPTIONS = [
 
 
 function palette(v) {
-  switch (v) {
-    case 1:
-      return {
-        text: "text-red-400",
-        ring: "ring-red-500/70",
-        bg: "bg-red-500/15",
-        glow: "shadow-[0_0_18px_rgba(239,68,68,0.35)]",
-      };
-    case 2:
-      return {
-        text: "text-orange-400",
-        ring: "ring-orange-500/70",
-        bg: "bg-orange-500/15",
-        glow: "shadow-[0_0_18px_rgba(249,115,22,0.30)]",
-      };
-    case 3:
-      return {
-        text: "text-orange-300",
-        ring: "ring-orange-400/70",
-        bg: "bg-orange-400/15",
-        glow: "shadow-[0_0_18px_rgba(251,146,60,0.28)]",
-      };
-    case 4:
-      return {
-        text: "text-yellow-300",
-        ring: "ring-yellow-400/70",
-        bg: "bg-yellow-400/15",
-        glow: "shadow-[0_0_18px_rgba(250,204,21,0.25)]",
-      };
-    case 5:
-      return {
-        text: "text-green-400",
-        ring: "ring-green-500/70",
-        bg: "bg-green-500/15",
-        glow: "shadow-[0_0_18px_rgba(34,197,94,0.28)]",
-      };
-    default:
-      return {
-        text: "text-white/70",
-        ring: "ring-white/25",
-        bg: "bg-white/[0.03]",
-        glow: "",
-      };
+  if (!v) {
+    return {
+      text: "text-[#1a1a1a]/60",
+      ring: "ring-[#1D4789]/25",
+      bg: "bg-white",
+      glow: "",
+    };
   }
+
+  return {
+    text: "text-[#1D4789]",
+    ring: "ring-[#1D4789]",
+    bg: "bg-white",
+    glow: "shadow-[0_8px_24px_rgba(29,71,137,0.22)]",
+  };
 }
 
 
@@ -219,13 +190,13 @@ export default function CourseRating({
 
   return (
     <div className="w-full flex justify-center px-4 py-10">
-      <div className="w-full max-w-[920px] rounded-[44px] bg-white/[0.06] ring-1 ring-white/25 p-10">
-        <h3 className="text-center text-white/90 text-xl leading-snug">
-          Cómo calificarías el módulo de <span className="font-semibold">{moduleName}</span> ?
+      <div className="w-full max-w-[920px] rounded-[32px] bg-white border border-[#1D4789]/20 shadow-[0_4px_16px_rgba(0,0,0,0.06)] p-10">
+        <h3 className="text-center text-[#1a1a1a] text-xl leading-snug">
+          Cómo calificarías el módulo de <span className="font-semibold text-[#1D4789]">{moduleName}</span> ?
         </h3>
 
-        <div className="mt-8 rounded-[26px] bg-white/[0.03] ring-1 ring-white/25 p-6">
-          <div className="rounded-[18px] bg-[#1F2433]/70 ring-1 ring-white/10 px-6 py-5">
+        <div className="mt-8 rounded-[26px] bg-[#EEEEEE] border border-[#1D4789]/20 p-6">
+          <div className="rounded-[18px] bg-white border border-[#1D4789]/20 px-6 py-5">
             <div className="flex items-center justify-between gap-4">
               {OPTIONS.map((opt) => {
                 /**
@@ -246,24 +217,24 @@ export default function CourseRating({
                     onClick={() => setRating(opt.value)}
                     className={[
                       "h-14 w-14 rounded-full grid place-items-center",
-                      "ring-1 ring-white/15 bg-white/[0.02]",
+                      "ring-1 ring-[#1D4789]/20 bg-white",
                       "transition active:scale-[0.98]",
-                      "focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60",
+                      "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1D4789]/45",
                       // Estilos de la opción activa (solo UI)
-                      active ? `ring-2 ${pal.ring} ${pal.bg} ${pal.glow}` : "hover:bg-white/[0.05]",
+                      active ? `ring-2 ${pal.ring} ${pal.bg} ${pal.glow}` : "hover:bg-[#F5F5F6]",
                     ].join(" ")}
                     aria-label={opt.label}
                     title={opt.label}
                   >
                     {/*  reemplazar FaceSvg por <img src="..." /> */}
-                    <FaceSvg kind={opt.key} className={active ? pal.text : "text-white/60"} />
+                    <FaceSvg kind={opt.key} className={active ? pal.text : "text-[#1a1a1a]/55"} />
                   </button>
                 );
               })}
             </div>
           </div>
 
-          <div className="mt-4 flex items-center justify-between text-white/85 text-base">
+          <div className="mt-4 flex items-center justify-between text-[#1a1a1a]/70 text-base">
             <span>Muy malo</span>
             <span>Muy bueno</span>
           </div>
@@ -284,7 +255,7 @@ export default function CourseRating({
               "rounded-full px-12 py-3 text-base font-semibold",
               "bg-[#1D4789] hover:bg-[#163672] active:scale-[0.98] transition",
               "text-white shadow-sm",
-              "focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60",
+              "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1D4789]/45",
               "disabled:opacity-50 disabled:hover:bg-[#1D4789] disabled:active:scale-100",
             ].join(" ")}
           >
