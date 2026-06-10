@@ -103,7 +103,7 @@ export default function ActionList({
                   src={src}
                   alt=""
                   className="h-7 w-auto object-contain select-none pointer-events-none transition-all duration-200 ease-out group-hover:translate-y-[-1px]"
-                  style={{}}
+                  style={isCompleted ? { filter: "brightness(0) invert(1)" } : {}}
                   draggable={false}
                 />
               </button>

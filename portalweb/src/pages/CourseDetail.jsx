@@ -269,11 +269,10 @@ export default function CourseDetail() {
                   "focus:outline-none focus-visible:ring-2",
                   moduleCertUnlocked
                     ? [
-                      "bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-cyan-500/15",
-                      "ring-2 ring-emerald-400/70 text-emerald-300",
-                      "hover:ring-emerald-400 hover:from-emerald-500/25 hover:to-cyan-500/25",
-                      "shadow-[0_0_24px_-6px_rgba(52,211,153,0.45)]",
-                      "focus-visible:ring-emerald-400 cursor-pointer",
+                      "ring-2 ring-[#1D4789] bg-[#1D4789]/8 text-[#1D4789]",
+                      "shadow-[0_0_18px_-6px_rgba(29,71,137,0.45)]",
+                      "hover:bg-[#1D4789]/12 hover:shadow-[0_0_22px_-6px_rgba(29,71,137,0.55)]",
+                      "focus-visible:ring-[#1D4789] cursor-pointer",
                     ].join(" ")
                     : "ring-1 ring-[#1D4789]/20 bg-white text-[#1a1a1a] cursor-not-allowed shadow-[0_4px_16px_rgba(0,0,0,0.08)]",
                 ].join(" ")}
@@ -283,7 +282,7 @@ export default function CourseDetail() {
                     className={[
                       "shrink-0 h-9 w-9 rounded-xl flex items-center justify-center ring-1",
                       moduleCertUnlocked
-                        ? "ring-emerald-400/50 bg-emerald-400/15 text-emerald-400"
+                        ? "ring-[#1D4789] bg-[#1D4789] text-white"
                         : "ring-[#1D4789]/20 bg-white text-[#1D4789] border border-[#1D4789]/30",
                     ].join(" ")}
                     aria-hidden="true"
@@ -301,10 +300,10 @@ export default function CourseDetail() {
                     )}
                   </span>
                   <div className="text-left leading-tight min-w-0">
-                    <p className="text-[13px] font-semibold truncate">
+                    <p className={["text-[13px] truncate", moduleCertUnlocked ? "font-bold" : "font-semibold"].join(" ")}>
                       Certificado Módulo {modulo}
                     </p>
-                    <p className="text-[11px] mt-0.5 truncate">
+                    <p className={["text-[11px] mt-0.5 truncate", moduleCertUnlocked ? "font-bold" : ""].join(" ")}>
                       {moduleCertUnlocked
                         ? "Listo para descargar"
                         : certMissingItems.length
@@ -317,7 +316,7 @@ export default function CourseDetail() {
                   className={[
                     "shrink-0 h-7 w-7 rounded-full flex items-center justify-center ring-1 transition",
                     moduleCertUnlocked
-                      ? "ring-emerald-400/60 bg-emerald-400/15 text-emerald-400"
+                      ? "ring-[#1D4789] bg-[#1D4789] text-white"
                       : "ring-[#1D4789]/20 bg-white text-[#1D4789] border border-[#1D4789]/30",
                   ].join(" ")}
                   aria-hidden="true"

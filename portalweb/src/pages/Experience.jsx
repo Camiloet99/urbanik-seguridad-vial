@@ -37,6 +37,7 @@ export default function Experience() {
 
   const videoElRef = useRef(null);
   const videoObserverRef = useRef(null);
+  const xrButtonObserverRef = useRef(null);
   const after1sTimerRef = useRef(null);
 
   const hardRedirectHome = () => {
@@ -119,6 +120,12 @@ export default function Experience() {
     videoObserverRef.current = mo;
   };
 
+  const removeXRButton = () => {
+    const root = containerRef.current;
+    if (!root) return;
+    root.querySelectorAll("#xrBtn").forEach((button) => button.remove());
+  };
+
   // === Arcware init ===
   useEffect(() => {
     if (loadingAuth || !studentId || !avatarId) return;
@@ -133,6 +140,7 @@ export default function Experience() {
               AutoConnect: true,
               AutoPlayVideo: true,
               AutoPlayAudio: true,
+              XRControllerInput: false,
             },
             settings: {
               infoButton: true,
@@ -275,8 +283,30 @@ export default function Experience() {
   }, []);
 
   useEffect(() => {
+    const root = containerRef.current;
+    if (!root) return;
+
+    removeXRButton();
+
+    const observer = new MutationObserver(() => {
+      removeXRButton();
+    });
+    observer.observe(root, { childList: true, subtree: true });
+    xrButtonObserverRef.current = observer;
+
+    return () => {
+      observer.disconnect();
+      xrButtonObserverRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
     return () => {
       if (after1sTimerRef.current) clearTimeout(after1sTimerRef.current);
+      if (xrButtonObserverRef.current) {
+        xrButtonObserverRef.current.disconnect();
+        xrButtonObserverRef.current = null;
+      }
       if (videoObserverRef.current) {
         videoObserverRef.current.disconnect();
         videoObserverRef.current = null;
