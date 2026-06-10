@@ -25,13 +25,13 @@ export default function ActionList({
   );
 
   const resolveSrc = (key, completed) => {
-    const iconKey =
-      key === "calificacion" || key === "califica"
-        ? "calificacion"
-        : key === "contacto"
-          ? "contacto"
-          : key;
-    const folder = completed ? "complete" : "nocomplete";
+    const isCalifica = key === "calificacion" || key === "califica";
+    const iconKey = isCalifica
+      ? completed ? "calificacion2" : "calificacion"
+      : key === "contacto"
+        ? "contacto"
+        : key;
+    const folder = isCalifica ? "nocomplete" : completed ? "complete" : "nocomplete";
     return new URL(
       `../../assets/courses/${folder}/${iconKey}.png`,
       import.meta.url
