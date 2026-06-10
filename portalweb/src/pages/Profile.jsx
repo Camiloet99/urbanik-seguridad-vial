@@ -212,8 +212,8 @@ export default function Profile() {
                     className={[
                       "mt-4 text-sm px-3 py-2 rounded-md text-center transition-opacity",
                       toast.type === "ok"
-                        ? "bg-emerald-500/15 text-emerald-200 border border-emerald-400/30"
-                        : "bg-red-500/15 text-red-200 border border-red-400/30",
+                        ? "bg-emerald-50 text-emerald-700 border border-emerald-300"
+                        : "bg-red-50 text-red-700 border border-red-300",
                     ].join(" ")}
                   >
                     {toast.msg}
@@ -442,9 +442,9 @@ export default function Profile() {
             </p>
             {user?.riskProfile ? (() => {
               const cfg = {
-                BAJO:  { bg: "bg-emerald-500/10", ring: "ring-emerald-500/30", text: "text-emerald-300", badge: "bg-emerald-500/20 text-emerald-300", dot: "🟢" },
-                MEDIO: { bg: "bg-amber-500/10",   ring: "ring-amber-500/30",   text: "text-amber-300",   badge: "bg-amber-500/20   text-amber-300",   dot: "🟡" },
-                ALTO:  { bg: "bg-red-500/10",     ring: "ring-red-500/30",     text: "text-red-300",     badge: "bg-red-500/20     text-red-300",     dot: "🔴" },
+                BAJO:  { bg: "bg-emerald-50",  ring: "ring-emerald-400", text: "text-emerald-700", badge: "bg-emerald-100 text-emerald-700", dot: "🟢" },
+                MEDIO: { bg: "bg-orange-50",   ring: "ring-orange-400",  text: "text-orange-600",  badge: "bg-orange-100  text-orange-600",  dot: "🟠" },
+                ALTO:  { bg: "bg-red-50",      ring: "ring-red-400",     text: "text-red-700",     badge: "bg-red-100     text-red-700",     dot: "🔴" },
               }[user.riskProfile] ?? { bg: "bg-white/5", ring: "ring-white/10", text: "text-white", badge: "bg-white/10 text-white", dot: "⚪" };
               return (
                 <div className={`rounded-2xl ring-1 ${cfg.ring} ${cfg.bg} px-4 py-3 flex items-center justify-between gap-3`}>

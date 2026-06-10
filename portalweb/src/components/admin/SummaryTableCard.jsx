@@ -41,7 +41,7 @@ function RiskPill({ profile }) {
   if (!profile) return <span className="text-[#1a1a1a]/40 text-[11px]">–</span>;
   const cfg = {
     BAJO:  { text: "text-emerald-700", iconCls: "text-emerald-600" },
-    MEDIO: { text: "text-amber-700",   iconCls: "text-amber-600"   },
+    MEDIO: { text: "text-orange-600",  iconCls: "text-orange-500"  },
     ALTO:  { text: "text-red-700",     iconCls: "text-red-600"     },
   }[profile] ?? { text: "text-[#1a1a1a]", iconCls: "text-[#1a1a1a]/60" };
   return (
@@ -109,7 +109,7 @@ function SortableHeader({ label, field, sortConfig, onSort }) {
       <button
         type="button"
         onClick={() => onSort(field)}
-        className="inline-flex items-center gap-1 text-[11px] md:text-xs text-[#1D4789] hover:text-[#1D4789] transition-colors"
+        className="inline-flex items-center gap-1 text-[11px] md:text-xs text-[#1D4789] font-bold hover:text-[#1D4789] transition-colors"
       >
         <span>{label}</span>
         <span className="inline-flex flex-col leading-none">
@@ -221,7 +221,7 @@ export default function SummaryTableCard({
           </span>
           {" · "}
           <span className="inline-flex items-center gap-1">
-            <span className="h-2 w-2 rounded-full bg-white/15" />
+            <span className="h-2 w-2 rounded-full bg-[#1a1a1a]/20" />
             Pendiente
           </span>
         </span>
@@ -240,7 +240,7 @@ export default function SummaryTableCard({
       ) : (
         <>
           <div className="overflow-x-auto">
-            <table className="min-w-full text-xs md:text-sm">
+            <table className="min-w-full text-xs md:text-sm text-[#1a1a1a]">
               <thead>
                 <tr className="border-b border-[#1D4789]/15">
                   <SortableHeader label="Estudiante"          field="name"       sortConfig={sortConfig} onSort={handleSort} />
@@ -273,7 +273,7 @@ export default function SummaryTableCard({
 
                       {/* Documento */}
                       <td className="py-2 px-4 align-middle text-[11px] md:text-xs whitespace-nowrap">
-                        <span className="text-[#1a1a1a]/50 mr-1 uppercase">{u.documentType || "CC"}</span>
+                        <span className="text-[#1a1a1a]/70 mr-1 uppercase">{u.documentType || "CC"}</span>
                         {u.dni || "-"}
                       </td>
 
