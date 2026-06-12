@@ -164,7 +164,7 @@ async function generatePdf({ certConfig, nombre, numDoc }) {
   // Antes: `D.I. ${numDoc}` — causaba duplicación con el "D.I." ya impreso en el PDF
   const docW = fontNormal.widthOfTextAtSize(numDoc, 16);
   page.drawText(numDoc, {
-    x: (width - docW) / 2,
+    x: (width / 2) - 20,
     y: height - 313,
     size: 16,
     font: fontNormal,
@@ -175,7 +175,7 @@ async function generatePdf({ certConfig, nombre, numDoc }) {
   page.drawText(fechaHoy(), {
     x: 400,
     y: height - 433,
-    size: 11,
+    size: 13,
     font: fontNormal,
     color: certNavy,
   });
