@@ -659,9 +659,9 @@ export default function AuthGateway() {
           </div>
 
           {/* Columna derecha: hero (ligeramente más grande) */}
-          <div className="hidden lg:flex justify-end pr-3">
+          <div className="hidden lg:flex items-end justify-end pr-3 self-end">
             <motion.div
-              className="relative overflow-hidden rounded-[36px] w-[min(64vw,1200px)] max-w-[1200px]"
+              className="relative overflow-hidden rounded-[36px] w-full"
               initial={{ y: 6 }}
               animate={{ y: 0 }}
               transition={{ type: "spring", stiffness: 80, damping: 18 }}
@@ -669,7 +669,7 @@ export default function AuthGateway() {
               <motion.img
                 src={hero}
                 alt="Escena de bienvenida"
-                className="block w-full h-[65vh] object-cover rounded-[36px] will-change-transform"
+                className="block w-full h-[48vh] object-cover rounded-[36px] will-change-transform"
                 initial={{ scale: 1.02 }}
                 animate={{ scale: 1 }}
                 transition={{ duration: 0.8 }}
