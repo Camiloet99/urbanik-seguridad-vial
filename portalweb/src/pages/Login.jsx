@@ -73,6 +73,8 @@ export default function AuthGateway() {
 
   const FORM_WIDTH = "max-w-[420px]";
   const isEmail = (v) => /\S+@\S+\.\S+/.test(v);
+  const getApiMessage = (err, fallback) =>
+    err?.data?.detail || err?.data?.message || err?.message || fallback;
 
   // --------- LOGIN ---------
   const [loginValues, setLoginValues] = useState({ email: "", pass: "" });
@@ -97,8 +99,14 @@ export default function AuthGateway() {
         await login(loginValues.email, loginValues.pass);
         setLoginOkBurst(true);
         setTimeout(() => navigate("/courses"), 250);
-      } catch {
-        setLoginErrors((p) => ({ ...p, pass: "Credenciales inválidas" }));
+      } catch (err) {
+        setLoginErrors((p) => ({
+          ...p,
+          pass: getApiMessage(
+            err,
+            "Correo o contraseña incorrectos. Revisa los datos e inténtalo de nuevo."
+          ),
+        }));
       } finally {
         setIsLoggingIn(false); // ⬅️ desactivamos loader
       }
@@ -126,6 +134,45 @@ export default function AuthGateway() {
   const [idGeneralError, setIdGeneralError] = useState("");
   const [isVerifyingSignup, setIsVerifyingSignup] = useState(false);
   const [signupEmailFixed, setSignupEmailFixed] = useState("");
+
+  function handleSignupApiError(err, passwordField = "pass") {
+    const message = getApiMessage(
+      err,
+      "No pudimos crear la cuenta. Revisa los datos e inténtalo nuevamente."
+    );
+    const field = err?.data?.field;
+    const code = err?.data?.code;
+
+    if (field === "email" || code === "DUPLICATE_EMAIL") {
+      setIdErrors((p) => ({ ...p, email: message }));
+      setIdGeneralError("Revisa el correo registrado para continuar.");
+      setSignupStep(1);
+      return;
+    }
+
+    if (field === "dni" || code === "DUPLICATE_DNI") {
+      setIdErrors((p) => ({ ...p, dni: message }));
+      setIdGeneralError("Revisa el número de documento para continuar.");
+      setSignupStep(1);
+      return;
+    }
+
+    if (code === "DUPLICATE_ACCOUNT") {
+      setIdGeneralError(message);
+      setSignupStep(1);
+      return;
+    }
+
+    if (passwordField === "credential") {
+      setCredErrors((p) => ({ ...p, pass: message }));
+      return;
+    }
+
+    setDetailErrors((p) => ({
+      ...p,
+      pass: message,
+    }));
+  }
 
   // Validaciones
   const isValidEmail = (email) => /\S+@\S+\.\S+/.test(email);
@@ -262,10 +309,7 @@ export default function AuthGateway() {
       await login(signupEmailFixed, detailValues.pass);
       navigate("/courses");
     } catch (err) {
-      setDetailErrors((p) => ({
-        ...p,
-        pass: err.message || "Error al crear la cuenta",
-      }));
+      handleSignupApiError(err);
     } finally {
       setIsVerifyingSignup(false);
     }
@@ -329,10 +373,7 @@ export default function AuthGateway() {
         await login(signupEmailFixed, credValues.pass);
         navigate("/courses");
       } catch (err) {
-        setCredErrors((p) => ({
-          ...p,
-          pass: err.message || "Error al crear la cuenta",
-        }));
+        handleSignupApiError(err, "credential");
       }
     }
   }
@@ -342,6 +383,7 @@ export default function AuthGateway() {
   const [forgotIdErrors, setForgotIdErrors] = useState({ email: "", dni: "" });
   const [forgotGeneralErr, setForgotGeneralErr] = useState("");
   const [forgotEmailFixed, setForgotEmailFixed] = useState("");
+  const [isVerifyingForgot, setIsVerifyingForgot] = useState(false);
 
   async function handleForgotValidate(e) {
     e.preventDefault();
@@ -366,18 +408,33 @@ export default function AuthGateway() {
     if (!ok) return;
 
     try {
+      setIsVerifyingForgot(true);
       const resp = await verifyUserIdentityApi({
         email: forgotIdValues.email,
         dni: forgotIdValues.dni,
       });
       if (!resp?.ok) {
-        setForgotGeneralErr("Combinación no válida o usuario no encontrado.");
+        setForgotGeneralErr(
+          "No encontramos una cuenta que coincida con ese correo y número de documento."
+        );
         return;
       }
       setForgotEmailFixed(forgotIdValues.email);
       setForgotStep(2);
     } catch (err) {
-      setForgotGeneralErr(err.message || "No pudimos validar tu identidad");
+      const message = getApiMessage(
+        err,
+        "No encontramos una cuenta que coincida con ese correo y número de documento."
+      );
+      if (err?.data?.field === "email") {
+        setForgotIdErrors((p) => ({ ...p, email: message }));
+      } else if (err?.data?.field === "dni" && err?.data?.code === "INVALID_DNI") {
+        setForgotIdErrors((p) => ({ ...p, dni: message }));
+      } else {
+        setForgotGeneralErr(message);
+      }
+    } finally {
+      setIsVerifyingForgot(false);
     }
   }
 
@@ -434,7 +491,7 @@ export default function AuthGateway() {
       } catch (err) {
         setForgotResetErrors((p) => ({
           ...p,
-          pass: err.message || "Error al actualizar contraseña",
+          pass: getApiMessage(err, "Error al actualizar contraseña"),
         }));
       }
     }
@@ -615,7 +672,7 @@ export default function AuthGateway() {
                         setValues={setForgotIdValues}
                         errors={forgotIdErrors}
                         generalError={forgotGeneralErr}
-                        isVerifying={false}
+                        isVerifying={isVerifyingForgot}
                         onValidate={handleForgotValidate}
                         onToLogin={() => setMode("login")}
                       />

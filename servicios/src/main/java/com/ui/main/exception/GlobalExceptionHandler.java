@@ -10,6 +10,16 @@ import reactor.core.publisher.Mono;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(ApiErrorException.class)
+    public Mono<ProblemDetail> handleApiError(ApiErrorException ex) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(ex.getStatusCode(), ex.getReason());
+        pd.setProperty("code", ex.getCode());
+        if (ex.getField() != null && !ex.getField().isBlank()) {
+            pd.setProperty("field", ex.getField());
+        }
+        return Mono.just(pd);
+    }
+
     @ExceptionHandler(ResponseStatusException.class)
     public Mono<ProblemDetail> handleRse(ResponseStatusException ex) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(ex.getStatusCode(), ex.getReason());

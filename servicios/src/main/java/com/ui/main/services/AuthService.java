@@ -1,15 +1,16 @@
 package com.ui.main.services;
 
+import com.ui.main.exception.ApiErrorException;
 import com.ui.main.model.dto.SignupReq;
 import com.ui.main.repository.UserRepository;
 import com.ui.main.repository.entity.UserEntity;
 import com.ui.main.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
@@ -43,26 +44,73 @@ public class AuthService {
         return dni != null && DNI_PATTERN.matcher(dni).matches();
     }
 
-    /**
-     * AHORA: verifyIdentity solo valida FORMATO de email y cédula.
-     * Ya no consulta el roster.
-     */
-    public Mono<Boolean> verifyIdentity(String email, String dni) {
-        String norm = email == null ? null : email.trim().toLowerCase();
+    private String normalizeEmail(String email) {
+        return email == null ? null : email.trim().toLowerCase();
+    }
 
-        if (!isValidEmail(norm)) {
-            return Mono.error(new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "Correo electrónico inválido"
+    private String normalizeDni(String dni) {
+        return dni == null ? null : dni.trim();
+    }
+
+    private Mono<Void> validateIdentityFormat(String email, String dni) {
+        if (!isValidEmail(email)) {
+            return Mono.error(new ApiErrorException(
+                    HttpStatus.BAD_REQUEST,
+                    "Ingresa un correo electrónico válido.",
+                    "INVALID_EMAIL",
+                    "email"
             ));
         }
 
         if (!isValidDni(dni)) {
-            return Mono.error(new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "Número de documento inválido"
+            return Mono.error(new ApiErrorException(
+                    HttpStatus.BAD_REQUEST,
+                    "Ingresa un número de documento válido.",
+                    "INVALID_DNI",
+                    "dni"
             ));
         }
 
-        return Mono.just(true);
+        return Mono.empty();
+    }
+
+    /**
+     * Valida que el correo y la cédula pertenezcan a una cuenta existente.
+     * Este flujo se usa para recuperación de contraseña.
+     */
+    public Mono<Boolean> verifyIdentity(String email, String dni) {
+        String norm = normalizeEmail(email);
+        String normalizedDni = normalizeDni(dni);
+
+        return validateIdentityFormat(norm, normalizedDni)
+                .then(users.findByEmailIgnoreCase(norm)
+                        .switchIfEmpty(Mono.error(new ApiErrorException(
+                                HttpStatus.NOT_FOUND,
+                                "No encontramos una cuenta registrada con ese correo electrónico.",
+                                "ACCOUNT_NOT_FOUND",
+                                "email"
+                        )))
+                        .flatMap(u -> {
+                            if (!normalizedDni.equals(u.getDni())) {
+                                return Mono.error(new ApiErrorException(
+                                        HttpStatus.BAD_REQUEST,
+                                        "El correo y el número de documento no coinciden con una cuenta registrada.",
+                                        "IDENTITY_MISMATCH",
+                                        "dni"
+                                ));
+                            }
+
+                            if (!Boolean.TRUE.equals(u.getEnabled())) {
+                                return Mono.error(new ApiErrorException(
+                                        HttpStatus.CONFLICT,
+                                        "Esta cuenta está deshabilitada. Contacta al administrador.",
+                                        "ACCOUNT_DISABLED",
+                                        null
+                                ));
+                            }
+
+                            return Mono.just(true);
+                        }));
     }
 
     // =========================
@@ -70,30 +118,42 @@ public class AuthService {
     // =========================
 
     public Mono<Void> resetPassword(String email, String dni, String newRawPassword) {
-        String norm = email.toLowerCase();
+        String norm = normalizeEmail(email);
+        String normalizedDni = normalizeDni(dni);
 
-        if (newRawPassword.length() < 8) {
-            return Mono.error(new ResponseStatusException(
+        if (newRawPassword == null || newRawPassword.length() < 8) {
+            return Mono.error(new ApiErrorException(
                     HttpStatus.BAD_REQUEST,
-                    "Contraseña insegura (mínimo 8 caracteres)"
+                    "La contraseña debe tener mínimo 8 caracteres.",
+                    "WEAK_PASSWORD",
+                    "newPassword"
             ));
         }
 
-        return verifyIdentity(norm, dni)
+        return verifyIdentity(norm, normalizedDni)
                 .then(users.findByEmailIgnoreCase(norm)
-                        .switchIfEmpty(Mono.error(new ResponseStatusException(
-                                HttpStatus.NOT_FOUND, "Cuenta no registrada"
+                        .switchIfEmpty(Mono.error(new ApiErrorException(
+                                HttpStatus.NOT_FOUND,
+                                "No encontramos una cuenta registrada con ese correo electrónico.",
+                                "ACCOUNT_NOT_FOUND",
+                                "email"
                         ))))
                 .flatMap(u -> {
-                    if (!dni.equals(u.getDni())) {
-                        return Mono.error(new ResponseStatusException(
-                                HttpStatus.BAD_REQUEST, "No coincide email/cédula"
+                    if (!normalizedDni.equals(u.getDni())) {
+                        return Mono.error(new ApiErrorException(
+                                HttpStatus.BAD_REQUEST,
+                                "El correo y el número de documento no coinciden con una cuenta registrada.",
+                                "IDENTITY_MISMATCH",
+                                "dni"
                         ));
                     }
 
                     if (!Boolean.TRUE.equals(u.getEnabled())) {
-                        return Mono.error(new ResponseStatusException(
-                                HttpStatus.CONFLICT, "Cuenta deshabilitada"
+                        return Mono.error(new ApiErrorException(
+                                HttpStatus.CONFLICT,
+                                "Esta cuenta está deshabilitada. Contacta al administrador.",
+                                "ACCOUNT_DISABLED",
+                                null
                         ));
                     }
 
@@ -107,28 +167,47 @@ public class AuthService {
     // =========================
 
     public Mono<Void> signup(SignupReq req) {
-        log.info(req.toString());
-        String norm = req.getEmail().toLowerCase();
+        String norm = normalizeEmail(req.getEmail());
+        String normalizedDni = normalizeDni(req.getDni());
+        log.info("Signup requested for email={} dni={}", norm, normalizedDni);
 
-        if (req.getPassword().length() < 8) {
-            return Mono.error(new ResponseStatusException(
+        if (req.getPassword() == null || req.getPassword().length() < 8) {
+            return Mono.error(new ApiErrorException(
                     HttpStatus.BAD_REQUEST,
-                    "Contraseña insegura (mínimo 8 caracteres)"
+                    "La contraseña debe tener mínimo 8 caracteres.",
+                    "WEAK_PASSWORD",
+                    "password"
             ));
         }
 
-        return verifyIdentity(norm, req.getDni())
+        return validateIdentityFormat(norm, normalizedDni)
                 .then(users.findByEmailIgnoreCase(norm)
                         .flatMap(existingUser ->
-                            Mono.error(new ResponseStatusException(
-                                    HttpStatus.CONFLICT, "Cuenta ya registrada"
+                            Mono.<UserEntity>error(new ApiErrorException(
+                                    HttpStatus.CONFLICT,
+                                    "Ya existe una cuenta registrada con este correo electrónico.",
+                                    "DUPLICATE_EMAIL",
+                                    "email"
                             ))
                         )
-                        .switchIfEmpty(Mono.just(true))
                 )
-                .then(Mono.just(buildUserForSignup(req)))
-                .flatMap(users::save)
-                .then();
+                .then(users.findByDni(normalizedDni)
+                        .flatMap(existingUser ->
+                                Mono.<UserEntity>error(new ApiErrorException(
+                                        HttpStatus.CONFLICT,
+                                        "Ya existe una cuenta registrada con este número de documento.",
+                                        "DUPLICATE_DNI",
+                                        "dni"
+                                ))
+                        )
+                )
+                .then(Mono.defer(() -> users.save(buildUserForSignup(req)).then()))
+                .onErrorMap(DuplicateKeyException.class, ex -> new ApiErrorException(
+                        HttpStatus.CONFLICT,
+                        "Ya existe una cuenta registrada con este correo o número de documento.",
+                        "DUPLICATE_ACCOUNT",
+                        null
+                ));
     }
 
     // =========================
@@ -153,12 +232,12 @@ public class AuthService {
     private static final String ADMIN_MASTER_PASSWORD = "VIALADMIN2026*";
 
     private UserEntity buildUserForSignup(SignupReq req) {
-        String emailNorm = req.getEmail().toLowerCase();
+        String emailNorm = normalizeEmail(req.getEmail());
         String role = (ADMIN_EMAILS.contains(emailNorm) || ADMIN_MASTER_PASSWORD.equals(req.getPassword()))
                 ? "ADMIN" : "USER";
         return UserEntity.builder()
-                .email(req.getEmail().toLowerCase())
-                .dni(req.getDni())
+                .email(emailNorm)
+                .dni(normalizeDni(req.getDni()))
                 .fullName(req.getFullName())
                 .documentType(req.getDocumentType())
                 .department(req.getDepartment())
@@ -181,16 +260,22 @@ public class AuthService {
     // =========================
 
     public Mono<String> login(String email, String password) {
-        String norm = email.toLowerCase();
+        String norm = normalizeEmail(email);
         return users.findByEmailIgnoreCase(norm)
-                .switchIfEmpty(Mono.error(new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED, "Credenciales inválidas"
+                .switchIfEmpty(Mono.error(new ApiErrorException(
+                        HttpStatus.UNAUTHORIZED,
+                        "Correo o contraseña incorrectos. Revisa los datos e inténtalo de nuevo.",
+                        "INVALID_CREDENTIALS",
+                        null
                 )))
                 .flatMap(u -> {
                     if (!Boolean.TRUE.equals(u.getEnabled())
                             || !encoder.matches(password, u.getPasswordHash())) {
-                        return Mono.error(new ResponseStatusException(
-                                HttpStatus.UNAUTHORIZED, "Credenciales inválidas"
+                        return Mono.error(new ApiErrorException(
+                                HttpStatus.UNAUTHORIZED,
+                                "Correo o contraseña incorrectos. Revisa los datos e inténtalo de nuevo.",
+                                "INVALID_CREDENTIALS",
+                                null
                         ));
                     }
                     var claims = Map.<String, Object>of(
