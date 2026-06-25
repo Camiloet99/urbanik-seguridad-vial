@@ -47,6 +47,8 @@ export default function SignupIdentityStep({
   onValidate,
   onToLogin,
 }) {
+  const blockClipboard = (e) => e.preventDefault();
+
   // Default Antioquia on mount
   useEffect(() => {
     setValues((v) => ({
@@ -161,6 +163,32 @@ export default function SignupIdentityStep({
               ? isValidEmail(values.email)
                 ? "Correo válido"
                 : "Correo inválido"
+              : ""
+          }
+        />
+
+        <Input
+          aria-invalid={!!errors.emailConfirm}
+          placeholder="Verifica tu correo electrónico"
+          value={values.emailConfirm || ""}
+          onChange={(e) =>
+            setValues((v) => ({ ...v, emailConfirm: e.target.value }))
+          }
+          onPaste={blockClipboard}
+          onCopy={blockClipboard}
+          onCut={blockClipboard}
+          onDrop={blockClipboard}
+          type="email"
+          autoComplete="off"
+          size="lg"
+          iconLeft={<MdEmail size={18} />}
+          error={errors.emailConfirm}
+          helperText={
+            !errors.emailConfirm && values.emailConfirm
+              ? values.emailConfirm.trim().toLowerCase() ===
+                (values.email || "").trim().toLowerCase()
+                ? "Los correos coinciden"
+                : "Debe coincidir con el correo anterior"
               : ""
           }
         />

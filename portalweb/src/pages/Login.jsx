@@ -120,6 +120,7 @@ export default function AuthGateway() {
     documentType: "cc",
     dni: "",
     email: "",
+    emailConfirm: "",
     phone: "",
   });
   const [idErrors, setIdErrors] = useState({
@@ -129,6 +130,7 @@ export default function AuthGateway() {
     documentType: "",
     dni: "",
     email: "",
+    emailConfirm: "",
     phone: "",
   });
   const [idGeneralError, setIdGeneralError] = useState("");
@@ -177,6 +179,7 @@ export default function AuthGateway() {
   // Validaciones
   const isValidEmail = (email) => /\S+@\S+\.\S+/.test(email);
   const isValidPhoneNumber = (phone) => /^[0-9]{10}$/.test(phone);
+  const normalizeSignupEmail = (email) => (email || "").trim().toLowerCase();
 
   function handleValidateIdentity(e) {
     e.preventDefault();
@@ -187,11 +190,14 @@ export default function AuthGateway() {
       documentType: "",
       dni: "",
       email: "",
+      emailConfirm: "",
       phone: "",
     });
     setIdGeneralError("");
 
     let okLocal = true;
+    const normalizedEmail = normalizeSignupEmail(idValues.email);
+    const normalizedEmailConfirm = normalizeSignupEmail(idValues.emailConfirm);
 
     if (!idValues.department) {
       setIdErrors((p) => ({ ...p, department: "Selecciona un departamento" }));
@@ -209,8 +215,15 @@ export default function AuthGateway() {
       setIdErrors((p) => ({ ...p, dni: "Número válido (6–10 dígitos)" }));
       okLocal = false;
     }
-    if (!isValidEmail(idValues.email)) {
+    if (!isValidEmail(normalizedEmail)) {
       setIdErrors((p) => ({ ...p, email: "Correo electrónico inválido" }));
+      okLocal = false;
+    }
+    if (!normalizedEmailConfirm) {
+      setIdErrors((p) => ({ ...p, emailConfirm: "Confirma tu correo electrónico" }));
+      okLocal = false;
+    } else if (normalizedEmailConfirm !== normalizedEmail) {
+      setIdErrors((p) => ({ ...p, emailConfirm: "Los correos electrónicos no coinciden" }));
       okLocal = false;
     }
     if (!isValidPhoneNumber(idValues.phone)) {
@@ -221,7 +234,7 @@ export default function AuthGateway() {
     if (!okLocal) return;
 
     // Validaciones locales pasadas, continuar al siguiente paso
-    setSignupEmailFixed(idValues.email);
+    setSignupEmailFixed(normalizedEmail);
     setSignupStep(2);
   }
 
