@@ -1,0 +1,6 @@
+# Pon aqui los correos que quieres marcar con 100% de avance.
+# Un correo por linea.
+# Las lineas vacias y las que empiezan por # se ignoran.
+
+# estudiante1@est.iudigital.edu.co
+camiloet98@gmail.com
