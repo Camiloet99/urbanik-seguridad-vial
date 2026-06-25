@@ -252,6 +252,7 @@ CROSS JOIN (
   UNION ALL SELECT 5
   UNION ALL SELECT 6
 ) m
+WHERE 1 = 1
 ON DUPLICATE KEY UPDATE
   user_id = VALUES(user_id),
   email = VALUES(email),
