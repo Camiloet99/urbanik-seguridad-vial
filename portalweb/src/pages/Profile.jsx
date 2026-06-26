@@ -11,6 +11,7 @@ const DEPT_MAP = Object.fromEntries(DEPARTMENTS.map((d) => [d.value, d.label]));
 const MUN_MAP = Object.fromEntries(MUNICIPALITIES_ANTIOQUIA.map((m) => [m.value, m.label]));
 
 const AGE_LABELS = {
+  "14-16": "14 – 16 años · Menor",
   "16-25": "16 – 25 · Joven",
   "25-34": "25 – 34 · Adulto Joven",
   "35-59": "35 – 59 · Adulto",

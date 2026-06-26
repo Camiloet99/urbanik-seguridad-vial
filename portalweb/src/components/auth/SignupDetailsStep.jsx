@@ -19,6 +19,7 @@ const variants = {
 };
 
 const AGE_RANGES = [
+  { value: "14-16", label: "14 – 16 años · Menor" },
   { value: "16-25", label: "16 – 25 · Joven" },
   { value: "25-34", label: "25 – 34 · Adulto Joven" },
   { value: "35-59", label: "35 – 59 · Adulto" },
