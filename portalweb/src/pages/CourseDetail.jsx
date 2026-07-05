@@ -214,6 +214,7 @@ export default function CourseDetail() {
             testInitialDone={mp?.testInitialDone}
             testExitDone={mp?.testExitDone}
             showRating={true}
+            moduleVariant={true}
             lockedItems={lockedItems}
             onClick={(key) => {
               if (key === "califica") {

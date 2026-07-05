@@ -9,10 +9,13 @@ export default function ActionList({
   showRating = false,
   showContacto = false,
   lockedItems = {},
+  moduleVariant = false,
 }) {
   const items = useMemo(
     () => [
-      { key: "test-inicial", label: "Nivel de riesgo", sublabel: "Personaliza tu Experiencia" },
+      moduleVariant
+        ? { key: "test-inicial", label: "Test de Inicio", sublabel: "Evalúa tus conocimientos." }
+        : { key: "test-inicial", label: "Nivel de riesgo", sublabel: "Personaliza tu Experiencia" },
       { key: "test-salida", label: "Test de salida", sublabel: "Evalúa tus conocimientos" },
       showContacto
         ? { key: "contacto", label: "Contáctanos", sublabel: "Estamos aquí para ayudarte" }
@@ -21,7 +24,7 @@ export default function ActionList({
           label: showRating ? "Califica este módulo" : "Calificación",
         },
     ],
-    [showRating, showContacto]
+    [showRating, showContacto, moduleVariant]
   );
 
   const resolveSrc = (key, completed) => {

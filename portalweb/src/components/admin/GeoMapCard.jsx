@@ -7,8 +7,27 @@ import tag1 from "@/assets/admin/tags/tag1.png";
 import tag2 from "@/assets/admin/tags/tag2.png";
 import tag3 from "@/assets/admin/tags/tag3.png";
 
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+import ExcelJS from "exceljs";
+
+const EXCLUDED_EMAILS = new Set(["admin@test.com"]);
+
+const REPORT_COLUMNS = [
+  "Estudiante",
+  "Correo",
+  "Documento",
+  "Municipio",
+  "Teléfono",
+  "Género",
+  "Edad",
+  "Enfoque Diferencial",
+  "Perfil de Riesgo",
+  "% Avance",
+];
+
+const TITLE_FILL = { type: "pattern", pattern: "solid", fgColor: { argb: "FF1D4789" } };
+const HEADER_FILL = { type: "pattern", pattern: "solid", fgColor: { argb: "FF29375C" } };
+const SECTION_FILL = { type: "pattern", pattern: "solid", fgColor: { argb: "FFDCE6F5" } };
+const TOTAL_FILL = { type: "pattern", pattern: "solid", fgColor: { argb: "FFEFEFEF" } };
 
 const TAG_IMAGES = [tag1, tag2, tag3];
 
@@ -110,94 +129,244 @@ export default function GeoMapCard({ users = [] }) {
     return { presentSubregions: present, countsBySubregion: counts };
   }, [users]);
 
-  const handleExportPdf = async () => {
+  const handleExportExcel = async () => {
     try {
       setIsExporting(true);
 
       // Traer todos los usuarios del backend
-      const data = await exportAdminUsers(); // Array<UserWithExperienceStatusRes>
+      const raw = await exportAdminUsers(); // Array<UserWithExperienceStatusRes>
 
-      if (!data || data.length === 0) {
+      if (!raw || raw.length === 0) {
         alert("No hay usuarios para exportar");
         return;
       }
 
-      const doc = new jsPDF({ orientation: "landscape" });
+      const data = raw.filter(
+        (u) => !EXCLUDED_EMAILS.has(String(u.email || "").toLowerCase())
+      );
 
-      doc.setFontSize(14);
-      doc.text("Informe de Progreso de Estudiantes – Antioquia", 14, 15);
+      if (data.length === 0) {
+        alert("No hay usuarios para exportar");
+        return;
+      }
 
-      doc.setFontSize(10);
-      doc.text(`Generado: ${new Date().toLocaleString("es-CO")}`, 14, 22);
+      const rows = data.map((u) => ({
+        municipio: toLabel(u.municipality) || "Sin municipio",
+        estudiante: u.fullName || u.name || "-",
+        correo: u.email || "-",
+        documento: (u.documentType || "CC") + " " + (u.dni || "-"),
+        telefono: u.phone || "-",
+        genero: GENERO_MAP[u.genero] || toLabel(u.genero) || "-",
+        edad: AGE_MAP[u.ageRange ?? u.edad] || u.ageRange || u.edad || "-",
+        enfoque:
+          FOCUS_MAP[u.differentialFocus ?? u.enfoqueDiferencial] ||
+          u.differentialFocus ||
+          u.enfoqueDiferencial ||
+          "-",
+        riesgo: u.riskProfile || "-",
+        avance: getProgressFromStatus(u.experienceStatus),
+      }));
 
-      const head = [
-        [
-          "Estudiante",
-          "Correo",
-          "Documento",
-          "Municipio",
-          "Teléfono",
-          "Género",
-          "Edad",
-          "Enfoque Diferencial",
-          "Perfil de Riesgo",
-          "% Avance",
-        ],
+      const byMunicipio = new Map();
+      rows.forEach((r) => {
+        if (!byMunicipio.has(r.municipio)) byMunicipio.set(r.municipio, []);
+        byMunicipio.get(r.municipio).push(r);
+      });
+
+      const municipios = [...byMunicipio.keys()].sort((a, b) => a.localeCompare(b, "es"));
+      const total = rows.length;
+      const generatedAt = new Date().toLocaleString("es-CO");
+
+      const workbook = new ExcelJS.Workbook();
+      workbook.creator = "Portal de Seguridad Vial";
+      workbook.created = new Date();
+
+      // ---------- Hoja 1: Listado por municipio ----------
+      const sheet1 = workbook.addWorksheet("Listado por municipio");
+      sheet1.columns = [
+        { width: 30 },
+        { width: 30 },
+        { width: 16 },
+        { width: 18 },
+        { width: 14 },
+        { width: 14 },
+        { width: 12 },
+        { width: 22 },
+        { width: 14 },
+        { width: 12 },
       ];
 
-      const body = data.map((u) => {
-        const progress = getProgressFromStatus(u.experienceStatus);
-        return [
-          u.fullName || u.name || "-",
-          u.email || "-",
-          (u.documentType || "CC") + " " + (u.dni || "-"),
-          toLabel(u.municipality) || "-",
-          u.phone || "-",
-          GENERO_MAP[u.genero] || toLabel(u.genero) || "-",
-          AGE_MAP[u.ageRange ?? u.edad] || u.ageRange || u.edad || "-",
-          FOCUS_MAP[u.differentialFocus ?? u.enfoqueDiferencial] ||
-            u.differentialFocus ||
-            u.enfoqueDiferencial ||
-            "-",
-          u.riskProfile || "-",
-          `${progress}%`,
-        ];
+      sheet1.mergeCells(1, 1, 1, REPORT_COLUMNS.length);
+      const s1Title = sheet1.getCell(1, 1);
+      s1Title.value = "Informe de inscritos por municipio – Antioquia";
+      s1Title.font = { bold: true, size: 14, color: { argb: "FFFFFFFF" } };
+      s1Title.fill = TITLE_FILL;
+      s1Title.alignment = { vertical: "middle" };
+      sheet1.getRow(1).height = 24;
+
+      sheet1.mergeCells(2, 1, 2, REPORT_COLUMNS.length);
+      const s1Subtitle = sheet1.getCell(2, 1);
+      s1Subtitle.value = `Fuente: Informe de Progreso de Estudiantes – Antioquia | Generado: ${generatedAt}`;
+      s1Subtitle.font = { italic: true, size: 9, color: { argb: "FF555555" } };
+
+      sheet1.mergeCells(3, 1, 3, REPORT_COLUMNS.length);
+      const s1Note = sheet1.getCell(3, 1);
+      s1Note.value = "Criterio aplicado: se excluyó el registro con correo admin@test.com.";
+      s1Note.font = { italic: true, size: 9, color: { argb: "FF999999" } };
+
+      sheet1.getCell(4, 1).value = "Total inscritos";
+      sheet1.getCell(4, 1).font = { bold: true };
+      sheet1.getCell(4, 2).value = total;
+      sheet1.getCell(4, 2).font = { bold: true };
+
+      let rIdx = 6;
+      municipios.forEach((mun) => {
+        const items = byMunicipio.get(mun);
+
+        for (let c = 1; c <= REPORT_COLUMNS.length; c++) {
+          sheet1.getCell(rIdx, c).fill = SECTION_FILL;
+        }
+        sheet1.mergeCells(rIdx, 1, rIdx, 6);
+        const secCell = sheet1.getCell(rIdx, 1);
+        secCell.value = `Municipio: ${mun}`;
+        secCell.font = { bold: true, color: { argb: "FF1D4789" } };
+        sheet1.getCell(rIdx, 9).value = "Total inscritos";
+        sheet1.getCell(rIdx, 9).font = { bold: true };
+        sheet1.getCell(rIdx, 10).value = items.length;
+        sheet1.getCell(rIdx, 10).font = { bold: true };
+        rIdx++;
+
+        const headerRow = sheet1.getRow(rIdx);
+        REPORT_COLUMNS.forEach((label, i) => {
+          const cell = headerRow.getCell(i + 1);
+          cell.value = label;
+          cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
+          cell.fill = HEADER_FILL;
+        });
+        rIdx++;
+
+        items.forEach((r) => {
+          const row = sheet1.getRow(rIdx);
+          row.getCell(1).value = r.estudiante;
+          row.getCell(2).value = r.correo;
+          row.getCell(3).value = r.documento;
+          row.getCell(4).value = r.municipio;
+          row.getCell(5).value = r.telefono;
+          row.getCell(6).value = r.genero;
+          row.getCell(7).value = r.edad;
+          row.getCell(8).value = r.enfoque;
+          row.getCell(9).value = r.riesgo;
+          row.getCell(10).value = r.avance / 100;
+          row.getCell(10).numFmt = "0%";
+          rIdx++;
+        });
+
+        for (let c = 1; c <= REPORT_COLUMNS.length; c++) {
+          sheet1.getCell(rIdx, c).fill = TOTAL_FILL;
+        }
+        sheet1.mergeCells(rIdx, 1, rIdx, 8);
+        const totCell = sheet1.getCell(rIdx, 1);
+        totCell.value = `Total ${mun}`;
+        totCell.font = { bold: true };
+        sheet1.getCell(rIdx, 9).value = "Inscritos";
+        sheet1.getCell(rIdx, 9).font = { bold: true };
+        sheet1.getCell(rIdx, 10).value = items.length;
+        sheet1.getCell(rIdx, 10).font = { bold: true };
+        rIdx += 2;
       });
 
-      autoTable(doc, {
-        head,
-        body,
-        startY: 26,
-        styles: {
-          fontSize: 8,
-        },
-        headStyles: {
-          fillColor: [41, 55, 92],
-          textColor: 255,
-          fontStyle: "bold",
-        },
-        alternateRowStyles: {
-          fillColor: [245, 245, 245],
-        },
-        columnStyles: {
-          0: { halign: "left" },
-          1: { halign: "left" },
-          2: { halign: "center" },
-          3: { halign: "left" },
-          4: { halign: "center" },
-          5: { halign: "center" },
-          6: { halign: "center" },
-          7: { halign: "left" },
-          8: { halign: "center" },
-          9: { halign: "center", fillColor: [220, 240, 255] },
-        },
+      // ---------- Hoja 2: Resumen ejecutivo (% de participación por municipio) ----------
+      const sheet2 = workbook.addWorksheet("Resumen ejecutivo");
+      sheet2.columns = [{ width: 24 }, { width: 14 }, { width: 16 }, { width: 22 }];
+
+      sheet2.mergeCells(1, 1, 1, 4);
+      const s2Title = sheet2.getCell(1, 1);
+      s2Title.value = "Resumen ejecutivo de inscritos";
+      s2Title.font = { bold: true, size: 14, color: { argb: "FFFFFFFF" } };
+      s2Title.fill = TITLE_FILL;
+      s2Title.alignment = { vertical: "middle" };
+      sheet2.getRow(1).height = 24;
+
+      sheet2.mergeCells(2, 1, 2, 4);
+      const s2Subtitle = sheet2.getCell(2, 1);
+      s2Subtitle.value = `Fuente: Informe de Progreso de Estudiantes – Antioquia | Generado: ${generatedAt}`;
+      s2Subtitle.font = { italic: true, size: 9, color: { argb: "FF555555" } };
+
+      sheet2.getCell(3, 1).value = "Total inscritos";
+      sheet2.getCell(3, 1).font = { bold: true };
+      sheet2.getCell(3, 2).value = total;
+      sheet2.getCell(3, 2).font = { bold: true };
+
+      const headerRow2 = sheet2.getRow(5);
+      ["Municipio", "Inscritos", "Participación", "Observación"].forEach((label, i) => {
+        const cell = headerRow2.getCell(i + 1);
+        cell.value = label;
+        cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
+        cell.fill = HEADER_FILL;
       });
 
+      const summary = municipios
+        .map((mun) => ({ mun, count: byMunicipio.get(mun).length }))
+        .sort((a, b) => b.count - a.count);
+      const maxCount = summary[0]?.count ?? 0;
+
+      let r2 = 6;
+      summary.forEach(({ mun, count }) => {
+        const pct = total > 0 ? count / total : 0;
+        const row = sheet2.getRow(r2);
+        row.getCell(1).value = mun;
+        row.getCell(2).value = count;
+        row.getCell(3).value = pct;
+        row.getCell(3).numFmt = "0.0%";
+        row.getCell(4).value =
+          count === maxCount
+            ? "Mayor concentración"
+            : pct > 0.05
+              ? "Participación media"
+              : "Participación baja";
+        r2++;
+      });
+
+      if (r2 > 6) {
+        sheet2.addConditionalFormatting({
+          ref: `C6:C${r2 - 1}`,
+          rules: [
+            {
+              type: "dataBar",
+              priority: 1,
+              cfvo: [{ type: "min" }, { type: "max" }],
+              color: { argb: "FF1D4789" },
+            },
+          ],
+        });
+      }
+
+      const totalRow = sheet2.getRow(r2);
+      totalRow.getCell(1).value = "TOTAL";
+      totalRow.getCell(1).font = { bold: true };
+      totalRow.getCell(2).value = total;
+      totalRow.getCell(2).font = { bold: true };
+      totalRow.getCell(3).value = 1;
+      totalRow.getCell(3).numFmt = "0.0%";
+      totalRow.getCell(3).font = { bold: true };
+      for (let c = 1; c <= 4; c++) totalRow.getCell(c).fill = TOTAL_FILL;
+
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
       const timestamp = new Date().toISOString().split("T")[0];
-      doc.save(`informe-participacion-antioquia_${timestamp}.pdf`);
+      a.href = url;
+      a.download = `informe-participacion-antioquia_${timestamp}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
     } catch (err) {
-      console.error("Error exportando PDF", err);
-      alert("Error al generar el PDF. Intenta de nuevo.");
+      console.error("Error exportando Excel", err);
+      alert("Error al generar el Excel. Intenta de nuevo.");
     } finally {
       setIsExporting(false);
     }
@@ -297,7 +466,7 @@ export default function GeoMapCard({ users = [] }) {
 
       <div className="mt-4 flex justify-end">
         <button
-          onClick={handleExportPdf}
+          onClick={handleExportExcel}
           disabled={isExporting}
           className="
             inline-flex items-center gap-2
@@ -314,7 +483,7 @@ export default function GeoMapCard({ users = [] }) {
             transition
           "
         >
-          {isExporting ? "Generando PDF..." : "Informe PDF"}
+          {isExporting ? "Generando Excel..." : "Informe Excel"}
         </button>
       </div>
     </div>
