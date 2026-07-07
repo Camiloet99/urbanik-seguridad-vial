@@ -9,7 +9,10 @@ import tag3 from "@/assets/admin/tags/tag3.png";
 
 import ExcelJS from "exceljs";
 
-const EXCLUDED_EMAILS = new Set(["admin@test.com"]);
+const EXCLUDED_EMAILS = new Set([
+  "admin@test.com",
+  "rafaelcabrera@urbanik-hub.com",
+]);
 
 const REPORT_COLUMNS = [
   "Estudiante",
