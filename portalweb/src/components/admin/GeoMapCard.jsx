@@ -21,8 +21,17 @@ const REPORT_COLUMNS = [
   "Edad",
   "Enfoque Diferencial",
   "Perfil de Riesgo",
-  "% Avance",
+  "M1 - 20h",
+  "M2 - 20h",
+  "M3 - 20h",
+  "M4 - 20h",
+  "M5 - 20h",
+  "M6 - 20h",
+  "120 h",
 ];
+
+const MODULE_COLUMNS_START = 10; // primer índice (1-based) de columna "M1 - 20h"
+const TOTAL_MODULES = 6;
 
 const TITLE_FILL = { type: "pattern", pattern: "solid", fgColor: { argb: "FF1D4789" } };
 const HEADER_FILL = { type: "pattern", pattern: "solid", fgColor: { argb: "FF29375C" } };
@@ -65,21 +74,6 @@ const toLabel = (slug) =>
   slug
     ? slug.replace(/[-_]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
     : null;
-
-const getProgressFromStatus = (rawStatus) => {
-  if (typeof rawStatus === "number" && !Number.isNaN(rawStatus)) {
-    return Math.min(Math.max(rawStatus, 0), 100);
-  }
-  if (typeof rawStatus === "string") {
-    const parsed = parseInt(rawStatus, 10);
-    if (!Number.isNaN(parsed)) {
-      return Math.min(Math.max(parsed, 0), 100);
-    }
-  }
-  if (rawStatus === "complete") return 100;
-  if (rawStatus === "progress") return 60;
-  return 0;
-};
 
 const SUBREGION_CONFIG = {
   "Bajo Cauca": { top: "30%", left: "65%" },
@@ -164,7 +158,7 @@ export default function GeoMapCard({ users = [] }) {
           u.enfoqueDiferencial ||
           "-",
         riesgo: u.riskProfile || "-",
-        avance: getProgressFromStatus(u.experienceStatus),
+        modulosDone: Array.isArray(u.modulosDone) ? u.modulosDone : [],
       }));
 
       const byMunicipio = new Map();
@@ -193,7 +187,13 @@ export default function GeoMapCard({ users = [] }) {
         { width: 12 },
         { width: 22 },
         { width: 14 },
-        { width: 12 },
+        { width: 10 },
+        { width: 10 },
+        { width: 10 },
+        { width: 10 },
+        { width: 10 },
+        { width: 10 },
+        { width: 10 },
       ];
 
       sheet1.mergeCells(1, 1, 1, REPORT_COLUMNS.length);
@@ -256,8 +256,22 @@ export default function GeoMapCard({ users = [] }) {
           row.getCell(7).value = r.edad;
           row.getCell(8).value = r.enfoque;
           row.getCell(9).value = r.riesgo;
-          row.getCell(10).value = r.avance / 100;
-          row.getCell(10).numFmt = "0%";
+
+          const allModulesDone =
+            r.modulosDone.length === TOTAL_MODULES &&
+            r.modulosDone.every(Boolean);
+
+          for (let m = 0; m < TOTAL_MODULES; m++) {
+            const cell = row.getCell(MODULE_COLUMNS_START + m);
+            cell.value = r.modulosDone[m] ? "X" : "";
+            cell.alignment = { horizontal: "center" };
+          }
+
+          const totalCell = row.getCell(MODULE_COLUMNS_START + TOTAL_MODULES);
+          totalCell.value = allModulesDone ? "X" : "";
+          totalCell.alignment = { horizontal: "center" };
+          totalCell.font = { bold: true };
+
           rIdx++;
         });
 
