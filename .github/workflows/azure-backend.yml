@@ -1,0 +1,36 @@
+name: Deploy backend to Azure Container Apps
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "servicios/**"
+      - ".github/workflows/azure-backend.yml"
+  workflow_dispatch:
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    name: Build image and roll out
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login en Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Construir imagen en ACR (multi-stage, compila en la nube)
+        run: |
+          az acr build \
+            --registry urbanikvialacr \
+            --image backend-vial:${{ github.sha }} \
+            --image backend-vial:latest \
+            servicios
+
+      - name: Actualizar Container App (nueva revision)
+        run: |
+          az containerapp update \
+            --name backend-vial \
+            --resource-group urbanik-vial-rg \
+            --image urbanikvialacr.azurecr.io/backend-vial:${{ github.sha }}
