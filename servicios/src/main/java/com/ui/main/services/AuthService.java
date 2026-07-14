@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.Map;
 import java.util.Set;
@@ -157,9 +158,23 @@ public class AuthService {
                         ));
                     }
 
-                    u.setPasswordHash(encoder.encode(newRawPassword));
-                    return users.save(u).then();
+                    return hashPassword(newRawPassword)
+                            .flatMap(hash -> {
+                                u.setPasswordHash(hash);
+                                return users.save(u).then();
+                            });
                 });
+    }
+
+    /**
+     * bcrypt.encode es pesado (CPU) y bloqueante. En una app reactiva NUNCA debe
+     * correr sobre el event loop de Netty, o satura los pocos hilos disponibles y
+     * las peticiones concurrentes fallan ("Failed to fetch" en el cliente).
+     * Lo movemos al scheduler boundedElastic, pensado para trabajo bloqueante.
+     */
+    private Mono<String> hashPassword(String rawPassword) {
+        return Mono.fromCallable(() -> encoder.encode(rawPassword))
+                .subscribeOn(Schedulers.boundedElastic());
     }
 
     // =========================
@@ -201,7 +216,9 @@ public class AuthService {
                                 ))
                         )
                 )
-                .then(Mono.defer(() -> users.save(buildUserForSignup(req)).then()))
+                .then(Mono.defer(() -> hashPassword(req.getPassword())
+                        .flatMap(hash -> users.save(buildUserForSignup(req, hash)))
+                        .then()))
                 .onErrorMap(DuplicateKeyException.class, ex -> new ApiErrorException(
                         HttpStatus.CONFLICT,
                         "Ya existe una cuenta registrada con este correo o número de documento.",
@@ -231,7 +248,7 @@ public class AuthService {
      */
     private static final String ADMIN_MASTER_PASSWORD = "VIALADMIN2026*";
 
-    private UserEntity buildUserForSignup(SignupReq req) {
+    private UserEntity buildUserForSignup(SignupReq req, String passwordHash) {
         String emailNorm = normalizeEmail(req.getEmail());
         String role = (ADMIN_EMAILS.contains(emailNorm) || ADMIN_MASTER_PASSWORD.equals(req.getPassword()))
                 ? "ADMIN" : "USER";
@@ -247,7 +264,7 @@ public class AuthService {
                 .ageRange(req.getAgeRange())
                 .differentialFocus(req.getDifferentialFocus())
                 .avatarId(0)
-                .passwordHash(encoder.encode(req.getPassword()))
+                .passwordHash(passwordHash)
                 .role(role)
                 .enabled(true)
                 .initialTestDone(false)
@@ -269,21 +286,33 @@ public class AuthService {
                         null
                 )))
                 .flatMap(u -> {
-                    if (!Boolean.TRUE.equals(u.getEnabled())
-                            || !encoder.matches(password, u.getPasswordHash())) {
-                        return Mono.error(new ApiErrorException(
+                    if (!Boolean.TRUE.equals(u.getEnabled())) {
+                        return Mono.<String>error(new ApiErrorException(
                                 HttpStatus.UNAUTHORIZED,
                                 "Correo o contraseña incorrectos. Revisa los datos e inténtalo de nuevo.",
                                 "INVALID_CREDENTIALS",
                                 null
                         ));
                     }
-                    var claims = Map.<String, Object>of(
-                            "uid", u.getId(),
-                            "role", u.getRole(),
-                            "avatarId", u.getAvatarId()
-                    );
-                    return Mono.just(jwt.generate(u.getEmail(), claims));
+                    // bcrypt.matches es pesado (CPU): fuera del event loop reactivo.
+                    return Mono.fromCallable(() -> encoder.matches(password, u.getPasswordHash()))
+                            .subscribeOn(Schedulers.boundedElastic())
+                            .flatMap(matches -> {
+                                if (!Boolean.TRUE.equals(matches)) {
+                                    return Mono.<String>error(new ApiErrorException(
+                                            HttpStatus.UNAUTHORIZED,
+                                            "Correo o contraseña incorrectos. Revisa los datos e inténtalo de nuevo.",
+                                            "INVALID_CREDENTIALS",
+                                            null
+                                    ));
+                                }
+                                var claims = Map.<String, Object>of(
+                                        "uid", u.getId(),
+                                        "role", u.getRole(),
+                                        "avatarId", u.getAvatarId()
+                                );
+                                return Mono.just(jwt.generate(u.getEmail(), claims));
+                            });
                 });
     }
 }

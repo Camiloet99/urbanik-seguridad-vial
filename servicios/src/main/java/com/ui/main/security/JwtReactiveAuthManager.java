@@ -1,6 +1,7 @@
 package com.ui.main.security;
 
 import io.jsonwebtoken.Claims;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -31,7 +32,7 @@ public class JwtReactiveAuthManager implements ReactiveAuthenticationManager {
             return Mono.just(new UsernamePasswordAuthenticationToken(
                     email, token, List.of(new SimpleGrantedAuthority("ROLE_" + role))));
         } catch (Exception e) {
-            return Mono.empty();
+            return Mono.error(new BadCredentialsException("Token inválido o expirado"));
         }
     }
 }
