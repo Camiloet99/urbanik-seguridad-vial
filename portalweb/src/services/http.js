@@ -55,9 +55,17 @@ async function doRequest(method, path, body, { token } = {}) {
   if (authToken) headers.Authorization = `Bearer ${authToken}`;
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  // Marcamos explícitamente cuándo el abort lo provocó NUESTRO timeout, para no
+  // depender de e.name === "AbortError" (frágil entre navegadores) y para poder
+  // distinguirlo con certeza.
+  let timedOut = false;
+  const timeoutId = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, TIMEOUT_MS);
 
   let res;
+  let text;
   try {
     res = await fetch(`${BASE_URL}${path}`, {
       method,
@@ -65,10 +73,15 @@ async function doRequest(method, path, body, { token } = {}) {
       body: body ? JSON.stringify(body) : undefined,
       signal: controller.signal,
     });
+    // La lectura del body también puede abortarse si el timeout dispara mientras
+    // el servidor envía la respuesta: por eso va DENTRO del try (antes quedaba
+    // fuera y el "signal is aborted without reason" se filtraba crudo a la UI).
+    text = await res.text();
   } catch (e) {
-    // La petición ni siquiera se completó (fallo de red, no una respuesta HTTP).
-    // Aquí es donde antes aparecía el críptico "Failed to fetch".
-    if (e?.name === "AbortError") {
+    // La petición no se completó (fallo de red o abort por timeout), no es una
+    // respuesta HTTP. Aquí es donde antes aparecía "Failed to fetch" o el
+    // críptico "signal is aborted without reason".
+    if (timedOut || e?.name === "AbortError") {
       throw buildError(
         `El servidor tardó más de ${
           TIMEOUT_MS / 1000
@@ -85,7 +98,6 @@ async function doRequest(method, path, body, { token } = {}) {
   }
 
   let data = null;
-  const text = await res.text();
   if (text) {
     try {
       data = JSON.parse(text);
