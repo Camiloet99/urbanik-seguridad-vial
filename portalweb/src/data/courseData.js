@@ -28,7 +28,7 @@ export const COURSE_DATA = {
       {
         id: "pcc-pdf-2",
         label: "Manual de Señalización Vial",
-        fileName: "modulo-1/2_Manual_de_Senalizacion_Vial.pdf",
+        fileName: "shared/Manual_de_Senalizacion_Vial.pdf",
       },
       {
         id: "pcc-pdf-3",
@@ -85,7 +85,7 @@ export const COURSE_DATA = {
       {
         id: "jm-pdf-1",
         label: "Manual de Señalización Vial",
-        fileName: "modulo-3/1_Manual_de_Senalizacion_Vial.pdf",
+        fileName: "shared/Manual_de_Senalizacion_Vial.pdf",
       },
       {
         id: "jm-pdf-2",
@@ -116,7 +116,7 @@ export const COURSE_DATA = {
       {
         id: "ls-pdf-1",
         label: "Manual de Señalización Vial",
-        fileName: "modulo-4/1_Manual_de_Senalizacion_Vial.pdf",
+        fileName: "shared/Manual_de_Senalizacion_Vial.pdf",
       },
       {
         id: "ls-pdf-2",
@@ -147,7 +147,7 @@ export const COURSE_DATA = {
       {
         id: "m5-pdf-1",
         label: "Manual de Señalización Vial",
-        fileName: "modulo-5/1_Manual_de_Senalizacion_Vial.pdf",
+        fileName: "shared/Manual_de_Senalizacion_Vial.pdf",
       },
       {
         id: "m5-pdf-2",
@@ -183,7 +183,7 @@ export const COURSE_DATA = {
       {
         id: "m6-pdf-2",
         label: "Manual de Señalización Vial",
-        fileName: "modulo-6/2_Manual_de_Senalizacion_Vial.pdf",
+        fileName: "shared/Manual_de_Senalizacion_Vial.pdf",
       },
       {
         id: "m6-pdf-3",

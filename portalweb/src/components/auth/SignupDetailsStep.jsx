@@ -7,6 +7,7 @@ import {
   MdCancel,
 } from "react-icons/md";
 import PasswordInput from "../PasswordInput";
+import { assetUrl } from "@/config/assets";
 
 const variants = {
   initial: { opacity: 0, x: -12 },
@@ -213,7 +214,7 @@ export default function SignupDetailsStep({
           <span className={`text-sm leading-snug ${errors.accept ? "text-red-500" : "text-[#1a1a1a]"}`}>
             Acepto el{" "}
             <a
-              href="/documents/politica.pdf"
+              href={assetUrl("/documents/politica.pdf")}
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}

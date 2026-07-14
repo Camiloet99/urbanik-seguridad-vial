@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { COURSE_DATA } from "@/data/courseData";
 import { COURSE_KEY_TO_MODULO, submitPdfRead } from "@/services/progressService";
+import { assetUrl } from "@/config/assets";
 
 /**
  * In-portal PDF viewer.
@@ -38,7 +39,7 @@ export default function PdfVisor() {
     );
   }, [isIntro, modulo, pdfNumInt]);
 
-  const pdfSrc = resource ? `/documents/${resource.fileName}` : null;
+  const pdfSrc = resource ? assetUrl(`/documents/${resource.fileName}`) : null;
 
   if (!course || !resource || !pdfSrc) {
     return (

@@ -17,6 +17,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { useAuth } from "@/context/AuthContext";
+import { assetUrl } from "@/config/assets";
 
 /* ── Tipos de documento (comentado: nuevo diseño usa solo D.I.) ─────────── */
 // const DOC_TYPES = [
@@ -46,8 +47,8 @@ function fechaHoy() {
 }
 function pdfPath(certConfig) {
   return certConfig?.type === "general"
-    ? "/certificates/modulo-7.pdf"
-    : `/certificates/modulo-${certConfig?.n ?? 1}.pdf`;
+    ? assetUrl("/certificates/modulo-7.pdf")
+    : assetUrl(`/certificates/modulo-${certConfig?.n ?? 1}.pdf`);
 }
 
 /* ── Interpolación del degradado ────────────────────────────────────────── */
