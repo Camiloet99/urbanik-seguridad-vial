@@ -1,73 +1,89 @@
 package com.ui.main.services;
 
-import com.google.genai.Client;
-import com.google.genai.types.GenerateContentResponse;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.ui.main.model.dto.ChatMessage;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Proxy hacia Azure OpenAI (chat completions). La API key vive SOLO en el
+ * backend como secreto (AZURE_OPENAI_KEY), nunca en el navegador. Antes esto
+ * usaba la API de Gemini con la clave incrustada en el frontend, que quedó
+ * expuesta y fue suspendida por Google.
+ */
 @Service
 @Slf4j
 public class GeminiService {
 
-    private final Client client;
-    private final boolean isConfigured;
+    private final WebClient client;
+    private final String deployment;
+    private final String apiVersion;
+    private final boolean configured;
 
-    public GeminiService() {
-        Client tempClient = null;
-        boolean configured = false;
+    public GeminiService(@Value("${app.openai.endpoint:}") String endpoint,
+                         @Value("${app.openai.key:}") String key,
+                         @Value("${app.openai.deployment:gpt-4o-mini}") String deployment,
+                         @Value("${app.openai.api-version:2024-08-01-preview}") String apiVersion) {
+        this.deployment = deployment;
+        this.apiVersion = apiVersion;
 
-        try {
-            String apiKey = System.getenv("GOOGLE_API_KEY");
-
-            if (apiKey != null && !apiKey.isBlank()) {
-                tempClient = new Client();
-                configured = true;
-                log.info("✓ GeminiService inicializado correctamente");
-            } else {
-                log.warn("GOOGLE_API_KEY no configurada - El servicio de Gemini estará deshabilitado");
-                log.warn("Para habilitar Gemini, configura: $env:GOOGLE_API_KEY = 'tu-api-key'");
-            }
-        } catch (Exception e) {
-            log.warn("Error al inicializar GeminiService (continuando sin Gemini): {}", e.getMessage());
+        if (endpoint != null && !endpoint.isBlank() && key != null && !key.isBlank()) {
+            String base = endpoint.endsWith("/") ? endpoint : endpoint + "/";
+            this.client = WebClient.builder()
+                    .baseUrl(base)
+                    .defaultHeader("api-key", key)
+                    .build();
+            this.configured = true;
+            log.info("✓ Azure OpenAI configurado (deployment '{}')", deployment);
+        } else {
+            this.client = null;
+            this.configured = false;
+            log.warn("Azure OpenAI no configurado (faltan AZURE_OPENAI_ENDPOINT / AZURE_OPENAI_KEY)");
         }
-
-        this.client = tempClient;
-        this.isConfigured = configured;
     }
 
     public boolean isConfigured() {
-        return isConfigured;
+        return configured;
     }
 
-    public Mono<String> generateContent(String message) {
-        if (!isConfigured) {
-            return Mono.error(new RuntimeException(
-                "Gemini API no está configurada. Por favor, configura la variable de entorno GOOGLE_API_KEY"
-            ));
+    public Mono<String> chat(List<ChatMessage> messages) {
+        if (!configured) {
+            return Mono.error(new RuntimeException("Azure OpenAI no está configurado."));
         }
 
-        return Mono.fromCallable(() -> {
-            try {
-                log.debug("Enviando mensaje a Gemini: {}", message);
+        String uri = "openai/deployments/" + deployment + "/chat/completions?api-version=" + apiVersion;
 
-                GenerateContentResponse response = client.models.generateContent(
-                    "gemini-2.0-flash",
-                    message,
-                    null
-                );
+        List<Map<String, String>> payloadMsgs = messages.stream()
+                .filter(m -> m != null && m.getRole() != null && m.getContent() != null)
+                .map(m -> Map.of("role", m.getRole(), "content", m.getContent()))
+                .toList();
 
-                String result = response.text();
-                log.debug("Respuesta recibida de Gemini");
+        // Solo 'messages': los modelos gpt-5 rechazan temperature custom y
+        // max_tokens (usan otros parámetros). Los defaults sirven para el chat.
+        Map<String, Object> body = Map.of("messages", payloadMsgs);
 
-                return result != null && !result.isEmpty() ? result : "No se pudo generar una respuesta.";
-
-            } catch (Exception ex) {
-                log.error("Error en la API de Gemini: {}", ex.getMessage(), ex);
-                throw new RuntimeException("Error al comunicarse con Gemini: " + ex.getMessage(), ex);
-            }
-        }).subscribeOn(Schedulers.boundedElastic());
+        return client.post()
+                .uri(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(body)
+                .retrieve()
+                .bodyToMono(JsonNode.class)
+                .map(json -> {
+                    JsonNode content = json.path("choices").path(0).path("message").path("content");
+                    return content.isMissingNode() || content.asText().isBlank()
+                            ? "No se pudo generar una respuesta."
+                            : content.asText();
+                })
+                .onErrorMap(ex -> {
+                    log.error("Error en Azure OpenAI: {}", ex.getMessage(), ex);
+                    return new RuntimeException("Error al comunicarse con la IA: " + ex.getMessage(), ex);
+                });
     }
 }
-

@@ -1,55 +1,45 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { http } from "@/services/http";
 
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+// NIA ahora habla con el BACKEND (que a su vez llama a Azure OpenAI con la key
+// oculta como secreto). Antes esto usaba el SDK de Gemini con la API key
+// incrustada en el navegador, que quedó expuesta y fue suspendida por Google.
+//
+// Se conserva la misma interfaz (getChatSession + sendMessageStream) para no
+// tocar NiaChat.jsx ni ChatWidget.jsx.
 
-const MODEL_NAME = "gemini-3.1-flash-lite"; // o "gemini-1.5-pro" si prefieres
+// Timeout amplio para la IA (puede tardar en respuestas largas) y sin reintentos
+// (reintentar una generación lenta no aporta).
+const AI_OPTS = { timeoutMs: 60_000, retries: 0 };
+const MAX_TURNS = 16; // system + últimos N turnos, para acotar tokens/costo
 
-let genAI;
-
-function getClient() {
-  if (!genAI) genAI = new GoogleGenerativeAI(API_KEY);
-  return genAI;
-}
-
-function makeModel() {
-  return getClient().getGenerativeModel({ model: MODEL_NAME });
-}
-
-/**
- * Crea una sesión de chat con historial.
- * history: [{role:"user"|"model"|"system", content:string}]
- */
 export async function getChatSession(history = []) {
-  const model = makeModel();
+  return { messages: Array.isArray(history) ? [...history] : [] };
+}
 
-  const convertHistory = history
-    .filter((h) => h.role === "user" || h.role === "model")
-    .map((h) => ({
-      role: h.role === "user" ? "user" : "model",
-      parts: [{ text: h.content }],
-    }));
-
-  return model.startChat({
-    history: convertHistory,
-    generationConfig: {
-      temperature: 0.7,
-      topK: 40,
-      topP: 0.95,
-      maxOutputTokens: 1024,
-    },
-  });
+// Mapea el historial local al formato de mensajes de OpenAI.
+function toApiMessages(messages) {
+  const system = messages.filter((m) => m.role === "system").slice(0, 1);
+  const convo = messages.filter((m) => m.role !== "system").slice(-MAX_TURNS);
+  return [...system, ...convo].map((m) => ({
+    role: m.role === "model" ? "assistant" : m.role,
+    content: m.content ?? "",
+  }));
 }
 
 /**
- * Stream de respuesta
+ * Envía la conversación al backend y entrega la respuesta. El backend responde
+ * completa; simulamos el efecto de "escribiendo" entregándola por trozos, para
+ * conservar la misma UX que el streaming anterior.
  */
-export async function* sendMessageStream(chatSession, userText, signal) {
-  const result = await chatSession.sendMessageStream(userText, { signal });
+export async function* sendMessageStream(chatSession, _userText, signal) {
+  const messages = toApiMessages(chatSession?.messages ?? []);
+  const res = await http.post("/gemini", { messages }, AI_OPTS);
+  const text = (res && res.response) || "";
 
-  for await (const chunk of result.stream) {
-    const text = chunk.text();
-    if (text) {
-      yield text;
-    }
+  const parts = text.match(/\S+\s*/g) ?? (text ? [text] : []);
+  for (const part of parts) {
+    if (signal?.aborted) return;
+    yield part;
+    await new Promise((r) => setTimeout(r, 15));
   }
 }

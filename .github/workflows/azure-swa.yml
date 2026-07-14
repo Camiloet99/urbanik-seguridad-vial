@@ -23,7 +23,6 @@ jobs:
         working-directory: portalweb
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
-          VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
           VITE_ASSETS_URL: ${{ secrets.VITE_ASSETS_URL }}
         run: |
           npm ci

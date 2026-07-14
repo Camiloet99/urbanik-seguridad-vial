@@ -49,7 +49,7 @@ async function request(method, path, body, opts = {}) {
   }
 }
 
-async function doRequest(method, path, body, { token } = {}) {
+async function doRequest(method, path, body, { token, timeoutMs } = {}) {
   const headers = { "Content-Type": "application/json" };
   const authToken = token ?? getAuthToken();
   if (authToken) headers.Authorization = `Bearer ${authToken}`;
@@ -62,7 +62,7 @@ async function doRequest(method, path, body, { token } = {}) {
   const timeoutId = setTimeout(() => {
     timedOut = true;
     controller.abort();
-  }, TIMEOUT_MS);
+  }, timeoutMs ?? TIMEOUT_MS);
 
   let res;
   let text;

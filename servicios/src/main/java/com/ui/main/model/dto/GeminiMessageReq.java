@@ -4,10 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class GeminiMessageReq {
+    // Compatibilidad: un solo mensaje suelto.
     private String message;
+    // Conversación completa (system + user + assistant), preferida.
+    private List<ChatMessage> messages;
 }
-

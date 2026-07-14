@@ -23,5 +23,10 @@ app:
     secret: ${JWT_SECRET:EPzuE1fY/zKURZ0eklR27ULNZTpAO51+dfDWt3iJRI7zyv+UdDjXaDlkV7X1I04r89mvdet5CAWSFkfrKv+fmg==}
     access-minutes: 120
 
-  gemini:
-    api-key: ${GOOGLE_API_KEY:afervsdre43234}
+  # IA de NIA vía Azure OpenAI. La key vive SOLO aquí (secreto del backend),
+  # nunca en el frontend.
+  openai:
+    endpoint: ${AZURE_OPENAI_ENDPOINT:}
+    key: ${AZURE_OPENAI_KEY:}
+    deployment: ${AZURE_OPENAI_DEPLOYMENT:gpt-4o-mini}
+    api-version: ${AZURE_OPENAI_API_VERSION:2024-08-01-preview}

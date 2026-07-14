@@ -1,5 +1,6 @@
 package com.ui.main.controller;
 
+import com.ui.main.model.dto.ChatMessage;
 import com.ui.main.model.dto.GeminiMessageReq;
 import com.ui.main.model.dto.GeminiMessageRes;
 import com.ui.main.services.GeminiService;
@@ -9,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/gemini")
@@ -23,25 +26,30 @@ public class GeminiController {
         if (!geminiService.isConfigured()) {
             return Mono.error(new ResponseStatusException(
                 HttpStatus.SERVICE_UNAVAILABLE,
-                "Gemini API no está configurada. Por favor, configura la variable de entorno GOOGLE_API_KEY"
+                "La IA no está configurada. Falta AZURE_OPENAI_ENDPOINT / AZURE_OPENAI_KEY."
             ));
         }
 
         return request
-                .doOnNext(req -> {
-                    if (req.getMessage() == null || req.getMessage().trim().isEmpty()) {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El mensaje no puede estar vacío");
+                .flatMap(req -> {
+                    List<ChatMessage> msgs = req.getMessages();
+
+                    // Compatibilidad: si mandan un solo mensaje suelto.
+                    if (msgs == null || msgs.isEmpty()) {
+                        if (req.getMessage() == null || req.getMessage().trim().isEmpty()) {
+                            return Mono.<String>error(new ResponseStatusException(
+                                    HttpStatus.BAD_REQUEST, "El mensaje no puede estar vacío"));
+                        }
+                        msgs = List.of(new ChatMessage("user", req.getMessage()));
                     }
-                    log.info("Mensaje recibido en Gemini: {}", req.getMessage());
+
+                    return geminiService.chat(msgs);
                 })
-                .flatMap(req -> geminiService.generateContent(req.getMessage()))
-                .map(response -> GeminiMessageRes.builder()
-                        .response(response)
-                        .build())
+                .map(response -> GeminiMessageRes.builder().response(response).build())
                 .onErrorResume(err -> {
-                    log.error("Error procesando solicitud de Gemini: {}", err.getMessage(), err);
+                    if (err instanceof ResponseStatusException) return Mono.error(err);
+                    log.error("Error procesando solicitud de IA: {}", err.getMessage(), err);
                     return Mono.error(err);
                 });
     }
 }
-
