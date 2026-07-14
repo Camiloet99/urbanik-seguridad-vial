@@ -1,27 +1,32 @@
 package com.ui.main.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
 @Configuration
 public class WebCorsConfig {
+
+    // Orígenes permitidos, inyectados desde app.cors.allowed-origins
+    // (variable de entorno APP_CORS_ORIGINS). Así se cambia el dominio del
+    // frontend sin recompilar la imagen.
+    @Value("${app.cors.allowed-origins}")
+    private String allowedOrigins;
 
     @Bean
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration cors = new CorsConfiguration();
 
-        // Orígenes explícitos
-        cors.setAllowedOrigins(List.of(
-                "http://48.211.210.195",      // frontend en Azure (puerto 80)
-                "http://localhost:5173",    // dev Vite (si usas)
-                "http://127.0.0.1:5173",
-                "http://vial.urbanik-hub.com",
-                "https://vial.urbanik-hub.com"
-        ));
+        List<String> origins = Arrays.stream(allowedOrigins.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toList();
+        cors.setAllowedOrigins(origins);
 
         cors.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
         cors.setAllowedHeaders(List.of("*"));

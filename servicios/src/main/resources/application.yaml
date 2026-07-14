@@ -3,7 +3,9 @@ server:
 
 spring:
   r2dbc:
-    url: r2dbc:pool:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:iu_auth}?serverTimezone=UTC
+    # sslMode: DISABLED en local (MySQL de docker sin TLS); REQUIRED en Azure
+    # MySQL Flexible Server, que exige conexiones cifradas.
+    url: r2dbc:pool:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:iu_auth}?serverTimezone=UTC&sslMode=${DB_SSL_MODE:DISABLED}
     username: ${DB_USER:root}
     password: ${DB_PASSWORD:root}
   sql:
@@ -11,6 +13,10 @@ spring:
       mode: never
 
 app:
+  # Orígenes permitidos por CORS, separados por coma. Se sobreescribe por entorno
+  # (APP_CORS_ORIGINS) para no recompilar la imagen al cambiar de dominio.
+  cors:
+    allowed-origins: ${APP_CORS_ORIGINS:http://localhost:5173,http://127.0.0.1:5173,http://48.211.210.195,http://vial.urbanik-hub.com,https://vial.urbanik-hub.com}
   nivel99:
     base-url: "https://nivel99.com"
   jwt:
