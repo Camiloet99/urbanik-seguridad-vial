@@ -374,20 +374,13 @@ const GENERIC_QUESTIONS = [
   }
 ];
 
-function shuffleArray(array) {
-  const arr = [...array];
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
-
-function getRandomGenericQuestions(count, existingTexts = []) {
+// Selección determinista de preguntas genéricas de respaldo (sin aleatorizar):
+// solo se usa si un quiz llegara a tener menos de 10 preguntas propias.
+function getGenericQuestions(count, existingTexts = []) {
   const normalizedExisting = existingTexts.map(t => t.trim().toLowerCase());
   const filtered = GENERIC_QUESTIONS.filter(g => !normalizedExisting.includes(g.text.trim().toLowerCase()));
-  const shuffled = shuffleArray(filtered.length > 0 ? filtered : GENERIC_QUESTIONS);
-  return shuffled.slice(0, count);
+  const source = filtered.length > 0 ? filtered : GENERIC_QUESTIONS;
+  return source.slice(0, count);
 }
 
 // ---------------------------------------------------------------------------
@@ -419,17 +412,18 @@ export default function ResourceQuizModal({
     }
 
     let rawQuestions = quizData.questions ?? [];
-    
-    // If we have fewer than 20 questions, pad it to 20 with generic random questions
-    if (rawQuestions.length < 20) {
-      const needed = 20 - rawQuestions.length;
-      const extra = getRandomGenericQuestions(needed, rawQuestions.map(q => q.text));
+
+    // El cliente pide SIEMPRE las mismas 10 preguntas por quiz (no aleatorias):
+    // se toman las 10 primeras tal cual vienen en los datos, sin barajar.
+    // Si algún quiz llegara a tener menos de 10, se completa de forma
+    // determinista con preguntas genéricas para no dejarlo corto.
+    if (rawQuestions.length < 10) {
+      const needed = 10 - rawQuestions.length;
+      const extra = getGenericQuestions(needed, rawQuestions.map(q => q.text));
       rawQuestions = [...rawQuestions, ...extra];
     }
 
-    // Now shuffle the 20 questions and pick the first 10
-    const shuffled = shuffleArray(rawQuestions);
-    const selected = shuffled.slice(0, 10);
+    const selected = rawQuestions.slice(0, 10);
 
     setQuestions(selected);
     setAnswers({});
