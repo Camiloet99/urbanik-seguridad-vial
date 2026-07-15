@@ -30,11 +30,15 @@ export default function ForgotIdentityStep({
       animate="animate"
       exit="exit"
     >
+      <p className="mb-4 text-sm text-[#1a1a1a]/60">
+        Escribe tu correo y tu número de documento. Con que <strong>uno de los dos</strong> coincida
+        con tu cuenta podrás cambiar la contraseña.
+      </p>
       <div className="space-y-5">
         <Input
           autoFocus
           aria-invalid={!!errors.email}
-          placeholder="Email"
+          placeholder="Correo electrónico"
           value={values.email}
           onChange={(e) => setValues((v) => ({ ...v, email: e.target.value }))}
           type="email"
@@ -43,13 +47,13 @@ export default function ForgotIdentityStep({
           error={errors.email}
         />
         <Input
-          placeholder="Numero de documento"
+          placeholder="Número de documento"
           value={values.dni}
           onChange={(e) => setValues((v) => ({ ...v, dni: e.target.value }))}
           size="lg"
           iconLeft={<MdLock size={18} />}
           error={errors.dni}
-          helperText={!errors.dni ? "6–10 dígitos" : ""}
+          helperText={!errors.dni ? "Cédula, TI u otro documento" : ""}
         />
         {generalError && (
           <div

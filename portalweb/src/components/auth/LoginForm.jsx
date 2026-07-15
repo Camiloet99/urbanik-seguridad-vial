@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { MdEmail, MdLock, MdVisibility, MdVisibilityOff } from "react-icons/md";
+import { MdPersonOutline, MdLock, MdVisibility, MdVisibilityOff } from "react-icons/md";
 import Input from "../Input";
 import PasswordInput from "../PasswordInput";
 import brandLogo from "../../assets/brand-logo.png";
@@ -36,12 +36,13 @@ export default function LoginForm({
         <Input
           autoFocus
           aria-invalid={!!errors.email}
-          placeholder="Email"
+          placeholder="Correo o número de documento"
           value={values.email}
           onChange={(e) => setValues((v) => ({ ...v, email: e.target.value }))}
-          type="email"
+          type="text"
+          autoComplete="username"
           size="lg"
-          iconLeft={<MdEmail size={18} />}
+          iconLeft={<MdPersonOutline size={18} />}
           error={errors.email}
         />
         <PasswordInput

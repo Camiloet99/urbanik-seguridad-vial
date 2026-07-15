@@ -5203,5 +5203,5 @@ export const MODULE_QUIZZES = {
   6: { 1: M6_Q1, 2: M6_Q2, 3: M6_Q3, 4: M6_Q4 },
 };
 
-/** Pass threshold: the user must answer at least this fraction correctly. */
-export const QUIZ_PASS_THRESHOLD = 0.8;
+/** Aprobación: número mínimo de respuestas correctas para pasar el quiz. */
+export const QUIZ_MIN_CORRECT = 4;

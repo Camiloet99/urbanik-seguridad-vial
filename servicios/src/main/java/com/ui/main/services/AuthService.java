@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -76,42 +77,84 @@ public class AuthService {
     }
 
     /**
-     * Valida que el correo y la cédula pertenezcan a una cuenta existente.
-     * Este flujo se usa para recuperación de contraseña.
+     * Recuperación de contraseña FLEXIBLE: la persona escribe correo y documento,
+     * y basta con que UNO de los dos coincida con una cuenta registrada (por si se
+     * equivocó al escribir el otro). Reglas:
+     *   - Si ninguno coincide → NOT_FOUND.
+     *   - Si ambos coinciden pero apuntan a cuentas distintas → ambiguo, se rechaza.
+     *   - Si coincide al menos uno → se resuelve esa cuenta.
+     * La cuenta resuelta debe estar habilitada.
+     */
+    private Mono<UserEntity> resolveRecoveryAccount(String email, String dni) {
+        String normEmail = normalizeEmail(email);
+        String normDni = normalizeDni(dni);
+
+        boolean hasEmail = normEmail != null && !normEmail.isBlank();
+        boolean hasDni = normDni != null && !normDni.isBlank();
+
+        if (!hasEmail && !hasDni) {
+            return Mono.error(new ApiErrorException(
+                    HttpStatus.BAD_REQUEST,
+                    "Ingresa tu correo electrónico y tu número de documento.",
+                    "MISSING_IDENTITY",
+                    null
+            ));
+        }
+
+        Mono<Optional<UserEntity>> byEmail = hasEmail
+                ? users.findByEmailIgnoreCase(normEmail).map(Optional::of).defaultIfEmpty(Optional.empty())
+                : Mono.just(Optional.empty());
+        Mono<Optional<UserEntity>> byDni = hasDni
+                ? users.findByDni(normDni).map(Optional::of).defaultIfEmpty(Optional.empty())
+                : Mono.just(Optional.empty());
+
+        return Mono.zip(byEmail, byDni).flatMap(tuple -> {
+            Optional<UserEntity> foundByEmail = tuple.getT1();
+            Optional<UserEntity> foundByDni = tuple.getT2();
+
+            if (foundByEmail.isEmpty() && foundByDni.isEmpty()) {
+                return Mono.error(new ApiErrorException(
+                        HttpStatus.NOT_FOUND,
+                        "No encontramos ninguna cuenta con ese correo ni ese número de documento.",
+                        "ACCOUNT_NOT_FOUND",
+                        null
+                ));
+            }
+
+            UserEntity account;
+            if (foundByEmail.isPresent() && foundByDni.isPresent()) {
+                if (!foundByEmail.get().getId().equals(foundByDni.get().getId())) {
+                    return Mono.error(new ApiErrorException(
+                            HttpStatus.BAD_REQUEST,
+                            "El correo y el número de documento pertenecen a cuentas distintas. Verifica los datos.",
+                            "IDENTITY_MISMATCH",
+                            null
+                    ));
+                }
+                account = foundByEmail.get();
+            } else {
+                account = foundByEmail.orElseGet(foundByDni::get);
+            }
+
+            if (!Boolean.TRUE.equals(account.getEnabled())) {
+                return Mono.error(new ApiErrorException(
+                        HttpStatus.CONFLICT,
+                        "Esta cuenta está deshabilitada. Contacta al administrador.",
+                        "ACCOUNT_DISABLED",
+                        null
+                ));
+            }
+
+            return Mono.just(account);
+        });
+    }
+
+    /**
+     * Verifica que exista una cuenta recuperable con el correo y/o el documento.
+     * Usado por el paso 1 del flujo de "recuperar contraseña".
      */
     public Mono<Boolean> verifyIdentity(String email, String dni) {
-        String norm = normalizeEmail(email);
-        String normalizedDni = normalizeDni(dni);
-
-        return validateIdentityFormat(norm, normalizedDni)
-                .then(users.findByEmailIgnoreCase(norm)
-                        .switchIfEmpty(Mono.error(new ApiErrorException(
-                                HttpStatus.NOT_FOUND,
-                                "No encontramos una cuenta registrada con ese correo electrónico.",
-                                "ACCOUNT_NOT_FOUND",
-                                "email"
-                        )))
-                        .flatMap(u -> {
-                            if (!normalizedDni.equals(u.getDni())) {
-                                return Mono.error(new ApiErrorException(
-                                        HttpStatus.BAD_REQUEST,
-                                        "El correo y el número de documento no coinciden con una cuenta registrada.",
-                                        "IDENTITY_MISMATCH",
-                                        "dni"
-                                ));
-                            }
-
-                            if (!Boolean.TRUE.equals(u.getEnabled())) {
-                                return Mono.error(new ApiErrorException(
-                                        HttpStatus.CONFLICT,
-                                        "Esta cuenta está deshabilitada. Contacta al administrador.",
-                                        "ACCOUNT_DISABLED",
-                                        null
-                                ));
-                            }
-
-                            return Mono.just(true);
-                        }));
+        return resolveRecoveryAccount(email, dni).thenReturn(true);
     }
 
     // =========================
@@ -119,9 +162,6 @@ public class AuthService {
     // =========================
 
     public Mono<Void> resetPassword(String email, String dni, String newRawPassword) {
-        String norm = normalizeEmail(email);
-        String normalizedDni = normalizeDni(dni);
-
         if (newRawPassword == null || newRawPassword.length() < 8) {
             return Mono.error(new ApiErrorException(
                     HttpStatus.BAD_REQUEST,
@@ -131,39 +171,12 @@ public class AuthService {
             ));
         }
 
-        return verifyIdentity(norm, normalizedDni)
-                .then(users.findByEmailIgnoreCase(norm)
-                        .switchIfEmpty(Mono.error(new ApiErrorException(
-                                HttpStatus.NOT_FOUND,
-                                "No encontramos una cuenta registrada con ese correo electrónico.",
-                                "ACCOUNT_NOT_FOUND",
-                                "email"
-                        ))))
-                .flatMap(u -> {
-                    if (!normalizedDni.equals(u.getDni())) {
-                        return Mono.error(new ApiErrorException(
-                                HttpStatus.BAD_REQUEST,
-                                "El correo y el número de documento no coinciden con una cuenta registrada.",
-                                "IDENTITY_MISMATCH",
-                                "dni"
-                        ));
-                    }
-
-                    if (!Boolean.TRUE.equals(u.getEnabled())) {
-                        return Mono.error(new ApiErrorException(
-                                HttpStatus.CONFLICT,
-                                "Esta cuenta está deshabilitada. Contacta al administrador.",
-                                "ACCOUNT_DISABLED",
-                                null
-                        ));
-                    }
-
-                    return hashPassword(newRawPassword)
-                            .flatMap(hash -> {
-                                u.setPasswordHash(hash);
-                                return users.save(u).then();
-                            });
-                });
+        return resolveRecoveryAccount(email, dni)
+                .flatMap(u -> hashPassword(newRawPassword)
+                        .flatMap(hash -> {
+                            u.setPasswordHash(hash);
+                            return users.save(u).then();
+                        }));
     }
 
     /**
@@ -273,15 +286,25 @@ public class AuthService {
     }
 
     // =========================
-    //  LOGIN (igual que antes)
+    //  LOGIN (por correo o documento)
     // =========================
 
-    public Mono<String> login(String email, String password) {
-        String norm = normalizeEmail(email);
-        return users.findByEmailIgnoreCase(norm)
+    /**
+     * El identificador puede ser el correo electrónico o el número de documento.
+     * Si tiene forma de correo se busca por email; en caso contrario se trata
+     * como documento (cédula, TI, etc.) y se busca por dni.
+     */
+    public Mono<String> login(String identifier, String password) {
+        String id = identifier == null ? null : identifier.trim();
+
+        Mono<UserEntity> userMono = isValidEmail(id)
+                ? users.findByEmailIgnoreCase(normalizeEmail(id))
+                : users.findByDni(normalizeDni(id));
+
+        return userMono
                 .switchIfEmpty(Mono.error(new ApiErrorException(
                         HttpStatus.UNAUTHORIZED,
-                        "Correo o contraseña incorrectos. Revisa los datos e inténtalo de nuevo.",
+                        "Correo/documento o contraseña incorrectos. Revisa los datos e inténtalo de nuevo.",
                         "INVALID_CREDENTIALS",
                         null
                 )))
@@ -289,7 +312,7 @@ public class AuthService {
                     if (!Boolean.TRUE.equals(u.getEnabled())) {
                         return Mono.<String>error(new ApiErrorException(
                                 HttpStatus.UNAUTHORIZED,
-                                "Correo o contraseña incorrectos. Revisa los datos e inténtalo de nuevo.",
+                                "Correo/documento o contraseña incorrectos. Revisa los datos e inténtalo de nuevo.",
                                 "INVALID_CREDENTIALS",
                                 null
                         ));

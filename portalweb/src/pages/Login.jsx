@@ -73,6 +73,9 @@ export default function AuthGateway() {
 
   const FORM_WIDTH = "max-w-[420px]";
   const isEmail = (v) => /\S+@\S+\.\S+/.test(v);
+  // En login se admite correo o número de documento (cédula, TI, etc.)
+  const isEmailOrDocument = (v) =>
+    isEmail(v) || /^[0-9]{5,15}$/.test((v || "").trim());
   const getApiMessage = (err, fallback) =>
     err?.data?.detail || err?.data?.message || err?.message || fallback;
 
@@ -86,17 +89,17 @@ export default function AuthGateway() {
     e.preventDefault();
     setLoginErrors({ email: "", pass: "" });
 
-    if (!isEmail(loginValues.email)) {
-      setLoginErrors((p) => ({ ...p, email: "Email incorrecto" }));
+    if (!isEmailOrDocument(loginValues.email)) {
+      setLoginErrors((p) => ({ ...p, email: "Correo o documento inválido" }));
     }
     if (!loginValues.pass) {
       setLoginErrors((p) => ({ ...p, pass: "Campo requerido" }));
     }
 
-    if (isEmail(loginValues.email) && loginValues.pass) {
+    if (isEmailOrDocument(loginValues.email) && loginValues.pass) {
       try {
         setIsLoggingIn(true);
-        await login(loginValues.email, loginValues.pass);
+        await login(loginValues.email.trim(), loginValues.pass);
         setLoginOkBurst(true);
         setTimeout(() => navigate("/courses"), 250);
       } catch (err) {
@@ -211,8 +214,8 @@ export default function AuthGateway() {
       setIdErrors((p) => ({ ...p, fullName: "Campo requerido" }));
       okLocal = false;
     }
-    if (!/^\d{6,10}$/.test(idValues.dni)) {
-      setIdErrors((p) => ({ ...p, dni: "Número válido (6–10 dígitos)" }));
+    if (!/^\d{5,15}$/.test(idValues.dni)) {
+      setIdErrors((p) => ({ ...p, dni: "Número de documento válido (solo dígitos)" }));
       okLocal = false;
     }
     if (!isValidEmail(normalizedEmail)) {
@@ -403,22 +406,17 @@ export default function AuthGateway() {
     setForgotIdErrors({ email: "", dni: "" });
     setForgotGeneralErr("");
 
-    let ok = true;
-    if (!isEmail(forgotIdValues.email)) {
-      setForgotIdErrors((p) => ({
-        ...p,
-        email: "Email institucional inválido",
-      }));
-      ok = false;
+    // Recuperación flexible: basta con que UNO de los dos sea válido y coincida
+    // con una cuenta (por si la persona escribió mal el otro). Se piden ambos,
+    // pero solo se bloquea localmente si NINGUNO tiene formato válido.
+    const emailOk = isEmail(forgotIdValues.email);
+    const dniOk = /^\d{5,15}$/.test((forgotIdValues.dni || "").trim());
+    if (!emailOk && !dniOk) {
+      setForgotGeneralErr(
+        "Ingresa un correo electrónico o un número de documento válido para continuar."
+      );
+      return;
     }
-    if (!/^\d{6,10}$/.test(forgotIdValues.dni)) {
-      setForgotIdErrors((p) => ({
-        ...p,
-        dni: "Cédula inválida (6–10 dígitos)",
-      }));
-      ok = false;
-    }
-    if (!ok) return;
 
     try {
       setIsVerifyingForgot(true);
@@ -428,11 +426,12 @@ export default function AuthGateway() {
       });
       if (!resp?.ok) {
         setForgotGeneralErr(
-          "No encontramos una cuenta que coincida con ese correo y número de documento."
+          "No encontramos ninguna cuenta con ese correo ni ese número de documento."
         );
         return;
       }
-      setForgotEmailFixed(forgotIdValues.email);
+      // Etiqueta para mostrar en el paso 2 (solo visual):
+      setForgotEmailFixed(emailOk ? forgotIdValues.email : `Documento ${forgotIdValues.dni.trim()}`);
       setForgotStep(2);
     } catch (err) {
       const message = getApiMessage(
@@ -491,14 +490,18 @@ export default function AuthGateway() {
     ) {
       try {
         await resetPasswordApi({
-          email: forgotEmailFixed,
+          email: forgotIdValues.email,
           dni: forgotIdValues.dni,
           newPassword: forgotResetValues.pass,
         });
         setForgotOkBurst(true);
         setMode("login");
         setForgotStep(1);
-        setLoginValues((v) => ({ ...v, email: forgotEmailFixed, pass: "" }));
+        // Prefill del login con el dato válido (el backend acepta correo o documento)
+        const loginId = isEmail(forgotIdValues.email)
+          ? forgotIdValues.email
+          : forgotIdValues.dni.trim();
+        setLoginValues((v) => ({ ...v, email: loginId, pass: "" }));
         setForgotIdValues({ email: "", dni: "" });
         setForgotResetValues({ pass: "", confirm: "" });
       } catch (err) {

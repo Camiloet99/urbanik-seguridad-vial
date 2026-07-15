@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MODULE_QUIZZES, QUIZ_PASS_THRESHOLD } from "@/data/moduleQuizzes";
+import { MODULE_QUIZZES, QUIZ_MIN_CORRECT } from "@/data/moduleQuizzes";
 import { submitQuizResult } from "@/services/progressService";
 
 function ProgressRing({ percent, size = 84, stroke = 10, color = "#00b5e2" }) {
@@ -112,7 +112,7 @@ function ResultOverlay({ correct, total, onRetry, onClose, onFailed, onPassed, i
         <p className="text-[#1a1a1a]/55 text-sm mb-6">
           {isPassing
             ? "Has demostrado que dominás el contenido del recurso."
-            : `Necesitas al menos ${Math.round(QUIZ_PASS_THRESHOLD * 100)}% para pasar. ¡Repasa el documento e inténtalo de nuevo!`}
+            : `Necesitas al menos ${QUIZ_MIN_CORRECT} respuestas correctas para pasar. ¡Repasa el documento e inténtalo de nuevo!`}
         </p>
 
         {/* Score ring */}
@@ -383,6 +383,10 @@ function getGenericQuestions(count, existingTexts = []) {
   return source.slice(0, count);
 }
 
+// Número de preguntas que se presentan por quiz (requisito del cliente).
+// Se toman SIEMPRE las primeras N del quiz, sin barajar.
+const QUESTIONS_PER_QUIZ = 6;
+
 // ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
@@ -413,17 +417,17 @@ export default function ResourceQuizModal({
 
     let rawQuestions = quizData.questions ?? [];
 
-    // El cliente pide SIEMPRE las mismas 10 preguntas por quiz (no aleatorias):
-    // se toman las 10 primeras tal cual vienen en los datos, sin barajar.
-    // Si algún quiz llegara a tener menos de 10, se completa de forma
+    // El cliente pide SIEMPRE las mismas preguntas por quiz (no aleatorias):
+    // se toman las primeras QUESTIONS_PER_QUIZ tal cual vienen en los datos,
+    // sin barajar. Si algún quiz llegara a tener menos, se completa de forma
     // determinista con preguntas genéricas para no dejarlo corto.
-    if (rawQuestions.length < 10) {
-      const needed = 10 - rawQuestions.length;
+    if (rawQuestions.length < QUESTIONS_PER_QUIZ) {
+      const needed = QUESTIONS_PER_QUIZ - rawQuestions.length;
       const extra = getGenericQuestions(needed, rawQuestions.map(q => q.text));
       rawQuestions = [...rawQuestions, ...extra];
     }
 
-    const selected = rawQuestions.slice(0, 10);
+    const selected = rawQuestions.slice(0, QUESTIONS_PER_QUIZ);
 
     setQuestions(selected);
     setAnswers({});
@@ -455,7 +459,7 @@ export default function ResourceQuizModal({
       return acc + (answers[i] === q.correct ? 1 : 0);
     }, 0);
 
-    const isPassing = correct / total >= QUIZ_PASS_THRESHOLD;
+    const isPassing = correct >= QUIZ_MIN_CORRECT;
 
     try {
       await submitQuizResult(modulo, quizNum, isPassing);
