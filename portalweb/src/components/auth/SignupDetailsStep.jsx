@@ -1,4 +1,5 @@
 // src/components/auth/SignupDetailsStep.jsx
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   MdVisibility,
@@ -94,6 +95,128 @@ function SelectField({ placeholder, value, onChange, options, error }) {
   );
 }
 
+function MultiSelectField({
+  placeholder,
+  value,
+  onChange,
+  options,
+  error,
+  exclusiveValues = [],
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  const selected = value ? value.split(",").filter(Boolean) : [];
+
+  useEffect(() => {
+    if (!open) return;
+    function onDocClick(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onDocClick);
+    return () => document.removeEventListener("mousedown", onDocClick);
+  }, [open]);
+
+  function toggle(optValue) {
+    let next;
+    if (exclusiveValues.includes(optValue)) {
+      // Opción exclusiva (p. ej. "Ninguno"): selecciona solo esta o la quita.
+      next = selected.includes(optValue) ? [] : [optValue];
+    } else {
+      // Cualquier otra opción limpia las exclusivas antes de agregarse.
+      const base = selected.filter((v) => !exclusiveValues.includes(v));
+      next = base.includes(optValue)
+        ? base.filter((v) => v !== optValue)
+        : [...base, optValue];
+    }
+    onChange(next.join(","));
+  }
+
+  const labels = selected
+    .map((v) => options.find((o) => o.value === v)?.label)
+    .filter(Boolean);
+  const hasValue = labels.length > 0;
+
+  return (
+    <div className="relative group" ref={ref}>
+      <div
+        className={`flex items-center rounded-2xl border h-12 px-4 transition-all duration-200 ${
+          error
+            ? "border-red-400/60 bg-red-500/5 shadow-[0_0_0_3px_rgba(248,113,113,0.1)]"
+            : hasValue
+            ? "border-[#1D4789] bg-white shadow-[0_0_0_3px_rgba(29,71,137,0.08)]"
+            : "border-[#1D4789]/30 bg-white focus-within:border-[#1D4789] focus-within:shadow-[0_0_0_3px_rgba(29,71,137,0.08)]"
+        }`}
+      >
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          aria-invalid={!!error}
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          className="peer min-w-0 flex-1 bg-transparent outline-none appearance-none cursor-pointer text-sm text-left transition-colors"
+          style={{
+            backgroundImage: CHEVRON,
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "right 0.25rem center",
+            paddingRight: "1.5rem",
+            color: hasValue ? "#1a1a1a" : "rgba(26,26,26,0.4)",
+          }}
+        >
+          <span className="block truncate">
+            {hasValue ? labels.join(", ") : placeholder}
+          </span>
+        </button>
+      </div>
+
+      {open && (
+        <ul
+          role="listbox"
+          aria-multiselectable="true"
+          className="absolute z-20 mt-1 w-full max-h-60 overflow-auto rounded-2xl border border-[#1D4789]/30 bg-white py-1 shadow-[0_10px_30px_rgba(29,71,137,0.18)]"
+        >
+          {options.map((opt) => {
+            const checked = selected.includes(opt.value);
+            return (
+              <li key={opt.value} role="option" aria-selected={checked}>
+                <button
+                  type="button"
+                  onClick={() => toggle(opt.value)}
+                  className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm transition-colors hover:bg-[#1D4789]/5"
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-all duration-200 ${
+                      checked
+                        ? "border-[#1D4789] bg-[#1D4789]"
+                        : "border-[#1a1a1a]/30 bg-white"
+                    }`}
+                  >
+                    {checked && (
+                      <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
+                        <path
+                          d="M1 4.5L4 7.5L10 1"
+                          stroke="white"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    )}
+                  </span>
+                  <span className="text-[#1a1a1a]">{opt.label}</span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      {error && <p className="mt-1.5 text-xs text-red-300 pl-1">{error}</p>}
+    </div>
+  );
+}
+
 function Rule({ ok, label }) {
   return (
     <li
@@ -146,13 +269,14 @@ export default function SignupDetailsStep({
           error={errors.gender}
         />
 
-        <SelectField
+        <MultiSelectField
           placeholder="Enfoque diferencial"
           value={values.differentialFocus || ""}
-          onChange={(e) =>
-            setValues((v) => ({ ...v, differentialFocus: e.target.value }))
+          onChange={(next) =>
+            setValues((v) => ({ ...v, differentialFocus: next }))
           }
           options={DIFFERENTIAL_FOCUS}
+          exclusiveValues={["none", "prefer-not-say"]}
           error={errors.differentialFocus}
         />
 

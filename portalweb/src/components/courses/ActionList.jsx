@@ -10,6 +10,7 @@ export default function ActionList({
   showContacto = false,
   lockedItems = {},
   moduleVariant = false,
+  hideSublabels = false,
 }) {
   const items = useMemo(
     () => [
@@ -66,10 +67,10 @@ export default function ActionList({
 
           const src = resolveSrc(key, isCompleted);
 
-          const isDisabled =
-            !!lockedMsg ||
-            (key === "test-inicial" && testInitialDone) ||
-            (key === "test-salida" && testExitDone);
+          // Cada actividad se puede abrir en cualquier orden y repetir en
+          // cualquier momento; solo se bloquea si el módulo trae un mensaje
+          // explícito (p. ej. módulo en preparación).
+          const isDisabled = !!lockedMsg;
 
           const row = (
             <div
@@ -115,7 +116,7 @@ export default function ActionList({
                 <span className="text-[14px] text-[#1D4789] font-medium leading-tight truncate">
                   {label}
                 </span>
-                {sublabel && (
+                {sublabel && !hideSublabels && (
                   <span className="text-[12px] text-[#1D4789]/70 leading-tight">
                     {sublabel}
                   </span>

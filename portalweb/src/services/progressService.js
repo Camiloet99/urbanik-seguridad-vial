@@ -316,7 +316,7 @@ export function syncDiagnosticoFromBackend(done) {
 
 /**
  * Persists the diagnostic result locally and posts it to the backend.
- * @param {{ score: number, profile: "BAJO"|"MEDIO"|"ALTO", responses: object }} result
+ * @param {{ score: number, profile: "BAJO"|"MEDIO"|"ALTO", responses: object, actorVial?: string|null }} result
  */
 export async function submitDiagnostico(result) {
   const payload = {
@@ -339,7 +339,17 @@ export async function submitDiagnostico(result) {
       ),
       http.put(
         "/users/me",
-        { riskScore: result.score, riskProfile: result.profile, actorVial: result.responses?.actorVial ?? null },
+        {
+          riskScore: result.score,
+          riskProfile: result.profile,
+          // actorVial explícito (más vulnerable, string); si viniera solo en
+          // responses puede ser un arreglo → tomamos el primero como respaldo.
+          actorVial:
+            result.actorVial ??
+            (Array.isArray(result.responses?.actorVial)
+              ? result.responses.actorVial[0] ?? null
+              : result.responses?.actorVial ?? null),
+        },
         { token }
       ),
     ]);

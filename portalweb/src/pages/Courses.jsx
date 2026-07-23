@@ -345,6 +345,7 @@ export default function Courses() {
                   testInitialDone={testFlags.initial}
                   testExitDone={testFlags.exit}
                   showContacto={true}
+                  hideSublabels={true}
                   lockedItems={
                     !avatarDone
                       ? {
@@ -468,17 +469,6 @@ export default function Courses() {
                         </span>
                         <div className="text-left leading-tight min-w-0">
                           <p className="text-[13px] font-semibold truncate">Certificado 120h</p>
-                          <p className="text-[11px] mt-0.5 opacity-60 truncate">
-                            {certificateStatus.unlocked
-                              ? "Listo para descargar"
-                              : (() => {
-                                  const mp = certificateStatus.pendingModules.length;
-                                  const tp = certificateStatus.pendingTests.length;
-                                  const mLabel = mp > 0 ? `${mp} módulo${mp > 1 ? "s" : ""}` : "";
-                                  const tLabel = tp > 0 ? `${tp} test${tp > 1 ? "s" : ""}` : "";
-                                  return [mLabel, tLabel].filter(Boolean).join(" y ") + " pendiente";
-                                })()}
-                          </p>
                         </div>
                       </div>
                       <span

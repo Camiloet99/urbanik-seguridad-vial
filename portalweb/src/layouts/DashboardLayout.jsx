@@ -17,7 +17,7 @@ function Item({ to, imgSrc, label }) {
   return (
     <NavLink
       to={to}
-      className="group flex flex-col items-center justify-center gap-1.5 text-center text-[11px] leading-tight select-none cursor-pointer"
+      className="group flex flex-col items-center justify-center gap-1.5 text-center text-[13px] leading-tight select-none cursor-pointer"
     >
       {({ isActive }) => {
         const iconBase =
@@ -79,7 +79,7 @@ function MobileNav() {
           <li key={to} className="flex-1 flex justify-center">
             <NavLink
               to={to}
-              className="group flex flex-col items-center gap-1.5 text-[11px] leading-tight select-none"
+              className="group flex flex-col items-center gap-1.5 text-[13px] leading-tight select-none"
             >
               {({ isActive }) => (
                 <>
@@ -158,7 +158,7 @@ export default function DashboardLayout() {
 
         <button
           onClick={logout}
-          className="mb-2 flex w-full flex-col items-center justify-center gap-1.5 text-[11px] text-white/85 transition group cursor-pointer"
+          className="mb-2 flex w-full flex-col items-center justify-center gap-1.5 text-[13px] text-white/85 transition group cursor-pointer"
           title="Salir"
         >
           <span className="grid place-items-center h-11 w-11 rounded-[40%] bg-transparent transition-all duration-200 group-hover:bg-white/20 active:scale-95">

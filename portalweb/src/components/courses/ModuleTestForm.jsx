@@ -35,7 +35,7 @@ function RatingCard({ index, question, selected, onChange }) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-[18px] ring-1 ring-[#1D4789]/20 bg-white px-6 py-5">
       {/* Texto de la pregunta */}
-      <p className="text-[15px] text-[#1a1a1a] leading-relaxed flex-1">
+      <p className="text-[17px] sm:text-[18px] text-[#1a1a1a] leading-relaxed flex-1">
         <span className="font-semibold mr-1">{index + 1}.</span>
         {question.category && (
           <span className="font-semibold">({question.category}) </span>
@@ -72,7 +72,7 @@ function RatingCard({ index, question, selected, onChange }) {
 function QuestionCard({ index, question, selected, onChange }) {
   return (
     <div className="rounded-[18px] ring-1 ring-[#1D4789]/20 bg-white p-5">
-      <p className="text-[15px] font-medium text-[#1a1a1a] mb-4 leading-relaxed">
+      <p className="text-[17px] sm:text-[18px] font-medium text-[#1a1a1a] mb-4 leading-relaxed">
         <span className="text-[#1D4789] font-semibold mr-2">{index + 1}.</span>
         {question.text}
       </p>
@@ -85,7 +85,7 @@ function QuestionCard({ index, question, selected, onChange }) {
               type="button"
               onClick={() => onChange(opt.id)}
               className={[
-                "flex items-start gap-3 text-left rounded-xl px-4 py-3 text-sm transition ring-1",
+                "flex items-start gap-3 text-left rounded-xl px-4 py-3 text-[15px] transition ring-1",
                 isSelected
                   ? "bg-[#1D4789]/15 ring-[#1D4789] text-[#1D4789] shadow-[0_4px_16px_rgba(29,71,137,0.22)]"
                   : "bg-[#F5F5F6] ring-[#1a1a1a]/15 text-[#1a1a1a]/75 hover:bg-[#EEEEEE] hover:ring-[#1D4789]/25",
@@ -322,9 +322,25 @@ export default function ModuleTestForm({ type }) {
           {moduleData.title}
         </h1>
         {introText ? (
-          <p className="text-[#1a1a1a]/65 text-sm mt-2 leading-relaxed max-w-2xl">{introText}</p>
+          Array.isArray(introText) ? (
+            <div className="mt-2 max-w-2xl space-y-1.5">
+              {introText.map((line, idx) => (
+                <p
+                  key={idx}
+                  className={[
+                    "text-base sm:text-[17px] leading-relaxed",
+                    line.bold ? "font-bold text-[#1a1a1a]" : "text-[#1a1a1a]/75",
+                  ].join(" ")}
+                >
+                  {line.text}
+                </p>
+              ))}
+            </div>
+          ) : (
+            <p className="text-[#1a1a1a]/75 text-base sm:text-[17px] mt-2 leading-relaxed max-w-2xl">{introText}</p>
+          )
         ) : (
-          <p className="text-[#1a1a1a]/55 text-sm mt-1">
+          <p className="text-[#1a1a1a]/65 text-base mt-2 leading-relaxed max-w-2xl">
             {isInitial
               ? "Responde las siguientes preguntas para evaluar tus conocimientos previos."
               : "Demuestra lo que aprendiste en este módulo respondiendo las siguientes preguntas."}

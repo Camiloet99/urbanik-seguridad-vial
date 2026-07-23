@@ -62,10 +62,27 @@ const CONDUCTORES = ["motociclista", "conductor_liviano", "conductor_pesado"];
 // Score algorithm
 // ─────────────────────────────────────────────────────────────────────────────
 
+// De una lista de actores viales seleccionados, devuelve el "más vulnerable":
+// el de mayor puntaje de riesgo (pts). Empate → el primero según ACTOR_VIAL.
+function mostVulnerableActor(ids = []) {
+  let best = null;
+  let bestPts = -1;
+  for (const o of ACTOR_VIAL) {
+    if (ids.includes(o.id) && o.pts > bestPts) {
+      bestPts = o.pts;
+      best = o.id;
+    }
+  }
+  return best;
+}
+
 function calcScore(form, ageRange) {
   let score = 0;
   score += AGE_PTS[ageRange] ?? 0;
-  score += ACTOR_VIAL.find((o) => o.id === form.actorVial)?.pts ?? 0;
+  // Actor vial es multi-selección: para el riesgo se toma el más vulnerable
+  // (el de mayor puntaje entre los seleccionados).
+  const actorVialIds = Array.isArray(form.actorVial) ? form.actorVial : [];
+  score += ACTOR_VIAL.find((o) => o.id === mostVulnerableActor(actorVialIds))?.pts ?? 0;
   if (form.frecuencia) score += FRECUENCIA.find((o) => o.id === form.frecuencia)?.pts ?? 0;
   if (form.horario)    score += HORARIO.find((o) => o.id === form.horario)?.pts ?? 0;
   if (form.experiencia) score += EXPERIENCIA.find((o) => o.id === form.experiencia)?.pts ?? 0;
@@ -83,7 +100,7 @@ function scoreToProfile(score) {
 // Sub-components
 // ─────────────────────────────────────────────────────────────────────────────
 
-function OptionBtn({ label, selected, onClick }) {
+function OptionBtn({ label, selected, onClick, multi = false }) {
   return (
     <button
       type="button"
@@ -97,7 +114,8 @@ function OptionBtn({ label, selected, onClick }) {
     >
       <span
         className={[
-          "flex-shrink-0 h-5 w-5 rounded-full border-2 grid place-items-center transition",
+          "flex-shrink-0 h-5 w-5 border-2 grid place-items-center transition",
+          multi ? "rounded-md" : "rounded-full",
           selected ? "border-[#1D4789] bg-[#1D4789]" : "border-[#1D4789]/30",
         ].join(" ")}
       >
@@ -112,7 +130,13 @@ function OptionBtn({ label, selected, onClick }) {
   );
 }
 
-function QuestionBlock({ number, title, subtitle, options, value, onChange, required = false }) {
+function QuestionBlock({ number, title, subtitle, options, value, onChange, required = false, multi = false }) {
+  const isSelected = (id) => (multi ? (value ?? []).includes(id) : value === id);
+  const handleClick = (id) => {
+    if (!multi) return onChange(id);
+    const cur = Array.isArray(value) ? value : [];
+    onChange(cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]);
+  };
   return (
     <div className="rounded-[18px] ring-1 ring-[#1D4789]/20 bg-white shadow-[0_4px_16px_rgba(0,0,0,0.06)] p-5 space-y-3">
       <div>
@@ -132,8 +156,9 @@ function QuestionBlock({ number, title, subtitle, options, value, onChange, requ
           <OptionBtn
             key={opt.id}
             label={opt.label}
-            selected={value === opt.id}
-            onClick={() => onChange(opt.id)}
+            selected={isSelected(opt.id)}
+            onClick={() => handleClick(opt.id)}
+            multi={multi}
           />
         ))}
       </div>
@@ -205,7 +230,7 @@ export default function RiskProfileTest() {
   const ageRange = session?.user?.ageRange ?? "25-34";
 
   const [form, setForm] = useState({
-    actorVial:   null,
+    actorVial:   [],
     frecuencia:  null,
     horario:     null,
     experiencia: null,
@@ -217,17 +242,23 @@ export default function RiskProfileTest() {
 
   const set = (field, val) => setForm((p) => ({ ...p, [field]: val }));
 
-  // Mandatory: only actorVial
-  const canSubmit = !!form.actorVial;
+  // Mandatory: at least one actor vial (multi-selección, mín 1)
+  const canSubmit = (form.actorVial?.length ?? 0) >= 1;
 
   // Progress: count filled optional fields + mandatory
-  const filled = Object.values(form).filter(Boolean).length;
-  const total  = Object.keys(form).length;
+  const filled = [
+    (form.actorVial?.length ?? 0) > 0,
+    form.frecuencia,
+    form.horario,
+    form.experiencia,
+    form.proteccion,
+  ].filter(Boolean).length;
+  const total  = 5;
   const pct    = Math.round((filled / total) * 100);
 
   const handleSubmit = async () => {
     if (!canSubmit) {
-      setError("El campo 'Actor vial principal' es obligatorio.");
+      setError("Debes seleccionar al menos un actor vial en la pregunta 1.");
       return;
     }
     setError("");
@@ -239,6 +270,8 @@ export default function RiskProfileTest() {
         score,
         profile,
         responses: form,
+        // El backend guarda un único actor vial: enviamos el más vulnerable.
+        actorVial: mostVulnerableActor(form.actorVial),
         ageRange,
       });
       // Refresh live session so Profile.jsx shows the result immediately
@@ -284,11 +317,12 @@ export default function RiskProfileTest() {
           <QuestionBlock
             number={1}
             title="Actor vial principal"
-            subtitle="¿Con cuál rol te desplazas con mayor frecuencia?"
+            subtitle="¿Con cuáles roles te desplazas? Puedes elegir varios (mínimo uno)."
             options={ACTOR_VIAL}
             value={form.actorVial}
             onChange={(v) => set("actorVial", v)}
             required
+            multi
           />
 
           <QuestionBlock
@@ -313,7 +347,7 @@ export default function RiskProfileTest() {
             number={4}
             title="Experiencia en la vía"
             subtitle={
-              CONDUCTORES.includes(form.actorVial)
+              (form.actorVial ?? []).some((id) => CONDUCTORES.includes(id))
                 ? "En tu rol de conductor, ¿cuánto tiempo llevas manejando habitualmente?"
                 : "¿Cuánto tiempo llevas desplazándote de forma autónoma en la ciudad? (opcional)"
             }
