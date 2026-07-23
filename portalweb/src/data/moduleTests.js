@@ -1,4 +1,8 @@
 ﻿﻿
+// Línea de instrucción de la escala 1–5 (va en negrita en el test inicial).
+const MARCA_ESCALA =
+  "Marca 1 si tienes poco conocimiento en el tema o 5 si tienes un alto conocimiento.";
+
 export const MODULE_TESTS = {
   // ─────────────────────────────────────────────────────────────────────────
   // MÓDULO 0 — General (test inicial manejado por RiskProfileTest; exit aquí)
@@ -193,8 +197,10 @@ export const MODULE_TESTS = {
   // ─────────────────────────────────────────────────────────────────────────
   1: {
     title: "Fundamentos de Seguridad Vial",
-    introInitial:
-      "Antes de sumergirte en el Metaverso, queremos saber cómo percibes tu dominio sobre los pilares que protegen la vida en la vía. Este ejercicio no busca respuestas correctas, sino una reflexión honesta sobre tu conocimiento actual. Al finalizar el módulo, compararemos estos resultados para que descubras cuánto has avanzado en tu camino hacia la experticia vial.",
+    introInitial: [
+      { text: "Antes de sumergirte en el Metaverso, queremos saber cómo percibes tu dominio sobre los pilares que protegen la vida en la vía." },
+      { text: MARCA_ESCALA, bold: true },
+    ],
     introExit:
       "¡Felicidades por completar este primer paso en el Metaverso de la Seguridad Vial! Ahora que has explorado los escenarios y superado los retos del módulo, es momento de medir el impacto de lo aprendido en tu percepción técnica y ciudadana. Este ejercicio nos permitirá validar cómo tu visión de la vía se ha transformado y cuánta seguridad has ganado para proteger tu vida y la de los demás.",
     scaleInitial: { minLabel: "No conozco el tema", maxLabel: "Lo conozco perfectamente" },
@@ -223,8 +229,10 @@ export const MODULE_TESTS = {
   // ─────────────────────────────────────────────────────────────────────────
   2: {
     title: "Movilidad y Seguridad Peatonal",
-    introInitial:
-      "Antes de iniciar este módulo, queremos saber cómo percibes tu dominio sobre los pilares que protegen la vida en la vía desde el rol del actor más importante: el peatón. Este ejercicio no busca respuestas correctas, sino una reflexión honesta sobre tu conocimiento actual. Al finalizar el módulo, compararemos estos resultados para que descubras cuánto has avanzado en tu camino hacia una movilidad consciente y segura.",
+    introInitial: [
+      { text: "Antes de iniciar este módulo, queremos saber cómo percibes tu dominio sobre los pilares que protegen la vida en la vía desde el rol del actor más importante: el peatón." },
+      { text: MARCA_ESCALA, bold: true },
+    ],
     introExit:
       "¡Felicidades por completar este paso en el Metaverso de la Seguridad Vial! Ahora que has explorado la ciudad desde la perspectiva peatonal y superado los retos del módulo, es momento de medir el impacto de lo aprendido en tu percepción técnica y ciudadana. Este ejercicio nos permitirá validar cómo tu visión de la vía se ha transformado y cuánta seguridad has ganado para proteger tu integridad física y personal.",
     scaleInitial: { minLabel: "No conozco el tema", maxLabel: "Lo conozco perfectamente" },
@@ -253,8 +261,10 @@ export const MODULE_TESTS = {
   // ─────────────────────────────────────────────────────────────────────────
   3: {
     title: "Movilidad Sostenible y Activa",
-    introInitial:
-      "Antes de sumergirte en el Metaverso, queremos saber cómo percibes tu dominio sobre los pilares que protegen la vida de quienes eligen formas de transporte limpias y eficientes. Este ejercicio no busca respuestas correctas, sino una reflexión honesta sobre tu conocimiento actual. Al finalizar el módulo, compararemos estos resultados para que descubras cuánto has avanzado en tu camino hacia una micromovilidad experta y segura.",
+    introInitial: [
+      { text: "Antes de sumergirte en el Metaverso, queremos saber cómo percibes tu dominio sobre los pilares que protegen la vida de quienes eligen formas de transporte limpias y eficientes." },
+      { text: MARCA_ESCALA, bold: true },
+    ],
     introExit:
       "¡Felicidades por completar este paso en el Metaverso de la Seguridad Vial! Ahora que has recorrido ciclorrutas técnicas y superado retos de convivencia en el entorno digital, es momento de medir el impacto de lo aprendido. Este ejercicio nos permitirá validar cómo tu visión de la movilidad activa se ha transformado y cuánta seguridad has ganado para liderar el cambio hacia una ciudad más limpia y segura.",
     scaleInitial: { minLabel: "No conozco el tema", maxLabel: "Lo conozco perfectamente" },
@@ -283,8 +293,10 @@ export const MODULE_TESTS = {
   // ─────────────────────────────────────────────────────────────────────────
   4: {
     title: "Seguridad Vial para Motociclistas",
-    introInitial:
-      "Antes de sumergirte en el Metaverso, queremos saber cómo percibes tu dominio sobre los pilares que protegen la vida de quienes conducen motocicleta. Este ejercicio no busca respuestas correctas, sino una reflexión honesta sobre tu conocimiento actual. Al finalizar el módulo, compararemos estos resultados para que descubras cuánto has avanzado en tu camino hacia una conducción experta y preventiva.",
+    introInitial: [
+      { text: "Antes de sumergirte en el Metaverso, queremos saber cómo percibes tu dominio sobre los pilares que protegen la vida de quienes conducen motocicleta." },
+      { text: MARCA_ESCALA, bold: true },
+    ],
     introExit:
       "¡Felicidades por completar este paso en el Metaverso de la Seguridad Vial! Ahora que has enfrentado los desafíos de la ruta digital y superado los retos del módulo, es momento de medir el impacto de lo aprendido en tu percepción técnica. Este ejercicio nos permitirá validar cómo tu visión del motociclismo se ha transformado y cuánta seguridad has ganado para dominar tu máquina y proteger tu vida.",
     scaleInitial: { minLabel: "No conozco el tema", maxLabel: "Lo conozco perfectamente" },
@@ -313,8 +325,10 @@ export const MODULE_TESTS = {
   // ─────────────────────────────────────────────────────────────────────────
   5: {
     title: "Conducción Segura en Automóviles",
-    introInitial:
-      "Antes de sumergirte en el Metaverso, queremos saber cómo percibes tu dominio sobre los pilares que protegen la vida al volante de un automóvil. Este ejercicio no busca respuestas correctas, sino una reflexión honesta sobre tu conocimiento actual. Al finalizar el módulo, compararemos estos resultados para que descubras cuánto has avanzado en tu camino hacia una conducción líder y responsable.",
+    introInitial: [
+      { text: "Antes de sumergirte en el Metaverso, queremos saber cómo percibes tu dominio sobre los pilares que protegen la vida al volante de un automóvil." },
+      { text: MARCA_ESCALA, bold: true },
+    ],
     introExit:
       "¡Felicidades por completar este paso en el Metaverso de la Seguridad Vial! Ahora que has navegado entornos complejos y superado los retos de percepción al volante, es momento de medir el impacto de lo aprendido. Este ejercicio nos permitirá validar cómo tu visión de la conducción se ha transformado y cuánta seguridad has ganado para garantizar la integridad de todos en la vía.",
     scaleInitial: { minLabel: "No conozco el tema", maxLabel: "Lo conozco perfectamente" },
@@ -343,8 +357,10 @@ export const MODULE_TESTS = {
   // ─────────────────────────────────────────────────────────────────────────
   6: {
     title: "Conducción de Vehículos Pesados Rígidos (C2)",
-    introInitial:
-      "Antes de sumergirte en el Metaverso, queremos conocer cómo percibes tu dominio sobre los pilares del transporte profesional de carga y pasajeros. Este ejercicio no busca respuestas técnicas correctas, sino una reflexión honesta sobre tu preparación actual para manejar vehículos de grandes dimensiones. Al finalizar el módulo, compararemos estos resultados para que descubras cuánto ha crecido tu criterio profesional.",
+    introInitial: [
+      { text: "Antes de sumergirte en el Metaverso, queremos conocer cómo percibes tu dominio sobre los pilares del transporte profesional de carga y pasajeros." },
+      { text: MARCA_ESCALA, bold: true },
+    ],
     introExit:
       "¡Felicidades por completar este último paso en el Metaverso de la Seguridad Vial! Tras navegar rutas urbanas complejas y gestionar los desafíos de un vehículo pesado, es momento de validar tu progreso. Este ejercicio nos permitirá confirmar cómo tu visión de la conducción profesional se ha transformado y cuánta seguridad has ganado para ser un líder responsable en las vías.",
     scaleInitial: { minLabel: "No conozco el tema", maxLabel: "Lo conozco perfectamente" },

@@ -118,34 +118,6 @@ export default function CourseDetail() {
     return missing;
   }, [mp, progress, modulo]);
 
-  // Locked messages for ActionList rows — only mention what's actually missing
-  const lockedItems = useMemo(() => {
-    if (!mp) return {};
-    const items = {};
-
-    // test-salida: build list of only the missing prereqs
-    if (!canDoTestSalida) {
-      const missing = [];
-      if (!mp.testInitialDone) missing.push("el test inicial");
-      const quizPending = [mp.quiz1Done, mp.quiz2Done, mp.quiz3Done, mp.quiz4Done].filter(Boolean).length;
-      if (quizPending < 4) {
-        const n = 4 - quizPending;
-        missing.push(`${n} quiz${n > 1 ? "es" : ""} de recursos`);
-      }
-      if (!experienciaDone) missing.push("la experiencia 3D");
-      items["test-salida"] = missing.length
-        ? `Falta completar: ${missing.join(", ")}`
-        : "";
-    }
-
-    // califica requires test-salida
-    if (!mp.testExitDone) {
-      items["califica"] = "Completa el test de salida primero";
-    }
-
-    return items;
-  }, [mp, canDoTestSalida, experienciaDone]);
-
   const smartCta = useMemo(() => {
     if (courseData?.locked) {
       return { label: "Próximamente", onClick: () => { } };
@@ -165,9 +137,10 @@ export default function CourseDetail() {
     return { label: "", onClick: () => { } };
   }, [courseData, mp, modulo, canDoTestSalida, navigate]);
 
-  // Play button -- marks experiencia done in localStorage then navigates
+  // Play button -- marks experiencia done in localStorage then navigates.
+  // Se puede entrar en cualquier momento (sin exigir el test inicial).
   const handleExperience = () => {
-    if (!mp?.testInitialDone || !modulo) return;
+    if (!modulo || courseData.locked) return;
     markExperienciaDone(modulo);
     setExperienciaDone(true);
     navigate("/experience", { state: { shareId: courseData.shareId ?? "", modulo } });
@@ -194,7 +167,7 @@ export default function CourseDetail() {
     );
   }
 
-  const experienceCanPlay = !!mp?.testInitialDone && !courseData.locked;
+  const experienceCanPlay = !courseData.locked;
 
   return (
     <>
@@ -215,7 +188,6 @@ export default function CourseDetail() {
             testExitDone={mp?.testExitDone}
             showRating={true}
             moduleVariant={true}
-            lockedItems={lockedItems}
             onClick={(key) => {
               if (key === "califica") {
                 setIsRatingModalOpen(true);
@@ -349,7 +321,7 @@ export default function CourseDetail() {
                 <div className="absolute inset-0 flex items-center justify-center">
                   <LockedTooltip
                     disabled={!experienceCanPlay}
-                    message="Completa el test inicial del modulo primero"
+                    message="Este modulo esta en preparacion"
                     placement="top"
                   >
                     <button
@@ -380,9 +352,7 @@ export default function CourseDetail() {
                 <p className="text-[#1a1a1a] text-sm">
                   {courseData.locked
                     ? "Este modulo esta en preparacion."
-                    : !mp?.testInitialDone
-                      ? "Haz el test inicial del modulo para desbloquear la experiencia."
-                      : "Al hacer clic, entras a la experiencia gamificada del modulo."}
+                    : "Ingresa al Metaverso"}
                 </p>
               </div>
             </div>
@@ -394,17 +364,6 @@ export default function CourseDetail() {
             <div className="rounded-[22px] border border-[#1D4789] bg-[#EEEEEE] p-5">
               <p className="text-[#1a1a1a] font-medium mb-4">Recursos:</p>
 
-              {/* Lock banner — shown when test inicial is not yet done */}
-              {!courseData.locked && !mp?.testInitialDone && (
-                <div className="mb-3 flex items-center gap-2 rounded-2xl px-3 py-2 ring-1 ring-[#1D4789]/20 bg-[#1D4789]/5 text-[#1a1a1a]/50 text-xs">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" className="shrink-0 opacity-60">
-                    <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" strokeWidth="2" />
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
-                  Haz el test inicial para acceder a los recursos
-                </div>
-              )}
-
               <div className="space-y-2">
                 {courseData.resources?.length ? (
                   courseData.resources.map((r, idx) => {
@@ -414,15 +373,18 @@ export default function CourseDetail() {
                     const pdfDone = mp?.[pdfKey] ?? false;
                     const quizDone = mp?.[quizKey] ?? false;
                     const quizFailed = localQuizFailed.has(quizNum);
-                    // Resources are locked until test inicial is done
-                    const resourceLocked = courseData.locked || !mp?.testInitialDone;
+                    // El recurso solo se bloquea si el módulo está en preparación.
+                    const resourceLocked = courseData.locked;
+                    // El ítem se marca "verde" (completado) al aprobar el quiz,
+                    // sin depender de haber abierto el PDF.
+                    const resourceDone = quizDone;
 
                     return (
                       <div
                         key={r.id}
                         className={[
                           "w-full flex items-center gap-2 rounded-full px-4 py-[10px] ring-1 transition-all duration-300",
-                          quizDone
+                          resourceDone
                             ? "ring-2 ring-[#1D4789] bg-[#1D4789]/8 text-[#1D4789]"
                             : "ring-1 ring-[#1D4789]/25 bg-white text-[#1a1a1a]",
                           resourceLocked ? "opacity-40" : "",
@@ -432,29 +394,30 @@ export default function CourseDetail() {
                         <button
                           disabled={resourceLocked}
                           onClick={() => openResource(idx)}
-                          title={resourceLocked ? "Haz el test inicial primero" : undefined}
+                          title={resourceLocked ? "Modulo en preparacion" : "Abrir recurso"}
                           className={[
                             "flex-1 text-left text-sm truncate transition-colors hover:text-[#1D4789] focus:outline-none cursor-pointer disabled:cursor-not-allowed",
-                            quizDone ? "font-bold text-[#1D4789]" : "font-medium",
+                            resourceDone ? "font-bold text-[#1D4789]" : "font-medium",
                           ].join(" ")}
                         >
                           {r.label}
                         </button>
 
-                        {/* Recurso visto — icon circle: grey until opened, green when done. Also opens the PDF. */}
+                        {/* Recurso visto — icon circle. Se marca en azul si el
+                            PDF se abrió o si el quiz ya se aprobó. Abre el PDF. */}
                         <button
                           disabled={resourceLocked}
                           onClick={() => openResource(idx)}
                           title={
                             resourceLocked
-                              ? "Haz el test inicial primero"
+                              ? "Modulo en preparacion"
                               : pdfDone
                                 ? "Recurso visto — abrir de nuevo"
                                 : "Abrir recurso"
                           }
                           className={[
                             "shrink-0 h-7 w-7 rounded-full flex items-center justify-center ring-1 transition-all duration-300 focus:outline-none",
-                            pdfDone
+                            pdfDone || resourceDone
                               ? "ring-[#1D4789] bg-[#1D4789] cursor-pointer hover:bg-[#163672]"
                               : "ring-[#1D4789] bg-white cursor-pointer hover:bg-[#F5F5F6]",
                             resourceLocked ? "cursor-not-allowed opacity-50" : "",
@@ -465,39 +428,36 @@ export default function CourseDetail() {
                             alt=""
                             draggable={false}
                             className="h-4 w-4 object-contain select-none transition-all duration-300"
-                            style={!pdfDone ? {
+                            style={!(pdfDone || resourceDone) ? {
                               filter: "brightness(0) saturate(100%) invert(23%) sepia(72%) saturate(1000%) hue-rotate(200deg) brightness(90%)"
                             } : {}}
                           />
                         </button>
 
-                        {/* Quiz button */}
+                        {/* Quiz button — se puede responder en cualquier momento
+                            (sin abrir el PDF) y repetir aunque ya esté aprobado. */}
                         <button
-                          disabled={!pdfDone || resourceLocked || quizDone}
+                          disabled={resourceLocked}
                           onClick={() =>
-                            !quizDone &&
-                            pdfDone &&
                             !resourceLocked &&
                             setQuizModalOpen({ quizNum, resourceLabel: r.label })
                           }
                           title={
                             resourceLocked
-                              ? "Haz el test inicial primero"
+                              ? "Modulo en preparacion"
                               : quizDone
-                                ? "Quiz superado ✅"
+                                ? "Quiz superado ✅ — repetir"
                                 : quizFailed
                                   ? "Quiz fallado — reintenta"
-                                  : pdfDone
-                                    ? "Hacer quiz"
-                                    : "Abre el recurso primero"
+                                  : "Hacer quiz"
                           }
                           className={[
                             "shrink-0 h-7 w-7 rounded-full flex items-center justify-center ring-1 transition-all duration-200",
                             quizDone
-                              ? "ring-[#1D4789] bg-[#1D4789] cursor-default"
+                              ? "ring-[#1D4789] bg-[#1D4789] cursor-pointer hover:bg-[#163672]"
                               : quizFailed
                                 ? "ring-red-500 bg-white cursor-pointer hover:bg-red-50"
-                                : pdfDone && !resourceLocked
+                                : !resourceLocked
                                   ? "ring-[#1D4789] bg-white cursor-pointer hover:bg-[#F5F5F6]"
                                   : "ring-[#1D4789]/20 bg-white cursor-not-allowed",
                           ].join(" ")}
