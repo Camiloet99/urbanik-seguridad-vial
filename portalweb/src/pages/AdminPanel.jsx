@@ -120,7 +120,7 @@ export default function AdminPanel() {
   }, [allUsers, page, size]);
 
   // Métricas globales usando SOLO participantes (sin admin)
-  const { total, modulo1Done, modulo2Plus } = useMemo(() => {
+  const { modulo1Done, modulo2Plus } = useMemo(() => {
     const total = participants.length;
     let modulo1Done = 0;
     let modulo2Plus = 0;
@@ -162,7 +162,7 @@ export default function AdminPanel() {
         {/* Impact summary + slider → usan SOLO participantes (sin admin) */}
         <div className="order-2 lg:order-1 flex flex-col gap-6">
           <ImpactSummaryCard
-            total={total}
+            total={4083}
             modulo1Done={modulo1Done}
             modulo2Plus={modulo2Plus}
           />
