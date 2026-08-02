@@ -119,9 +119,10 @@ export default function AdminPanel() {
     return allUsers.slice(start, end);
   }, [allUsers, page, size]);
 
-  // Métricas globales usando SOLO participantes (sin admin)
-  const { modulo1Done, modulo2Plus } = useMemo(() => {
-    const total = participants.length;
+  // Métricas globales: el total refleja TODOS los usuarios registrados
+  // (igual que la tabla); el desglose de módulos sí excluye admin/test.
+  const { total, modulo1Done, modulo2Plus } = useMemo(() => {
+    const total = allUsers.length;
     let modulo1Done = 0;
     let modulo2Plus = 0;
 
@@ -141,7 +142,7 @@ export default function AdminPanel() {
     });
 
     return { total, modulo1Done, modulo2Plus };
-  }, [participants]);
+  }, [allUsers, participants]);
 
   const handlePageChange = (nextPage) => {
     setPage(nextPage);
@@ -162,7 +163,7 @@ export default function AdminPanel() {
         {/* Impact summary + slider → usan SOLO participantes (sin admin) */}
         <div className="order-2 lg:order-1 flex flex-col gap-6">
           <ImpactSummaryCard
-            total={4083}
+            total={total}
             modulo1Done={modulo1Done}
             modulo2Plus={modulo2Plus}
           />
