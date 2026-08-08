@@ -24,6 +24,7 @@ const REPORT_COLUMNS = [
   "Edad",
   "Enfoque Diferencial",
   "Perfil de Riesgo",
+  "Actor Vial",
   "M1 - 20h",
   "M2 - 20h",
   "M3 - 20h",
@@ -33,7 +34,7 @@ const REPORT_COLUMNS = [
   "120 h",
 ];
 
-const MODULE_COLUMNS_START = 10; // primer índice (1-based) de columna "M1 - 20h"
+const MODULE_COLUMNS_START = 11; // primer índice (1-based) de columna "M1 - 20h"
 const TOTAL_MODULES = 6;
 
 const TITLE_FILL = { type: "pattern", pattern: "solid", fgColor: { argb: "FF1D4789" } };
@@ -71,6 +72,17 @@ const AGE_MAP = {
   "25-34": "25 – 34",
   "35-59": "35 – 59",
   "60+": "60+",
+};
+
+// Sync con ACTOR_VIAL en RiskProfileTest.jsx
+const ACTOR_VIAL_MAP = {
+  "peatón": "Peatón",
+  peaton: "Peatón",
+  motociclista: "Motociclista",
+  ciclista: "Ciclista",
+  micromovilidad: "Micromovilidad (patineta / scooter eléctrico)",
+  conductor_liviano: "Conductor de vehículo liviano (carro/camioneta)",
+  conductor_pesado: "Conductor de vehículo pesado (camión/bus)",
 };
 
 const toLabel = (slug) =>
@@ -161,6 +173,8 @@ export default function GeoMapCard({ users = [] }) {
           u.enfoqueDiferencial ||
           "-",
         riesgo: u.riskProfile || "-",
+        actorVial:
+          ACTOR_VIAL_MAP[u.actorVial] || toLabel(u.actorVial) || "-",
         modulosDone: Array.isArray(u.modulosDone) ? u.modulosDone : [],
       }));
 
@@ -190,6 +204,7 @@ export default function GeoMapCard({ users = [] }) {
         { width: 12 },
         { width: 22 },
         { width: 14 },
+        { width: 20 },
         { width: 10 },
         { width: 10 },
         { width: 10 },
@@ -259,6 +274,7 @@ export default function GeoMapCard({ users = [] }) {
           row.getCell(7).value = r.edad;
           row.getCell(8).value = r.enfoque;
           row.getCell(9).value = r.riesgo;
+          row.getCell(10).value = r.actorVial;
 
           const allModulesDone =
             r.modulosDone.length === TOTAL_MODULES &&
